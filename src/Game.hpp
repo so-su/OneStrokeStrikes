@@ -12,5 +12,5 @@ class Game : public App::Scene {
     void draw() const override;
 
    private:
-        Enemy enemy;
+    Enemy enemy;
 };

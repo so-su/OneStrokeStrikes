@@ -1,30 +1,65 @@
 #include "Polyomino.hpp"
 
 Polyomino::Polyomino() {
-    for (auto i : step(grid_size.x)) {
-        for (auto j : step(grid_size.y)) {
-            body[i][j] =
-                Sample({Cell::None, Cell::Red, Cell::Blue, Cell::Green});
+    // スタートする点をランダムに決め、セルを埋める
+    int32 now_x = Random<int32>(grid_size.x - 1);
+    int32 now_y = Random<int32>(grid_size.y - 1);
+    body[now_x][now_y] = Sample({Cell::Red, Cell::Blue, Cell::Green});
+
+    // エラーの許容回数（大きいほどポリオミノのサイズも大きくなりやすい）
+    constexpr int32 tolerance = 20;
+
+    int32 error_cnt = 0;
+    Cell prev = body[now_x][now_y];
+
+    // ランダムな方向に進みながらセルを埋め、ポリオミノをつくる
+    while (error_cnt < tolerance) {
+        const auto dir_idx = Random<uint32>(3);
+        const auto next_x = now_x + directions[dir_idx].x;
+        const auto next_y = now_y + directions[dir_idx].y;
+
+        if (next_x < 0 || grid_size.x <= next_x || next_y < 0 ||
+            grid_size.y <= next_y || is_filled(next_x, next_y)) {
+            ++error_cnt;
+            continue;
         }
+
+        now_x = next_x;
+        now_y = next_y;
+
+        // 50%の確率で前の色と同じにする
+        if (RandomBool()) {
+            body[now_x][now_y] = Sample({Cell::Red, Cell::Blue, Cell::Green});
+        } else {
+            body[now_x][now_y] = prev;
+        }
+        prev = body[now_x][now_y];
     }
 }
 
-// 左上の座標を受け取って描画
+// セルが埋められているかを返す
+bool Polyomino::is_filled(int32 x, int32 y) const {
+    return body[x][y] != Cell::None;
+}
+
+// 左上の座標を指定してポリオミノを描画する
 void Polyomino::draw(Point upper_left) const {
     for (auto i : step(grid_size.x)) {
         for (auto j : step(grid_size.y)) {
             if (body[i][j] == Cell::None) continue;
+
             Color cell_color;
             if (body[i][j] == Cell::Red) {
-                cell_color = Palette::Red;
+                cell_color = Color{255, 40, 0};
             } else if (body[i][j] == Cell::Blue) {
-                cell_color = Palette::Blue;
+                cell_color = Color{0, 65, 255};
             } else if (body[i][j] == Cell::Green) {
-                cell_color = Palette::Green;
+                cell_color = Color{53, 161, 107};
             }
             Rect{upper_left.x + i * cell_size.x, upper_left.y + j * cell_size.y,
                  cell_size}
-                .draw(cell_color);
+                .draw(cell_color)
+                .drawFrame(1, 1, Palette::Black);
         }
     }
 }
