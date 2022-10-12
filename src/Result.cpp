@@ -1,8 +1,6 @@
 #include "Result.hpp"
 
-Result::Result(const InitData& init) : IScene{init} {
-
-}
+Result::Result(const InitData& init) : IScene{init} {}
 
 void Result::update() {
     if (MouseL.down()) {
@@ -18,7 +16,7 @@ void Result::draw() const {
 
     const auto& data = getData();
 
-    if(data.score){
+    if (data.score) {
         FontAsset(U"Result")(*data.score).drawAt(Scene::Center(), ColorF{0.25});
     }
 }

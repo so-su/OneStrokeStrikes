@@ -1,7 +1,7 @@
 #pragma once
 #include "Common.hpp"
 
-// ランキングシーン
+// リザルトシーン
 class Result : public App::Scene {
    public:
     Result(const InitData& init);

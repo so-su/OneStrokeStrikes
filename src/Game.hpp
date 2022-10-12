@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.hpp"
+#include "Enemy.hpp"
 
 // ゲームシーン
 class Game : public App::Scene {
@@ -11,5 +12,5 @@ class Game : public App::Scene {
     void draw() const override;
 
    private:
-    
+        Enemy enemy;
 };

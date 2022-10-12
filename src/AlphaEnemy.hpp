@@ -1,10 +1,8 @@
 #pragma once
 #include "Polyomino.hpp"
 
-class Enemy{
-public:
-    Enemy
-    
-private:
+class Enemy {
+   public:
+   private:
     Polyomino body;
 }
