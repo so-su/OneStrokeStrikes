@@ -1,6 +1,7 @@
 #pragma once
 #include "Common.hpp"
 #include "Enemy.hpp"
+#include "AlphaEnemy.hpp"
 
 // ゲームシーン
 class Game : public App::Scene {
@@ -13,4 +14,6 @@ class Game : public App::Scene {
 
    private:
     Enemy enemy;
+    
+    AlphaEnemy alpha_enemy;
 };

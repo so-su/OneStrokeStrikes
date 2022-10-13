@@ -1,5 +1,5 @@
 #include "Enemy.hpp"
 
-Enemy::Enemy() {}
+Enemy::Enemy() :body(Size{5,5},30){}
 
-void Enemy::draw() const { body.draw(Point{400, 200}); }
+void Enemy::draw() const {body.draw(Point{400, 250}); }
