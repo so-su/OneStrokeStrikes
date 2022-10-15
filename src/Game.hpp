@@ -1,7 +1,7 @@
 #pragma once
+#include "AlphaEnemy.hpp"
 #include "Common.hpp"
 #include "Enemy.hpp"
-#include "AlphaEnemy.hpp"
 
 // ゲームシーン
 class Game : public App::Scene {
@@ -13,9 +13,9 @@ class Game : public App::Scene {
     void draw() const override;
 
    private:
-    Enemy enemy;
-    
+    Enemy* enemy;
+
     AlphaEnemy alpha_enemy;
-    
-    bool drawing_path=false;
+
+    bool drawing_path = false;
 };

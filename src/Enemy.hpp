@@ -2,7 +2,7 @@
 #include "Common.hpp"
 #include "Polyomino.hpp"
 
-class Enemy:public Polyomino {
+class Enemy : public Polyomino {
    public:
     Enemy();
 
