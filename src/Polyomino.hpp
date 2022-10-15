@@ -8,21 +8,27 @@ enum class Cell : uint8 {
     Blue,
     Green,
     Poison,
-    Alpha,
+    Black,
 };
 
 class Polyomino {
 public:
     Polyomino(Size grid_size, Size cell_size,Point upper_left,int32 tolerance,Cell designated=Cell::None);
 
-    // セルが埋められているかを返す
-    bool is_filled(int32 x, int32 y) const;
-
     // ポリオミノを描画する
     void draw() const;
     
-    // bodyからシードを生成する
-    int64 generate_seed()const;
+    // パスを描画する
+    void draw_path()const;
+    
+    // カーソルの座標を受け取ってパスを更新
+    bool update_path(Point pos);
+    
+    // パスを削除
+    void clear_path();
+    
+    // セルが埋められているかを返す
+    bool is_filled(int32 x, int32 y) const;
 
 protected:
     const Size grid_size;
@@ -36,11 +42,11 @@ protected:
     // セルを表すRect
     Grid<Optional<Rect>> rects;
     
-    // パスを描いている途中か
-    bool drawing_path=false;
-    
     // 一筆書き中のパス
-    Array<Rect> path;
+    Array<Point> path;
+    
+    // bodyからシードを生成する
+    int64 generate_seed()const;
 
 private:
     static constexpr std::array<Point, 4> directions = {

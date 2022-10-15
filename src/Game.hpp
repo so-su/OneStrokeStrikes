@@ -16,4 +16,6 @@ class Game : public App::Scene {
     Enemy enemy;
     
     AlphaEnemy alpha_enemy;
+    
+    bool drawing_path=false;
 };

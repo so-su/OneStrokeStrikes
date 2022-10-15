@@ -15,8 +15,8 @@ Polyomino::Polyomino(Size grid_size, Size cell_size,Point upper_left,const int32
         const auto next_x = now_x + directions[dir_idx].x;
         const auto next_y = now_y + directions[dir_idx].y;
 
-        if (next_x < 0 || grid_size.x <= next_x || next_y < 0 ||
-            grid_size.y <= next_y || is_filled(next_x, next_y)) {
+        if (next_x < 0 or grid_size.x <= next_x or next_y < 0 or
+            grid_size.y <= next_y or is_filled(next_x, next_y)) {
             ++error_cnt;
             continue;
         }
@@ -74,12 +74,62 @@ void Polyomino::draw() const {
                 cell_color = Color{0, 65, 255};
             } else if (cells[i][j] == Cell::Green) {
                 cell_color = Color{53, 161, 107};
-            }else if(cells[i][j]==Cell::Alpha){
+            }else if(cells[i][j]==Cell::Black){
                 cell_color=Palette::Black;
             }
             rects[i][j]->draw(cell_color).drawFrame(1, 1, Palette::Dimgray);
         }
     }
+}
+
+// パスを描画する
+void Polyomino::draw_path()const{
+    // for debug
+    ClearPrint();
+    Print<<path;
+    
+    for(size_t path_idx=0;path_idx+1<size(path);++path_idx){
+        Vec2 from=rects[path[path_idx].x][path[path_idx].y]->center();
+        Vec2 to=rects[path[path_idx+1].x][path[path_idx+1].y]->center();
+        Line{from,to}.draw(3,Palette::Yellow);
+    }
+}
+
+// カーソルの座標を受け取ってパスを更新
+bool Polyomino::update_path(Point pos){
+    for(auto [i,j]:step(grid_size)){
+        if(rects[i][j] and rects[i][j]->contains(pos)){
+            if(not path.empty()){
+                auto [last_i,last_j]=path.back();
+                // パスの末尾のセルに隣接していないなら拒否
+                if(not (abs(i-last_i)+abs(j-last_j)==1)){
+                    return false;
+                }
+                
+                // パスに既に含まれていたら拒否
+                for(size_t path_idx=0;path_idx<size(path);++path_idx){
+                    if(path[path_idx]==Point{i,j}){
+                        // 末尾から2番目ならパスの末尾を削除
+                        if(path_idx+2==size(path)){
+                            path.pop_back();
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            }
+            path.emplace_back(i,j);
+            return true;
+        }
+    }
+    
+    // posがポリオミノ外のとき
+    return false;
+}
+
+// パスを削除
+void Polyomino::clear_path(){
+    path.clear();
 }
 
 Cell Polyomino::random_cell(Cell designated)const{
