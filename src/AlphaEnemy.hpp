@@ -2,15 +2,11 @@
 #include "Common.hpp"
 #include "Polyomino.hpp"
 
-class AlphaEnemy {
+class AlphaEnemy:public Polyomino {
    public:
     AlphaEnemy();
-    
-    void draw()const;
-    
+
    private:
-    Polyomino body;
-    
     String name;
     
     int32 hp;

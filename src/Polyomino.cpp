@@ -1,13 +1,13 @@
 #include "Polyomino.hpp"
 
-Polyomino::Polyomino(const Size grid_size, const int32 tolerance,Cell designated):grid_size(grid_size),body{grid_size, Cell::None} {
+Polyomino::Polyomino(Size grid_size, Size cell_size,Point upper_left,const int32 tolerance,Cell designated):grid_size(grid_size),cell_size(cell_size),upper_left(upper_left),cells{grid_size, Cell::None},rects{grid_size} {
     // スタートする点をランダムに決め、セルを埋める
     int32 now_x = Random<int32>(grid_size.x - 1);
     int32 now_y = Random<int32>(grid_size.y - 1);
-    body[now_x][now_y] = random_cell(designated);
+    cells[now_x][now_y] = random_cell(designated);
 
     int32 error_cnt = 0;
-    Cell prev = body[now_x][now_y];
+    Cell prev = cells[now_x][now_y];
 
     // ランダムな方向に進みながらセルを埋め、ポリオミノをつくる
     while (error_cnt < tolerance) {
@@ -26,20 +26,28 @@ Polyomino::Polyomino(const Size grid_size, const int32 tolerance,Cell designated
 
         // 50%の確率で前の色と同じにする
         if (RandomBool()) {
-            body[now_x][now_y] =random_cell(designated);
+            cells[now_x][now_y] =random_cell(designated);
         } else {
-            body[now_x][now_y] = prev;
+            cells[now_x][now_y] = prev;
         }
-        prev = body[now_x][now_y];
+        prev = cells[now_x][now_y];
+    }
+    
+    // rectsの初期化
+    for(auto i:step(grid_size.x)){
+        for(auto j:step(grid_size.y)){
+            if(cells[i][j]==Cell::None)continue;
+            rects[i][j]=Rect{upper_left.x+i*cell_size.x,upper_left.y+j*cell_size.y,cell_size};
+        }
     }
 }
 
 // セルが埋められているかを返す
 bool Polyomino::is_filled(int32 x, int32 y) const {
-    return body[x][y] != Cell::None;
+    return cells[x][y] != Cell::None;
 }
 
-// bodyからシードを生成する
+// cellsからシードを生成する
 int64 Polyomino::generate_seed()const{
     int64 seed=0;
     for(auto i:step(grid_size.x)){
@@ -53,31 +61,28 @@ int64 Polyomino::generate_seed()const{
     return seed;
 }
 
-// 左上の座標を指定してポリオミノを描画する
-void Polyomino::draw(Point upper_left,Size cell_size) const {
+// ポリオミノを描画する
+void Polyomino::draw() const {
     for (auto i : step(grid_size.x)) {
         for (auto j : step(grid_size.y)) {
-            if (body[i][j] == Cell::None) continue;
+            if (cells[i][j] == Cell::None) continue;
 
             Color cell_color;
-            if (body[i][j] == Cell::Red) {
+            if (cells[i][j] == Cell::Red) {
                 cell_color = Color{255, 40, 0};
-            } else if (body[i][j] == Cell::Blue) {
+            } else if (cells[i][j] == Cell::Blue) {
                 cell_color = Color{0, 65, 255};
-            } else if (body[i][j] == Cell::Green) {
+            } else if (cells[i][j] == Cell::Green) {
                 cell_color = Color{53, 161, 107};
-            }else if(body[i][j]==Cell::Alpha){
+            }else if(cells[i][j]==Cell::Alpha){
                 cell_color=Palette::Black;
             }
-            Rect{upper_left.x + i * cell_size.x, upper_left.y + j * cell_size.y,
-                 cell_size}
-                .draw(cell_color)
-                .drawFrame(1, 1, Palette::Dimgray);
+            rects[i][j]->draw(cell_color).drawFrame(1, 1, Palette::Dimgray);
         }
     }
 }
 
-Cell Polyomino::random_cell(Cell designated){
+Cell Polyomino::random_cell(Cell designated)const{
     if(designated!=Cell::None){
         return designated;
     }

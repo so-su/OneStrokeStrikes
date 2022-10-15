@@ -2,12 +2,9 @@
 #include "Common.hpp"
 #include "Polyomino.hpp"
 
-class Enemy {
+class Enemy:public Polyomino {
    public:
     Enemy();
 
-    void draw() const;
-
    private:
-    Polyomino body;
 };
