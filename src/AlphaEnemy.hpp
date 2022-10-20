@@ -19,12 +19,4 @@ class AlphaEnemy : public Polyomino {
 
    private:
     String name;
-
-    int32 max_hp;
-    
-    int32 hp;
-    
-    int32 attack;
-    
-    ProgressBar hp_bar;
 };

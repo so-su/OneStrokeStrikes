@@ -9,7 +9,6 @@ void Game::update() {
         drawing_path = false;
         if (enemy.vanish()) {
             enemy.initialize();
-            alpha_enemy.get_damaged(player.attack_value());
             if(alpha_enemy.alive()){
                 player.get_damaged(alpha_enemy.attack_value());
                 if(not player.alive()){

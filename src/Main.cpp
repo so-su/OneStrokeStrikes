@@ -4,7 +4,7 @@
 #include "Title.hpp"
 
 void Main() {
-    Window::Resize(1200, 700);
+    Window::Resize(1400, 800);
 
     FontAsset::Register(U"TitleFont", FontMethod::MSDF, 50,
                         U"example/font/RocknRoll/RocknRollOne-Regular.ttf");
