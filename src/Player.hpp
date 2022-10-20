@@ -1,13 +1,10 @@
 #pragma once
 #include "Common.hpp"
-#include "Polyomino.hpp"
 #include "ProgressBar.hpp"
 
-class AlphaEnemy : public Polyomino {
-   public:
-    AlphaEnemy();
-    
-    void initialize();
+class Player{
+public:
+    Player();
     
     void get_damaged(int32 damage);
     
@@ -16,15 +13,15 @@ class AlphaEnemy : public Polyomino {
     int32 attack_value()const;
     
     void draw()const;
-
-   private:
-    String name;
-
+    
+private:
     int32 max_hp;
     
     int32 hp;
     
     int32 attack;
+    
+    int32 defence;
     
     ProgressBar hp_bar;
 };

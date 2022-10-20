@@ -13,8 +13,7 @@ enum class Cell : uint8 {
 
 class Polyomino {
    public:
-    Polyomino(Size grid_size, Size cell_size, Point upper_left, int32 tolerance,
-              Cell designated = Cell::None);
+    Polyomino(Size max_grid_size,Size cell_size, Point upper_left);
 
     // ポリオミノを描画する
     void draw() const;
@@ -38,14 +37,19 @@ class Polyomino {
     bool is_filled(int32 x, int32 y) const;
 
    protected:
-    const Size grid_size;
-
+    // セルの大きさ
     const Size cell_size;
 
+    // ポリオミノの左上の座標
     const Point upper_left;
+    
+    // グリッドの大きさ
+    Size grid_size;
 
-    size_t cell_num = 1;
+    // 有効なセルの個数
+    size_t cell_num;
 
+    // セル情報の二次元配列
     Grid<Cell> cells;
 
     // セルを表すRect
@@ -55,14 +59,18 @@ class Polyomino {
     Array<Point> path;
 
     // ポリオミノが倒されて消滅していく最中のインデックス
-    Optional<size_t> vanishing_idx = std::nullopt;
+    Optional<size_t> vanishing_idx = none;
 
     // bodyからシードを生成する
     int64 generate_seed() const;
+    
+    // ポリオミノの初期化
+    void initialize(Size grid_size, int32 tolerance,Cell designated = Cell::None);
 
    private:
     static constexpr std::array<Point, 4> directions = {
         Point{1, 0}, Point{-1, 0}, Point{0, 1}, Point{0, -1}};
 
-    Cell random_cell(Cell designated) const;
+    // セルを生成する
+    Cell generate_cell(Cell designated) const;
 };

@@ -1,52 +1,10 @@
 #include "Polyomino.hpp"
 
-Polyomino::Polyomino(Size grid_size, Size cell_size, Point upper_left,
-                     const int32 tolerance, Cell designated)
-    : grid_size(grid_size),
-      cell_size(cell_size),
+Polyomino::Polyomino(Size max_grid_size,Size cell_size, Point upper_left)
+    : cell_size(cell_size),
       upper_left(upper_left),
-      cells{grid_size, Cell::None},
-      rects{grid_size} {
-    // スタートする点をランダムに決め、セルを埋める
-    int32 now_x = Random<int32>(grid_size.x - 1);
-    int32 now_y = Random<int32>(grid_size.y - 1);
-    cells[now_x][now_y] = random_cell(designated);
-
-    int32 error_cnt = 0;
-    Cell prev = cells[now_x][now_y];
-
-    // ランダムな方向に進みながらセルを埋め、ポリオミノをつくる
-    while (error_cnt < tolerance) {
-        const auto dir_idx = Random<uint32>(3);
-        const auto next_x = now_x + directions[dir_idx].x;
-        const auto next_y = now_y + directions[dir_idx].y;
-
-        if (next_x < 0 or grid_size.x <= next_x or next_y < 0 or
-            grid_size.y <= next_y or is_filled(next_x, next_y)) {
-            ++error_cnt;
-            continue;
-        }
-
-        now_x = next_x;
-        now_y = next_y;
-
-        // 50%の確率で前の色と同じにする
-        if (RandomBool()) {
-            cells[now_x][now_y] = random_cell(designated);
-        } else {
-            cells[now_x][now_y] = prev;
-        }
-        ++cell_num;
-
-        prev = cells[now_x][now_y];
-    }
-
-    // rectsの初期化
-    for (auto [i, j] : step(grid_size)) {
-        if (cells[i][j] == Cell::None) continue;
-        rects[i][j] = Rect{upper_left.x + i * cell_size.x,
-                           upper_left.y + j * cell_size.y, cell_size};
-    }
+      cells{max_grid_size, Cell::None},
+      rects{max_grid_size,none} {
 }
 
 // セルが埋められているかを返す
@@ -148,7 +106,59 @@ bool Polyomino::vanish() {
 // ポリオミノが消滅中かを返す
 bool Polyomino::is_vanishing() const { return vanishing_idx.has_value(); }
 
-Cell Polyomino::random_cell(Cell designated) const {
+// ポリオミノの初期化
+void Polyomino::initialize(Size grid_size_,const int32 tolerance, Cell designated){
+    grid_size=grid_size_;
+    cells.fill(Cell::None);
+    rects.fill(none);
+    cell_num=1;
+    clear_path();
+    vanishing_idx=none;
+    
+    // スタートする点をランダムに決め、セルを埋める
+    int32 now_x = Random<int32>(grid_size.x - 1);
+    int32 now_y = Random<int32>(grid_size.y - 1);
+    cells[now_x][now_y] = generate_cell(designated);
+
+    int32 error_cnt = 0;
+    Cell prev = cells[now_x][now_y];
+
+    // ランダムな方向に進みながらセルを埋め、ポリオミノをつくる
+    while (error_cnt < tolerance) {
+        const auto dir_idx = Random<uint32>(3);
+        const auto next_x = now_x + directions[dir_idx].x;
+        const auto next_y = now_y + directions[dir_idx].y;
+
+        if (next_x < 0 or grid_size.x <= next_x or next_y < 0 or
+            grid_size.y <= next_y or is_filled(next_x, next_y)) {
+            ++error_cnt;
+            continue;
+        }
+
+        now_x = next_x;
+        now_y = next_y;
+
+        // 50%の確率で前の色と同じにする
+        if (RandomBool()) {
+            cells[now_x][now_y] = generate_cell(designated);
+        } else {
+            cells[now_x][now_y] = prev;
+        }
+        ++cell_num;
+
+        prev = cells[now_x][now_y];
+    }
+
+    // rectsの初期化
+    for (auto [i, j] : step(grid_size)) {
+        if (cells[i][j] == Cell::None) continue;
+        rects[i][j] = Rect{upper_left.x + i * cell_size.x,
+                           upper_left.y + j * cell_size.y, cell_size};
+    }
+}
+
+// セルを生成する
+Cell Polyomino::generate_cell(Cell designated) const {
     if (designated != Cell::None) {
         return designated;
     } else {

@@ -5,6 +5,8 @@
 class Enemy : public Polyomino {
    public:
     Enemy();
+    
+    void initialize();
 
    private:
 };

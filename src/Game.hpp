@@ -2,6 +2,8 @@
 #include "AlphaEnemy.hpp"
 #include "Common.hpp"
 #include "Enemy.hpp"
+#include "ProgressBar.hpp"
+#include "Player.hpp"
 
 // ゲームシーン
 class Game : public App::Scene {
@@ -13,7 +15,9 @@ class Game : public App::Scene {
     void draw() const override;
 
    private:
-    Enemy* enemy;
+    Player player;
+    
+    Enemy enemy;
 
     AlphaEnemy alpha_enemy;
 
