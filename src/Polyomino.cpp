@@ -116,37 +116,42 @@ void Polyomino::initialize(Size grid_size_,const int32 tolerance, Cell designate
     vanishing_idx=none;
     
     // スタートする点をランダムに決め、セルを埋める
-    int32 now_x = Random<int32>(grid_size.x - 1);
-    int32 now_y = Random<int32>(grid_size.y - 1);
-    cells[now_x][now_y] = generate_cell(designated);
+    int32 start_x=Random<int32>(grid_size.x - 1);
+    int32 start_y=Random<int32>(grid_size.y - 1);
+    cells[start_x][start_y] = generate_cell(designated);
+    
+    for(auto _ :step(2)){
+        int32 now_x = start_x;
+        int32 now_y = start_y;
 
-    int32 error_cnt = 0;
-    Cell prev = cells[now_x][now_y];
+        int32 error_cnt = 0;
+        Cell prev = cells[start_x][start_y];
 
-    // ランダムな方向に進みながらセルを埋め、ポリオミノをつくる
-    while (error_cnt < tolerance) {
-        const auto dir_idx = Random<uint32>(3);
-        const auto next_x = now_x + directions[dir_idx].x;
-        const auto next_y = now_y + directions[dir_idx].y;
+        // ランダムな方向に進みながらセルを埋め、ポリオミノをつくる
+        while (error_cnt < tolerance) {
+            const auto dir_idx = Random<uint32>(3);
+            const auto next_x = now_x + directions[dir_idx].x;
+            const auto next_y = now_y + directions[dir_idx].y;
 
-        if (next_x < 0 or grid_size.x <= next_x or next_y < 0 or
-            grid_size.y <= next_y or is_filled(next_x, next_y)) {
-            ++error_cnt;
-            continue;
+            if (next_x < 0 or grid_size.x <= next_x or next_y < 0 or
+                grid_size.y <= next_y or is_filled(next_x, next_y)) {
+                ++error_cnt;
+                continue;
+            }
+
+            now_x = next_x;
+            now_y = next_y;
+
+            // 50%の確率で前の色と同じにする
+            if (RandomBool()) {
+                cells[now_x][now_y] = generate_cell(designated);
+            } else {
+                cells[now_x][now_y] = prev;
+            }
+            ++cell_num;
+
+            prev = cells[now_x][now_y];
         }
-
-        now_x = next_x;
-        now_y = next_y;
-
-        // 50%の確率で前の色と同じにする
-        if (RandomBool()) {
-            cells[now_x][now_y] = generate_cell(designated);
-        } else {
-            cells[now_x][now_y] = prev;
-        }
-        ++cell_num;
-
-        prev = cells[now_x][now_y];
     }
 
     // rectsの初期化
