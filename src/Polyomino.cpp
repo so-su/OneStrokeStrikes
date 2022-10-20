@@ -1,8 +1,8 @@
 #include "Polyomino.hpp"
 
-Polyomino::Polyomino(Size max_grid_size,Size cell_size, Point upper_left)
+Polyomino::Polyomino(Size max_grid_size,Size cell_size, Point center)
     : cell_size(cell_size),
-      upper_left(upper_left),
+      center(center),
       cells{max_grid_size, Cell::None},
       rects{max_grid_size,none} {
 }
@@ -93,6 +93,11 @@ bool Polyomino::update_path(Point pos) {
 // パスを削除
 void Polyomino::clear_path() { path.clear(); }
 
+// パスを逆順にする
+void Polyomino::reverse_path(){
+    std::reverse(std::begin(path),std::end(path));
+}
+
 // ポリオミノの消滅を進める、すべて消滅したらtrueを返す
 bool Polyomino::vanish() {
     if (vanishing_idx == cell_num) {
@@ -153,12 +158,39 @@ void Polyomino::initialize(Size grid_size_,const int32 tolerance, Cell designate
             prev = cells[now_x][now_y];
         }
     }
+    
+    // 余白を詰める
+    resize();
+    
+    // ポリオミノの左上の座標を求める
+    upper_left=center-cell_size.x*grid_size/2;
 
     // rectsの初期化
     for (auto [i, j] : step(grid_size)) {
         if (cells[i][j] == Cell::None) continue;
         rects[i][j] = Rect{upper_left.x + i * cell_size.x,
                            upper_left.y + j * cell_size.y, cell_size};
+    }
+}
+
+void Polyomino::resize(){
+    int32 exist_min_x=grid_size.x;
+    int32 exist_max_x=-1;
+    int32 exist_min_y=grid_size.y;
+    int32 exist_max_y=-1;
+    for(auto [x,y]:step(grid_size)){
+        if(cells[x][y]==Cell::None)continue;
+        exist_min_x=Min(x,exist_min_x);
+        exist_max_x=Max(x,exist_max_x);
+        exist_min_y=Min(y,exist_min_y);
+        exist_max_y=Max(y,exist_max_y);
+    }
+    auto tmp=cells;
+    cells.fill(Cell::None);
+    
+    grid_size=Size{exist_max_x+1-exist_min_x,exist_max_y+1-exist_min_y};
+    for(auto [i,j]:step(grid_size)){
+        cells[i][j]=tmp[exist_min_x+i][exist_min_y+j];
     }
 }
 

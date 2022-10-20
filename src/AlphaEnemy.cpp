@@ -1,11 +1,11 @@
 #include "AlphaEnemy.hpp"
 
-AlphaEnemy::AlphaEnemy():Polyomino(Size{8,20},Size{20,20},Point{500,50}){
+AlphaEnemy::AlphaEnemy():Polyomino(Size{8,20},Size{20,20},Point{700,150}){
     initialize();
 }
 
 void AlphaEnemy::initialize(){
-    Polyomino::initialize(Size{20, 8}, 1000, Cell::Black);
+    Polyomino::initialize(Size{20, 8}, 100, Cell::Black);
 }
 
 bool AlphaEnemy::alive()const{

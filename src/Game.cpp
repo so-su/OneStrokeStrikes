@@ -22,6 +22,10 @@ void Game::update() {
         return;
     }
 
+    if(KeyR.pressed()){
+        enemy.reverse_path();
+    }
+    
     drawing_path ^= MouseL.down();
 
     if (drawing_path) {

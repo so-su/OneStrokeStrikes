@@ -26,6 +26,9 @@ class Polyomino {
 
     // パスを削除
     void clear_path();
+    
+    // パスを逆順にする
+    void reverse_path();
 
     // ポリオミノの消滅を進める
     bool vanish();
@@ -40,8 +43,11 @@ class Polyomino {
     // セルの大きさ
     const Size cell_size;
 
-    // ポリオミノの左上の座標
-    const Point upper_left;
+    // ポリオミノの中心の座標
+    const Point center;
+    
+    // ポリオミノの中心の座標
+    Point upper_left;
     
     // グリッドの大きさ
     Size grid_size;
@@ -68,6 +74,8 @@ class Polyomino {
     void initialize(Size grid_size, int32 tolerance,Cell designated = Cell::None);
 
    private:
+    void resize();
+    
     static constexpr std::array<Point, 4> directions = {
         Point{1, 0}, Point{-1, 0}, Point{0, 1}, Point{0, -1}};
 
