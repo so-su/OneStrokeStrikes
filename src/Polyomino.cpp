@@ -9,6 +9,9 @@ Polyomino::Polyomino(Size max_grid_size,Size cell_size, Point center)
 
 // セルが埋められているかを返す
 bool Polyomino::is_filled(int32 x, int32 y) const {
+    if(x<0 or grid_size.x<=x or y<0 or grid_size.y<=y){
+        return false;
+    }
     return cells[x][y] != Cell::None;
 }
 
@@ -51,6 +54,10 @@ void Polyomino::draw_path() const {
         Vec2 from = rects[path[path_idx].x][path[path_idx].y]->center();
         Vec2 to = rects[path[path_idx + 1].x][path[path_idx + 1].y]->center();
         Line{from, to}.draw(3, Palette::Yellow);
+    }
+    if(not path.empty()){
+        Circle{rects[path.front().x][path.front().y]->center(),5}.draw(Palette::Yellow);
+        Circle{rects[path.back().x][path.back().y]->center(),5}.draw(Palette::Yellow);
     }
 }
 

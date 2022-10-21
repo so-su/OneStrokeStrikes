@@ -18,5 +18,12 @@ class AlphaEnemy : public Polyomino {
     void draw()const;
 
    private:
+    // 属するポリオミノ（連結成分）の番号
+    Grid<int32> connected_component_id;
+    
+    // 外周のパスの、各連結成分ごとの配列
+    Array<Array<Point>> perimeters;
+    
+    // 名前
     String name;
 };

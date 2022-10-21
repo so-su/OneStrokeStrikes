@@ -10,7 +10,6 @@ void Game::update() {
         if (enemy.vanish()) {
             enemy.initialize();
             if(alpha_enemy.alive()){
-                player.get_damaged(alpha_enemy.attack_value());
                 if(not player.alive()){
                     changeScene(State::Game);
                 }
@@ -22,7 +21,7 @@ void Game::update() {
         return;
     }
 
-    if(KeyR.pressed()){
+    if(KeyR.down()){
         enemy.reverse_path();
     }
     
@@ -32,6 +31,10 @@ void Game::update() {
         enemy.update_path(Cursor::Pos());
     } else {
         enemy.clear_path();
+    }
+    
+    if(enemy.update_gauge()){
+        player.get_damaged(enemy.attack_value());
     }
 }
 
@@ -43,6 +46,7 @@ void Game::draw() const {
     enemy.draw();
     if (not enemy.is_vanishing()) {
         enemy.draw_path();
+        enemy.draw_gauge();
     }
 
     alpha_enemy.draw();

@@ -46,7 +46,7 @@ class Polyomino {
     // ポリオミノの中心の座標
     const Point center;
     
-    // ポリオミノの中心の座標
+    // ポリオミノの左上の座標
     Point upper_left;
     
     // グリッドの大きさ
@@ -66,6 +66,10 @@ class Polyomino {
 
     // ポリオミノが倒されて消滅していく最中のインデックス
     Optional<size_t> vanishing_idx = none;
+    
+    // 4方向
+    static constexpr std::array<Point, 4> directions = {
+        Point{1, 0}, Point{0, 1}, Point{-1, 0}, Point{0, -1}};
 
     // bodyからシードを生成する
     int64 generate_seed() const;
@@ -75,9 +79,6 @@ class Polyomino {
 
    private:
     void resize();
-    
-    static constexpr std::array<Point, 4> directions = {
-        Point{1, 0}, Point{-1, 0}, Point{0, 1}, Point{0, -1}};
 
     // セルを生成する
     Cell generate_cell(Cell designated) const;
