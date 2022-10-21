@@ -15,6 +15,61 @@ bool Polyomino::is_filled(int32 x, int32 y) const {
     return cells[x][y] != Cell::None;
 }
 
+PathScore Polyomino::get_path_score()const{
+    PathScore path_score{0,0,0,0,0,0};
+    Cell now_color=cells[path.front().x][path.front().y];
+    int cnt=1;
+    for(size_t path_idx=1;path_idx<size(path);++path_idx){
+        if(cells[path[path_idx].x][path[path_idx].y]==now_color){
+            ++cnt;
+        }
+        else{
+            // スコア計算
+            if(now_color==Cell::Green){
+                path_score.green+=cnt*cnt;
+            }else if(now_color==Cell::Red){
+                path_score.red+=cnt*cnt;
+            }else if(now_color==Cell::Blue){
+                path_score.blue+=cnt*cnt;
+            }
+            
+            now_color=cells[path[path_idx].x][path[path_idx].y];
+            cnt=1;
+        }
+    }
+    // 最後の連続部分のスコア計算
+    if(now_color==Cell::Green){
+        path_score.green+=cnt*cnt;
+    }else if(now_color==Cell::Red){
+        path_score.red+=cnt*cnt;
+    }else if(now_color==Cell::Blue){
+        path_score.blue+=cnt*cnt;
+    }
+    
+    // 端点ボーナス
+    if(cells[path.front().x][path.front().y]==Cell::Green){
+        ++path_score.green_bonus;
+    }
+    else if(cells[path.front().x][path.front().y]==Cell::Red){
+        ++path_score.red_bonus;
+    }
+    else if(cells[path.front().x][path.front().y]==Cell::Blue){
+        ++path_score.blue_bonus;
+    }
+    
+    if(cells[path.back().x][path.back().y]==Cell::Green){
+        ++path_score.green_bonus;
+    }
+    else if(cells[path.back().x][path.back().y]==Cell::Red){
+        ++path_score.red_bonus;
+    }
+    else if(cells[path.back().x][path.back().y]==Cell::Blue){
+        ++path_score.blue_bonus;
+    }
+
+    return path_score;
+}
+
 // cellsからシードを生成する
 int64 Polyomino::generate_seed() const {
     int64 seed = 0;

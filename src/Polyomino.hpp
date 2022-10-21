@@ -11,6 +11,15 @@ enum class Cell : uint8 {
     Black,
 };
 
+struct PathScore{
+    int32 green;
+    int32 red;
+    int32 blue;
+    int32 green_bonus;
+    int32 red_bonus;
+    int32 blue_bonus;
+};
+
 class Polyomino {
    public:
     Polyomino(Size max_grid_size,Size cell_size, Point upper_left);
@@ -38,6 +47,8 @@ class Polyomino {
 
     // セルが埋められているかを返す
     bool is_filled(int32 x, int32 y) const;
+    
+    PathScore get_path_score()const;
 
    protected:
     // セルの大きさ
@@ -82,4 +93,6 @@ class Polyomino {
 
     // セルを生成する
     Cell generate_cell(Cell designated) const;
+    
+    PathScore path_score;
 };

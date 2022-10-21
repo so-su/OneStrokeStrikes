@@ -6,7 +6,14 @@ Game::Game(const InitData& init) : IScene{init} {
 
 void Game::update() {
     if (enemy.is_vanishing()) {
-        drawing_path = false;
+        if(drawing_path){
+            // パスのスコアによって効果を得る
+            auto score=enemy.get_path_score();
+            player.get_healed(score.green);
+            player.get_ap(score.red);
+            player.get_sp(score.blue);
+            drawing_path = false;
+        }
         if (enemy.vanish()) {
             enemy.initialize();
             if(alpha_enemy.alive()){
@@ -14,11 +21,8 @@ void Game::update() {
                     changeScene(State::Game);
                 }
             }
-            else{
-                alpha_enemy.AlphaEnemy::initialize();
-            }
+            alpha_enemy.get_damaged(3);
         }
-        return;
     }
 
     if(KeyR.down()){
@@ -36,6 +40,10 @@ void Game::update() {
     if(enemy.update_gauge()){
         player.get_damaged(enemy.attack_value());
     }
+    
+    int32 full_num=alpha_enemy.update_gauges();
+    player.get_damaged(full_num*enemy.attack_value());
+    
 }
 
 void Game::draw() const {
@@ -50,4 +58,5 @@ void Game::draw() const {
     }
 
     alpha_enemy.draw();
+    alpha_enemy.draw_gauges();
 }

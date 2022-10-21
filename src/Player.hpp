@@ -10,6 +10,10 @@ public:
     
     void get_healed(int32 value);
     
+    void get_ap(int32 value);
+    
+    void get_sp(int32 value);
+    
     bool alive()const;
 
     void draw()const;

@@ -5,7 +5,7 @@ Enemy::Enemy() : Polyomino(Size{8,8},Size{50, 50}, Point{700, 500}),gauge_len(0.
 }
 
 void Enemy::initialize(){
-    Polyomino::initialize(Size{8, 8}, 100);
+    Polyomino::initialize(Size{4, 4}, 100);
     
     gauge_len=0.0;
     perimeter.clear();
@@ -58,7 +58,7 @@ void Enemy::initialize(){
 
 // ゲージを更新し、満タンになったらtrueを返す
 bool Enemy::update_gauge(){
-    gauge_len+=10*Scene::DeltaTime();
+    gauge_len+=Scene::DeltaTime();
     
     if(static_cast<size_t>(gauge_len)==std::size(perimeter)){
         gauge_len=0.0;
