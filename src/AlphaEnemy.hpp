@@ -17,8 +17,6 @@ class AlphaEnemy : public Polyomino {
     
     int32 attack_value()const;
     
-    void draw()const;
-    
     // ゲージを更新し、満タンになったゲージの個数を返す
     int32 update_gauges();
     

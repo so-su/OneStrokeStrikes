@@ -118,12 +118,6 @@ int32 AlphaEnemy::attack_value()const{
     return static_cast<int32>(cell_num);
 }
 
-void AlphaEnemy::draw()const {
-    Polyomino::draw();
-    ClearPrint();
-    Print<<cell_num;
-}
-
 // ゲージを更新し、満タンになったらtrueを返す
 int32 AlphaEnemy::update_gauges(){
     int32 full=0;
