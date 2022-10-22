@@ -11,7 +11,7 @@ enum class Cell : uint8 {
     Black,
 };
 
-struct PathScore{
+struct Score{
     int32 green;
     int32 red;
     int32 blue;
@@ -44,11 +44,18 @@ class Polyomino {
 
     // ポリオミノが消滅中かを返す
     bool is_vanishing() const;
+    
+    // ポリオミノが完全に消滅したかを返す
+    bool has_vanished()const;
 
     // セルが埋められているかを返す
     bool is_filled(int32 x, int32 y) const;
     
-    PathScore get_path_score()const;
+    Score get_ordinary_score()const;
+    
+    Score get_path_score()const;
+    
+    void prepare_to_randomly_vanish();
 
    protected:
     // セルの大きさ
@@ -74,9 +81,6 @@ class Polyomino {
 
     // 一筆書き中のパス
     Array<Point> path;
-
-    // ポリオミノが倒されて消滅していく最中のインデックス
-    Optional<size_t> vanishing_idx = none;
     
     // 4方向
     static constexpr std::array<Point, 4> directions = {
@@ -93,4 +97,9 @@ class Polyomino {
 
     // セルを生成する
     Cell generate_cell(Cell designated) const;
+    
+    // ポリオミノが倒されて消滅していく最中のインデックス
+    Optional<size_t> vanishing_idx = none;
+    
+    bool vanished;
 };

@@ -18,7 +18,7 @@ class AlphaEnemy : public Polyomino {
     int32 attack_value()const;
     
     // ゲージを更新し、満タンになったゲージの個数を返す
-    int32 update_gauges();
+    int32 update_gauges(bool speed_up);
     
     // 外周のゲージを描画する
     void draw_gauges()const;

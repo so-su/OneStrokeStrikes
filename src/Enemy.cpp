@@ -1,11 +1,11 @@
 #include "Enemy.hpp"
 
-Enemy::Enemy() : Polyomino(Size{8,8},Size{50, 50}, Point{700, 500}),gauge_len(0.0) {
+Enemy::Enemy(Point center) : Polyomino(Size{8,8},Size{50, 50}, center),gauge_len(0.0) {
     initialize();
 }
 
 void Enemy::initialize(){
-    Polyomino::initialize(Size{8, 8}, 100);
+    Polyomino::initialize(Size{6, 6}, 100);
     
     gauge_len=0.0;
     perimeter.clear();

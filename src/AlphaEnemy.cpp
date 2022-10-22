@@ -115,14 +115,14 @@ bool AlphaEnemy::alive()const{
 }
 
 int32 AlphaEnemy::attack_value()const{
-    return static_cast<int32>(cell_num);
+    return 10;
 }
 
 // ゲージを更新し、満タンになったらtrueを返す
-int32 AlphaEnemy::update_gauges(){
+int32 AlphaEnemy::update_gauges(bool speed_up){
     int32 full=0;
     for(auto gauge_idx:step(num_component)){
-        gauge_lens[gauge_idx]+=Scene::DeltaTime();
+        gauge_lens[gauge_idx]+=Scene::DeltaTime()*(speed_up?10.0:1.0);
     
         if(static_cast<size_t>(gauge_lens[gauge_idx])==std::size(perimeters[gauge_idx])){
             gauge_lens[gauge_idx]=0.0;

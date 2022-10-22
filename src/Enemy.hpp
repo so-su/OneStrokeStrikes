@@ -4,7 +4,7 @@
 
 class Enemy : public Polyomino {
    public:
-    Enemy();
+    Enemy(Point center);
     
     void initialize();
     

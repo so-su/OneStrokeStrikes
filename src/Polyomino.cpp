@@ -15,8 +15,24 @@ bool Polyomino::is_filled(int32 x, int32 y) const {
     return cells[x][y] != Cell::None;
 }
 
-PathScore Polyomino::get_path_score()const{
-    PathScore path_score{0,0,0,0,0,0};
+Score Polyomino::get_ordinary_score()const{
+    Score score{0,0,0,0,0,0};
+    for(auto [i,j]:step(grid_size)){
+        if(cells[i][j]==Cell::Green){
+            score.green+=10;
+        }
+        else if(cells[i][j]==Cell::Red){
+            score.red+=10;
+        }
+        else if(cells[i][j]==Cell::Blue){
+            score.blue+=10;
+        }
+    }
+    return score;
+}
+
+Score Polyomino::get_path_score()const{
+    Score path_score=get_ordinary_score();
     Cell now_color=cells[path.front().x][path.front().y];
     int cnt=1;
     for(size_t path_idx=1;path_idx<size(path);++path_idx){
@@ -68,6 +84,18 @@ PathScore Polyomino::get_path_score()const{
     }
 
     return path_score;
+}
+
+void Polyomino::prepare_to_randomly_vanish(){
+    path.clear();
+    for(auto [i,j]:step(grid_size)){
+        if(is_filled(i, j)){
+            path.emplace_back(i,j);
+        }
+    }
+    path.shuffle();
+    
+    vanishing_idx = 0;
 }
 
 // cellsからシードを生成する
@@ -163,6 +191,7 @@ void Polyomino::reverse_path(){
 // ポリオミノの消滅を進める、すべて消滅したらtrueを返す
 bool Polyomino::vanish() {
     if (vanishing_idx == cell_num) {
+        vanished=true;
         return true;
     }
     cells[path[*vanishing_idx].x][path[*vanishing_idx].y] = Cell::None;
@@ -173,6 +202,11 @@ bool Polyomino::vanish() {
 // ポリオミノが消滅中かを返す
 bool Polyomino::is_vanishing() const { return vanishing_idx.has_value(); }
 
+// ポリオミノが完全に消滅したかを返す
+bool Polyomino::has_vanished()const{
+    return vanished;
+}
+
 // ポリオミノの初期化
 void Polyomino::initialize(Size grid_size_,const int32 tolerance, Cell designated){
     grid_size=grid_size_;
@@ -181,6 +215,7 @@ void Polyomino::initialize(Size grid_size_,const int32 tolerance, Cell designate
     cell_num=1;
     clear_path();
     vanishing_idx=none;
+    vanished=false;
     
     // スタートする点をランダムに決め、セルを埋める
     int32 start_x=Random<int32>(grid_size.x - 1);
