@@ -5,7 +5,7 @@ Enemy::Enemy() : Polyomino(Size{8,8},Size{50, 50}, Point{700, 500}),gauge_len(0.
 }
 
 void Enemy::initialize(){
-    Polyomino::initialize(Size{4, 4}, 100);
+    Polyomino::initialize(Size{8, 8}, 100);
     
     gauge_len=0.0;
     perimeter.clear();
@@ -77,5 +77,5 @@ void Enemy::draw_gauge()const{
 }
 
 int32 Enemy::attack_value()const{
-    return cell_num;
+    return static_cast<int32>(cell_num);
 }

@@ -13,20 +13,23 @@ void Game::update() {
             player.get_ap(score.red);
             player.get_sp(score.blue);
             drawing_path = false;
+            if(player.ap_is_full()){
+                player.reset_ap();
+                alpha_enemy.get_damaged(3);
+            }
         }
         if (enemy.vanish()) {
             enemy.initialize();
-            if(alpha_enemy.alive()){
-                if(not player.alive()){
-                    changeScene(State::Game);
-                }
-            }
-            alpha_enemy.get_damaged(3);
         }
     }
 
     if(KeyR.down()){
         enemy.reverse_path();
+    }
+    
+    if(KeyE.down() and player.sp_is_full()){
+        player.reset_sp();
+        enemy.initialize();
     }
     
     drawing_path ^= MouseL.down();
@@ -42,7 +45,15 @@ void Game::update() {
     }
     
     int32 full_num=alpha_enemy.update_gauges();
-    player.get_damaged(full_num*enemy.attack_value());
+    player.get_damaged(full_num*alpha_enemy.attack_value());
+    
+    if(not alpha_enemy.alive()){
+        changeScene(State::Game);
+    }
+    
+    if(not player.alive()){
+        changeScene(State::Game);
+    }
     
 }
 

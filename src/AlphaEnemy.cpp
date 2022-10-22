@@ -1,6 +1,6 @@
 #include "AlphaEnemy.hpp"
 
-AlphaEnemy::AlphaEnemy():Polyomino(Size{8,20},Size{20,20},Point{700,150}){
+AlphaEnemy::AlphaEnemy():Polyomino(Size{8,20},Size{30,30},Point{700,150}){
     initialize();
 }
 
@@ -120,6 +120,8 @@ int32 AlphaEnemy::attack_value()const{
 
 void AlphaEnemy::draw()const {
     Polyomino::draw();
+    ClearPrint();
+    Print<<cell_num;
 }
 
 // ゲージを更新し、満タンになったらtrueを返す

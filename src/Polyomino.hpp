@@ -93,6 +93,4 @@ class Polyomino {
 
     // セルを生成する
     Cell generate_cell(Cell designated) const;
-    
-    PathScore path_score;
 };

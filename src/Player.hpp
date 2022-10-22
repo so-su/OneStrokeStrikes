@@ -15,6 +15,14 @@ public:
     void get_sp(int32 value);
     
     bool alive()const;
+    
+    bool ap_is_full()const;
+    
+    bool sp_is_full()const;
+    
+    void reset_ap();
+    
+    void reset_sp();
 
     void draw()const;
     
@@ -32,4 +40,8 @@ private:
     int32 max_sp;
 
     ProgressBar hp_bar;
+    
+    ProgressBar ap_bar;
+    
+    ProgressBar sp_bar;
 };
