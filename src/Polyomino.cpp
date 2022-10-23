@@ -87,14 +87,7 @@ Score Polyomino::get_path_score()const{
 }
 
 void Polyomino::prepare_to_randomly_vanish(){
-    path.clear();
-    for(auto [i,j]:step(grid_size)){
-        if(is_filled(i, j)){
-            path.emplace_back(i,j);
-        }
-    }
-    path.shuffle();
-    
+    path=shuffled_filled_cells;
     vanishing_idx = 0;
 }
 
@@ -216,6 +209,7 @@ void Polyomino::initialize(Size grid_size_,const int32 tolerance, Cell designate
     clear_path();
     vanishing_idx=none;
     vanished=false;
+    shuffled_filled_cells.clear();
     
     // スタートする点をランダムに決め、セルを埋める
     int32 start_x=Random<int32>(grid_size.x - 1);
@@ -262,12 +256,15 @@ void Polyomino::initialize(Size grid_size_,const int32 tolerance, Cell designate
     // ポリオミノの左上の座標を求める
     upper_left=center-cell_size.x*grid_size/2;
 
-    // rectsの初期化
+    // rects と shuffled_filled_cells の初期化
     for (auto [i, j] : step(grid_size)) {
-        if (cells[i][j] == Cell::None) continue;
+        if (not is_filled(i,j))continue;
         rects[i][j] = Rect{upper_left.x + i * cell_size.x,
                            upper_left.y + j * cell_size.y, cell_size};
+        shuffled_filled_cells.emplace_back(i,j);
     }
+    
+    shuffled_filled_cells.shuffle();
 }
 
 void Polyomino::resize(){

@@ -94,17 +94,13 @@ void AlphaEnemy::new_shape_initialize(){
 
 void AlphaEnemy::get_damaged(size_t remove_num){
     // 埋まっているセルの中から remove_num 個選んで削除する
-    Array<Point> filled_cells;
-    for(auto [i,j]:step(grid_size)){
-        if(cells[i][j]!=Cell::None){
-            filled_cells.emplace_back(i,j);
-        }
-    }
-    auto cells_removed=filled_cells.choice(Min(remove_num,size(filled_cells)));
-    for(auto [i,j]:cells_removed){
-        cells[i][j]=Cell::None;
-        rects[i][j]=none;
+    while(remove_num>0 and cell_num>0){
+        auto [x,y]=shuffled_filled_cells.back();
+        shuffled_filled_cells.pop_back();
+        cells[x][y]=Cell::None;
+        rects[x][y]=none;
         --cell_num;
+        --remove_num;
     }
     
     new_shape_initialize();

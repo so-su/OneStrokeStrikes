@@ -91,6 +91,8 @@ class Polyomino {
     
     // ポリオミノの初期化
     void initialize(Size grid_size, int32 tolerance,Cell designated = Cell::None);
+    
+    Array<Point> shuffled_filled_cells;
 
    private:
     void resize();
