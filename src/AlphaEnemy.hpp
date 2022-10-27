@@ -13,6 +13,8 @@ class AlphaEnemy : public Polyomino {
     
     void get_damaged(size_t remove_num);
     
+    void get_damaged(size_t remove_num,Point pos);
+    
     bool alive()const;
     
     int32 attack_value()const;
@@ -30,6 +32,10 @@ class AlphaEnemy : public Polyomino {
     // ゲージの長さの、各連結成分ごとの配列
     Array<double> gauge_lens;
     
+    // 連結成分の番号
+    Grid<Optional<int32>> component_id;
+    
+    // 連結成分の個数
     int32 num_component;
     
     // 名前

@@ -1,6 +1,6 @@
 #include "AlphaEnemy.hpp"
 
-AlphaEnemy::AlphaEnemy():Polyomino(Size{8,20},Size{30,30},Point{700,150}){
+AlphaEnemy::AlphaEnemy():Polyomino(Size{8,20},Size{30,30},Point{700,150}),component_id{8,20}{
     initialize();
 }
 
@@ -11,6 +11,7 @@ void AlphaEnemy::initialize(){
 
 void AlphaEnemy::new_shape_initialize(){
     perimeters.clear();
+    component_id.fill(none);
     
     // 幅優先探索して連結成分ごとに見ていき、それぞれの外周を求める
     num_component=0;
@@ -25,6 +26,9 @@ void AlphaEnemy::new_shape_initialize(){
         
         // ここを抜けるごとに新しい連結成分を処理
         
+        // 連結成分に新しい番号をふる
+        component_id[i][j]=num_component;
+        
         for(auto &ary:graph){
             ary.fill(none);
         }
@@ -37,6 +41,8 @@ void AlphaEnemy::new_shape_initialize(){
         while(not tmp.empty()){
             auto [x,y]=tmp.back();
             tmp.pop_back();
+            
+            component_id[x][y]=num_component;
             
             if(y<component_upper_left.y){
                 component_upper_left={x,y};
@@ -104,6 +110,36 @@ void AlphaEnemy::get_damaged(size_t remove_num){
     }
     
     new_shape_initialize();
+}
+
+void AlphaEnemy::get_damaged(size_t remove_num,Point pos){
+    Optional<int32> id=none;
+    
+    for(auto [i,j]:step(grid_size)){
+        if(not rects[i][j].has_value())continue;
+        if(rects[i][j]->contains(pos)){
+            id=component_id[i][j];
+        }
+    }
+    
+    if(id.has_value()){
+        // shuffled_filled_cells を前から見ていき、同じ番号がついているもののうち、初めに現れたものを削除
+        for(size_t i=0;i<size(shuffled_filled_cells);++i){
+            if(auto [x,y]=shuffled_filled_cells[i];component_id[x][y]==id){
+                cells[x][y]=Cell::None;
+                rects[x][y]=none;
+                --cell_num;
+                shuffled_filled_cells[i]=shuffled_filled_cells.back();
+                shuffled_filled_cells.pop_back();
+                break;
+            }
+        }
+        
+        // シャッフルしなおしておく
+        shuffled_filled_cells.shuffle();
+    }
+    
+    get_damaged(remove_num-1);
 }
 
 bool AlphaEnemy::alive()const{

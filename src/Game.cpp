@@ -1,9 +1,25 @@
 #include "Game.hpp"
 
-Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none) {
+Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none),attack_mode(false) {
 }
 
 void Game::update() {
+    mask_alpha_transition.update(attack_mode);
+    // アタックモードのときの処理
+    if(attack_mode){
+        // アタックモードに入ってからターゲットせずに10秒経過したらターゲットせずに攻撃
+        if(attack_mode_timer.sF()>=10.0){
+            alpha_enemy.get_damaged(5);
+            attack_mode=false;
+        }
+        else if(MouseL.down()){
+            alpha_enemy.get_damaged(5,Cursor::Pos());
+            attack_mode=false;
+        }
+        
+        return;
+    }
+    
     for(auto enemy_idx: step(3)){
         auto& enemy=enemies[enemy_idx];
         if (enemy.is_vanishing() and not enemy.has_vanished()) {
@@ -63,9 +79,11 @@ void Game::update() {
         }
     }
     
+    // APを消費してアタックモードに切り替わる
     if(KeyD.down() and player.ap_is_full()){
+        attack_mode=true;
+        attack_mode_timer.restart();
         player.reset_ap();
-        alpha_enemy.get_damaged(5);
     }
     
     for(auto& enemy:enemies){
@@ -116,4 +134,6 @@ void Game::draw() const {
 
     alpha_enemy.draw();
     alpha_enemy.draw_gauges();
+    
+    mask.draw(ColorF{0.0,0.0,0.0,mask_alpha_transition.value()*0.5});
 }
