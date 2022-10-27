@@ -88,12 +88,22 @@ void Game::update() {
             player.get_damaged(enemy.attack_value());
         }
     }
-    
+    stop_watch.start();
     bool speed_up=size(enemy_idx_queue)==3;
     if(speed_up){
-        player.get_ap(1);
-        player.get_sp(1);
+        if(not stop_watch.isRunning()){
+            stop_watch.start();
+        }
+        if(stop_watch.msF()>=10.0){
+            player.get_ap(1);
+            player.get_sp(1);
+            stop_watch.restart();
+        }
     }
+    else if(stop_watch.isRunning()){
+        stop_watch.reset();
+    }
+    
     int32 full_num=alpha_enemy.update_gauges(speed_up);
     while(not enemy_idx_queue.empty() and full_num>0){
         int32 enemy_idx=enemy_idx_queue.front();

@@ -38,4 +38,6 @@ class Game : public App::Scene {
     bool attack_mode;
     
     Stopwatch attack_mode_timer;
+    
+    Stopwatch stop_watch;
 };
