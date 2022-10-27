@@ -128,14 +128,33 @@ void Polyomino::draw() const {
 
 // パスを描画する
 void Polyomino::draw_path() const {
+    if(path.empty()){
+        return;
+    }
+    
     for (size_t path_idx = 0; path_idx + 1 < size(path); ++path_idx) {
         Vec2 from = rects[path[path_idx].x][path[path_idx].y]->center();
         Vec2 to = rects[path[path_idx + 1].x][path[path_idx + 1].y]->center();
         Line{from, to}.draw(3, Palette::Yellow);
     }
-    if(not path.empty()){
-        Circle{rects[path.front().x][path.front().y]->center(),5}.draw(Palette::Yellow);
-        Circle{rects[path.back().x][path.back().y]->center(),5}.draw(Palette::Yellow);
+    
+    Circle{rects[path.front().x][path.front().y]->center(),5}.draw(Palette::Yellow);
+
+    if(size(path)>=2){
+        Vec2 from=rects[next(std::rbegin(path))->x][next(std::rbegin(path))->y]->center();
+        Vec2 to=rects[path.back().x][path.back().y]->center();
+        if(to.x<from.x-0.5){
+            Triangle{to,15,270_deg}.draw(Palette::Yellow);
+        }
+        else if(to.x>from.x+0.5){
+            Triangle{to,15,90_deg}.draw(Palette::Yellow);
+        }
+        else if(to.y<from.y-0.5){
+            Triangle{to,15,0_deg}.draw(Palette::Yellow);
+        }
+        else if(to.y>from.y+0.5){
+            Triangle{to,15,180_deg}.draw(Palette::Yellow);
+        }
     }
 }
 
