@@ -11,6 +11,9 @@ class Enemy : public Polyomino {
     // ゲージを更新し、満タンになったらtrueを返す
     bool update_gauge();
     
+    // ゲージをリセットする
+    void reset_gauge();
+    
     // 外周のゲージを描画する
     void draw_gauge()const;
     

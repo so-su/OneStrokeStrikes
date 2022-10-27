@@ -17,6 +17,9 @@ void Game::update() {
             attack_mode=false;
         }
         
+        // マウスオーバーで連結成分の色を変化させる
+        alpha_enemy.mouse_over(attack_mode?Cursor::Pos():Point{-1,-1});
+        
         return;
     }
     
@@ -79,13 +82,6 @@ void Game::update() {
         }
     }
     
-    // APを消費してアタックモードに切り替わる
-    if(KeyD.down() and player.ap_is_full()){
-        attack_mode=true;
-        attack_mode_timer.restart();
-        player.reset_ap();
-    }
-    
     for(auto& enemy:enemies){
         if(enemy.has_vanished())continue;
         if(enemy.update_gauge()){
@@ -106,6 +102,18 @@ void Game::update() {
         --full_num;
     }
     player.get_damaged(full_num*alpha_enemy.attack_value());
+    
+    // APを消費してアタックモードに切り替わる
+    if(KeyD.down() and player.ap_is_full()){
+        attack_mode=true;
+        attack_mode_timer.restart();
+        player.reset_ap();
+        
+        for(auto& enemy:enemies){
+            enemy.reset_gauge();
+        }
+        alpha_enemy.reset_gauge();
+    }
     
     if(not alpha_enemy.alive()){
         getData().win=true;

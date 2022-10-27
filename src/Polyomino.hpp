@@ -9,6 +9,7 @@ enum class Cell : uint8 {
     Green,
     Poison,
     Black,
+    Gray,
 };
 
 struct Score{

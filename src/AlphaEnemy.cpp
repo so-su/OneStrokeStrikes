@@ -113,14 +113,7 @@ void AlphaEnemy::get_damaged(size_t remove_num){
 }
 
 void AlphaEnemy::get_damaged(size_t remove_num,Point pos){
-    Optional<int32> id=none;
-    
-    for(auto [i,j]:step(grid_size)){
-        if(not rects[i][j].has_value())continue;
-        if(rects[i][j]->contains(pos)){
-            id=component_id[i][j];
-        }
-    }
+    Optional<int32> id=get_component_id(pos);
     
     if(id.has_value()){
         // shuffled_filled_cells を前から見ていき、同じ番号がついているもののうち、初めに現れたものを削除
@@ -164,6 +157,11 @@ int32 AlphaEnemy::update_gauges(bool speed_up){
     return full;
 }
 
+// ゲージをリセットする
+void AlphaEnemy::reset_gauge(){
+    gauge_lens.fill(0.0);
+}
+
 // 外周のゲージを描画する
 void AlphaEnemy::draw_gauges()const{
     for(auto gauge_idx:step(num_component)){
@@ -173,4 +171,40 @@ void AlphaEnemy::draw_gauges()const{
         }
         perimeters[gauge_idx][len_int].stretched(0,cell_size.x*((gauge_lens[gauge_idx]-len_int)-1.0)).draw(5,Palette::Orange);
     }
+}
+
+// マウスオーバーで色を変化させる
+void AlphaEnemy::mouse_over(Point pos){
+    Optional<int32> id=get_component_id(pos);
+    
+    if(id.has_value()){
+        for(size_t cell_idx=0;cell_idx<size(shuffled_filled_cells);++cell_idx){
+            if(auto [x,y]=shuffled_filled_cells[cell_idx];component_id[x][y]==id){
+                cells[x][y]=Cell::Gray;
+            }
+            else{
+                cells[x][y]=Cell::Black;
+            }
+        }
+    }
+    else{
+        for(size_t cell_idx=0;cell_idx<size(shuffled_filled_cells);++cell_idx){
+            auto [x,y]=shuffled_filled_cells[cell_idx];
+            cells[x][y]=Cell::Black;
+        }
+    }
+}
+
+// 座標 pos にあるセルが属する連結成分の番号を返す
+Optional<int32> AlphaEnemy::get_component_id(Point pos)const{
+    Optional<int32> id=none;
+    
+    for(size_t i=0;i<size(shuffled_filled_cells);++i){
+        if(auto [x,y]=shuffled_filled_cells[i];rects[x][y]->contains(pos)){
+            id=component_id[x][y];
+            break;
+        }
+    }
+    
+    return id;
 }

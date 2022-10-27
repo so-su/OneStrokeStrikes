@@ -68,6 +68,11 @@ bool Enemy::update_gauge(){
     return false;
 }
 
+// ゲージをリセットする
+void Enemy::reset_gauge(){
+    gauge_len=0.0;
+}
+
 // 外周のゲージを描画する
 void Enemy::draw_gauge()const{
     int32 len_int=static_cast<int32>(gauge_len);

@@ -28,6 +28,7 @@ class Game : public App::Scene {
     
     static constexpr std::array<Rect,3> enemy_frames={Rect{50,300,400,400},Rect{500,300,400,400},Rect{950,300,400,400}};
     
+    // これは今のところ使わないので消してもいい
     static constexpr Rect alpha_enemy_frame=Rect{400,30,600,240};
     
     static constexpr Rect mask=Rect{0,290,1400,440};
