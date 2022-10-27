@@ -10,8 +10,7 @@ enum class State {
 
 // 共有するデータ
 struct GameData {
-    // 直前のゲームのスコア
-    Optional<int32> score;
+    bool win;
 };
 
 using App = SceneManager<State, GameData>;

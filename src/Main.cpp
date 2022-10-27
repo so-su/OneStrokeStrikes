@@ -19,7 +19,7 @@ void Main() {
     manager.add<Result>(State::Result);
 
     // ゲームシーンから開始したい場合はこのコメントを外す
-    manager.init(State::Game);
+    // manager.init(State::Game);
 
     while (System::Update()) {
         if (not manager.update()) {

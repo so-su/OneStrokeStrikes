@@ -10,13 +10,14 @@ void Result::update() {
 }
 
 void Result::draw() const {
-    Scene::SetBackground(ColorF{0.4, 0.6, 0.9});
-
-    FontAsset(U"Result")(U"Result").drawAt(400, 60);
+    Scene::SetBackground(ColorF{0.9});
 
     const auto& data = getData();
 
-    if (data.score) {
-        FontAsset(U"Result")(*data.score).drawAt(Scene::Center(), ColorF{0.25});
+    if (data.win) {
+        FontAsset(U"Result")(U"Clear!").drawAt(Scene::Center(), ColorF{0.25});
+    }
+    else{
+        FontAsset(U"Result")(U"Failure...").drawAt(Scene::Center(), ColorF{0.25});
     }
 }

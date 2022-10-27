@@ -63,7 +63,7 @@ void Game::update() {
         }
     }
     
-    if(player.ap_is_full()){
+    if(KeyD.down() and player.ap_is_full()){
         player.reset_ap();
         alpha_enemy.get_damaged(5);
     }
@@ -90,11 +90,13 @@ void Game::update() {
     player.get_damaged(full_num*alpha_enemy.attack_value());
     
     if(not alpha_enemy.alive()){
-        changeScene(State::Game);
+        getData().win=true;
+        changeScene(State::Result);
     }
     
     if(not player.alive()){
-        changeScene(State::Game);
+        getData().win=false;
+        changeScene(State::Result);
     }
 }
 
