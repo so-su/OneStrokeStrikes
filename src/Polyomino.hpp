@@ -105,4 +105,7 @@ class Polyomino {
     Optional<size_t> vanishing_idx = none;
     
     bool vanished;
+    
+private:
+    static constexpr Color path_color=Color{250,245,0};
 };

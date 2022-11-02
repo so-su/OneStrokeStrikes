@@ -126,14 +126,14 @@ void Game::update() {
     }
     
     // プレイヤーの勝ち
-    if(not alpha_enemy.alive()){
+    if(not alpha_enemy.is_alive()){
         getData().win=true;
         ++getData().win_cnt;
         changeScene(State::Result);
     }
     
     // プレイヤーの負け
-    if(not player.alive()){
+    if(not player.is_alive()){
         getData().win=false;
         getData().win_cnt=0;
         changeScene(State::Result);

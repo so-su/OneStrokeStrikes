@@ -26,7 +26,7 @@ void Player::get_sp(int32 value){
     sp_bar.update(static_cast<double>(sp)/max_sp);
 }
 
-bool Player::alive()const{
+bool Player::is_alive()const{
     return hp>0;
 }
 

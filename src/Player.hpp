@@ -14,7 +14,7 @@ public:
     
     void get_sp(int32 value);
     
-    bool alive()const;
+    bool is_alive()const;
     
     bool ap_is_full()const;
     

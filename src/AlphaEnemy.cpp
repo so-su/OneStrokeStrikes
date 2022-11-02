@@ -135,7 +135,7 @@ void AlphaEnemy::get_damaged(size_t remove_num,Point pos){
     get_damaged(remove_num-1);
 }
 
-bool AlphaEnemy::alive()const{
+bool AlphaEnemy::is_alive()const{
     return cell_num>0;
 }
 
@@ -166,10 +166,16 @@ void AlphaEnemy::reset_gauge(){
 void AlphaEnemy::draw_gauges()const{
     for(auto gauge_idx:step(num_component)){
         int32 len_int=static_cast<int32>(gauge_lens[gauge_idx]);
+        
         for(auto i:step(len_int)){
-            perimeters[gauge_idx][i].draw(5,Palette::Orange);
+            perimeters[gauge_idx][i].draw(7,Palette::Black);
         }
-        perimeters[gauge_idx][len_int].stretched(0,cell_size.x*((gauge_lens[gauge_idx]-len_int)-1.0)).draw(5,Palette::Orange);
+        perimeters[gauge_idx][len_int].stretched(0,cell_size.x*((gauge_lens[gauge_idx]-len_int)-1.0)).draw(7,Palette::Black);
+        
+        for(auto i:step(len_int)){
+            perimeters[gauge_idx][i].draw(5,gauge_color);
+        }
+        perimeters[gauge_idx][len_int].stretched(0,cell_size.x*((gauge_lens[gauge_idx]-len_int)-1.0)).draw(5,gauge_color);
     }
 }
 

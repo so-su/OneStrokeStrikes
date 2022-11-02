@@ -15,7 +15,7 @@ class AlphaEnemy : public Polyomino {
     
     void get_damaged(size_t remove_num,Point pos);
     
-    bool alive()const;
+    bool is_alive()const;
     
     int32 attack_value()const;
     
@@ -49,5 +49,7 @@ class AlphaEnemy : public Polyomino {
     
     // 座標 pos にあるセルが属する連結成分の番号を返す
     Optional<int32> get_component_id(Point pos)const;
-
+    
+    // ゲージの色
+    static constexpr Color gauge_color=Color{255,153,0};
 };

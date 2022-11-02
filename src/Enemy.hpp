@@ -26,4 +26,7 @@ class Enemy : public Polyomino {
     
     // 外周のゲージの長さ
     double gauge_len;
+    
+    // ゲージの色
+    static constexpr Color gauge_color=Color{255,153,0};
 };

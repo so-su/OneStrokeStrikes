@@ -122,7 +122,7 @@ void Polyomino::draw() const {
         }else if(cells[i][j] == Cell::Gray) {
             cell_color = ColorF{0.3};
         }
-        rects[i][j]->draw(cell_color).drawFrame(1, 1, Palette::Dimgray);
+        rects[i][j]->draw(cell_color).drawFrame(2, 2, Palette::Dimgray);
     }
 }
 
@@ -135,25 +135,25 @@ void Polyomino::draw_path() const {
     for (size_t path_idx = 0; path_idx + 1 < size(path); ++path_idx) {
         Vec2 from = rects[path[path_idx].x][path[path_idx].y]->center();
         Vec2 to = rects[path[path_idx + 1].x][path[path_idx + 1].y]->center();
-        Line{from, to}.draw(3, Palette::Yellow);
+        Line{from, to}.draw(3, path_color);
     }
     
-    Circle{rects[path.front().x][path.front().y]->center(),5}.draw(Palette::Yellow);
+    Circle{rects[path.front().x][path.front().y]->center(),5}.draw(path_color);
 
     if(size(path)>=2){
         Vec2 from=rects[next(std::rbegin(path))->x][next(std::rbegin(path))->y]->center();
         Vec2 to=rects[path.back().x][path.back().y]->center();
         if(to.x<from.x-0.5){
-            Triangle{to,20,270_deg}.draw(Palette::Yellow);
+            Triangle{to,20,270_deg}.draw(path_color);
         }
         else if(to.x>from.x+0.5){
-            Triangle{to,20,90_deg}.draw(Palette::Yellow);
+            Triangle{to,20,90_deg}.draw(path_color);
         }
         else if(to.y<from.y-0.5){
-            Triangle{to,20,0_deg}.draw(Palette::Yellow);
+            Triangle{to,20,0_deg}.draw(path_color);
         }
         else if(to.y>from.y+0.5){
-            Triangle{to,20,180_deg}.draw(Palette::Yellow);
+            Triangle{to,20,180_deg}.draw(path_color);
         }
     }
 }

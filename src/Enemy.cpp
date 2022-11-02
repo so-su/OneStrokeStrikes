@@ -76,10 +76,16 @@ void Enemy::reset_gauge(){
 // 外周のゲージを描画する
 void Enemy::draw_gauge()const{
     int32 len_int=static_cast<int32>(gauge_len);
+    
     for(auto i:step(len_int)){
-        perimeter[i].draw(5,Palette::Orange);
+        perimeter[i].draw(7,Palette::Black);
     }
-    perimeter[len_int].stretched(0,cell_size.x*((gauge_len-len_int)-1.0)).draw(5,Palette::Orange);
+    perimeter[len_int].stretched(0,cell_size.x*((gauge_len-len_int)-1.0)).draw(7,Palette::Black);
+    
+    for(auto i:step(len_int)){
+        perimeter[i].draw(5,gauge_color);
+    }
+    perimeter[len_int].stretched(0,cell_size.x*((gauge_len-len_int)-1.0)).draw(5,gauge_color);
 }
 
 int32 Enemy::attack_value()const{

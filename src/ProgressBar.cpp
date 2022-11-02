@@ -8,11 +8,11 @@ void ProgressBar::update(double ratio_){
     this->ratio=ratio_;
     
     Rect inner_bar_rect=inner_bar_full.stretched(0,-inner_bar_full.w*(1.0-ratio),0,0);
-    if(auto polygons=Geometry2D::And(inner_bar_rect,inner_bar_mask);not polygons.empty()){
-        inner_bar_polygon=polygons.front();
+    if(auto polygons=Geometry2D::And(inner_bar_rect,inner_bar_mask);polygons.empty()){
+        inner_bar_polygon=none;
     }
     else{
-        inner_bar_polygon=none;
+        inner_bar_polygon=polygons.front();
     }
 }
 
