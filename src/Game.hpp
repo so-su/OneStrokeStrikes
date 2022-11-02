@@ -40,13 +40,15 @@ class Game : public App::Scene {
     
     Stopwatch attack_mode_timer;
     
-    Stopwatch stop_watch;
-    
     bool speed_up;
     
-    static constexpr RoundRect speed_up_rect{50,50,50,50,15};
+    Stopwatch speed_up_stop_watch;
     
-    Triangle speed_up_triangle_left{66,75,20,90_deg};
+    Stopwatch speed_up_stop_watch_2nd;
     
-    Triangle speed_up_triangle_right{84,75,20,90_deg};
+    Triangle speed_up_triangle_left{650,500,50,90_deg};
+    
+    Triangle speed_up_triangle_center{700,500,50,90_deg};
+    
+    Triangle speed_up_triangle_right{750,500,50,90_deg};
 };

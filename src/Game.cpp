@@ -91,17 +91,29 @@ void Game::update() {
     
     speed_up=size(enemy_idx_queue)==3;
     if(speed_up){
-        if(not stop_watch.isRunning()){
-            stop_watch.start();
+        if(not speed_up_stop_watch.isRunning()){
+            speed_up_stop_watch.start();
         }
-        if(stop_watch.msF()>=50.0){
+        if(speed_up_stop_watch.msF()>=50.0){
             player.get_ap(10);
             player.get_sp(10);
-            stop_watch.restart();
+            speed_up_stop_watch.restart();
+        }
+        
+        if(not speed_up_stop_watch_2nd.isRunning()){
+            speed_up_stop_watch_2nd.start();
+        }
+        if(speed_up_stop_watch_2nd.msF()>=800.0){
+            speed_up_stop_watch_2nd.restart();
         }
     }
-    else if(stop_watch.isRunning()){
-        stop_watch.reset();
+    else{
+        if(speed_up_stop_watch.isRunning()){
+            speed_up_stop_watch.reset();
+        }
+        if(speed_up_stop_watch_2nd.isRunning()){
+            speed_up_stop_watch_2nd.reset();
+        }
     }
     
     int32 full_num=alpha_enemy.update_gauges(speed_up);
@@ -159,9 +171,21 @@ void Game::draw() const {
     
     mask.draw(ColorF{0.0,0.0,0.0,mask_alpha_transition.value()*0.5});
     
+    // スピードアップ中なら、マークを描画
     if(speed_up){
-        speed_up_rect.drawFrame(2,2,Palette::Black);
-        speed_up_triangle_left.draw(Palette::Black);
-        speed_up_triangle_right.draw(Palette::Black);
+        const double t=speed_up_stop_watch_2nd.msF();
+        
+        if(t>=600.0){
+            speed_up_triangle_left.draw(Palette::Black);
+            speed_up_triangle_center.draw(Palette::Black);
+            speed_up_triangle_right.draw(ColorF{0.0,0.0,0.0,(t-600.0)/150.0});
+        }
+        else if(t>=400.0){
+            speed_up_triangle_left.draw(Palette::Black);
+            speed_up_triangle_center.draw(ColorF{0.0,0.0,0.0,(t-400.0)/150.0});
+        }
+        else if(t>=200.0){
+            speed_up_triangle_left.draw(ColorF{0.0,0.0,0.0,(t-200.0)/150.0});
+        }
     }
 }
