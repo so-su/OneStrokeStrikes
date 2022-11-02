@@ -5,7 +5,7 @@ Result::Result(const InitData& init) : IScene{init} {}
 void Result::update() {
     if (MouseL.down()) {
         // タイトルシーンへ
-        changeScene(State::Title);
+        changeScene(State::Game);
     }
 }
 
@@ -19,5 +19,9 @@ void Result::draw() const {
     }
     else{
         FontAsset(U"Result")(U"Failure...").drawAt(Scene::Center(), ColorF{0.25});
+    }
+    
+    if(getData().win_cnt>=2){
+        FontAsset(U"GameScore")(U"{}連勝中"_fmt(getData().win_cnt)).drawAt(Scene::Center().x,Scene::Center().y+50, ColorF{0.25});
     }
 }

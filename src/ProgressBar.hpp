@@ -3,13 +3,18 @@
 
 class ProgressBar{
 private:
-    Rect outer_bar;
+    const RoundRect outer_bar;
     
-    Rect inner_bar;
+    const Rect inner_bar_full;
     
-    Color color;
+    Optional<Polygon> inner_bar_polygon;
+
+    const Polygon inner_bar_mask;
     
-    double ratio=1.0;
+    const Color color;
+    
+    double ratio;
+    
 public:
     ProgressBar(Rect outer_bar,Color color);
     

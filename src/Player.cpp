@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player():hp(1000),max_hp(1000),ap(0),max_ap(1000),sp(0),max_sp(1000),hp_bar(Rect{100,750,800,20},Palette::Green),ap_bar(Rect{950,750,100,20},Palette::Red),sp_bar(Rect{1100,750,100,20},Palette::Blue){
+Player::Player():hp(1000),max_hp(1000),ap(0),max_ap(1000),sp(0),max_sp(1000),hp_bar(Rect{100,750,800,20},Color{53, 161, 107}),ap_bar(Rect{950,750,100,20},Color{255, 40, 0}),sp_bar(Rect{1100,750,100,20},Color{0, 65, 255}){
     hp_bar.update(static_cast<double>(hp)/max_hp);
     ap_bar.update(static_cast<double>(ap)/max_ap);
     sp_bar.update(static_cast<double>(sp)/max_sp);

@@ -88,15 +88,15 @@ void Game::update() {
             player.get_damaged(enemy.attack_value());
         }
     }
-    stop_watch.start();
+    
     bool speed_up=size(enemy_idx_queue)==3;
     if(speed_up){
         if(not stop_watch.isRunning()){
             stop_watch.start();
         }
-        if(stop_watch.msF()>=10.0){
-            player.get_ap(1);
-            player.get_sp(1);
+        if(stop_watch.msF()>=50.0){
+            player.get_ap(10);
+            player.get_sp(10);
             stop_watch.restart();
         }
     }
@@ -125,13 +125,17 @@ void Game::update() {
         alpha_enemy.reset_gauge();
     }
     
+    // プレイヤーの勝ち
     if(not alpha_enemy.alive()){
         getData().win=true;
+        ++getData().win_cnt;
         changeScene(State::Result);
     }
     
+    // プレイヤーの負け
     if(not player.alive()){
         getData().win=false;
+        getData().win_cnt=0;
         changeScene(State::Result);
     }
 }

@@ -120,7 +120,7 @@ void Polyomino::draw() const {
         } else if (cells[i][j] == Cell::Black) {
             cell_color = Palette::Black;
         }else if(cells[i][j] == Cell::Gray) {
-            cell_color = ColorF{0.2};
+            cell_color = ColorF{0.3};
         }
         rects[i][j]->draw(cell_color).drawFrame(1, 1, Palette::Dimgray);
     }
@@ -144,16 +144,16 @@ void Polyomino::draw_path() const {
         Vec2 from=rects[next(std::rbegin(path))->x][next(std::rbegin(path))->y]->center();
         Vec2 to=rects[path.back().x][path.back().y]->center();
         if(to.x<from.x-0.5){
-            Triangle{to,15,270_deg}.draw(Palette::Yellow);
+            Triangle{to,20,270_deg}.draw(Palette::Yellow);
         }
         else if(to.x>from.x+0.5){
-            Triangle{to,15,90_deg}.draw(Palette::Yellow);
+            Triangle{to,20,90_deg}.draw(Palette::Yellow);
         }
         else if(to.y<from.y-0.5){
-            Triangle{to,15,0_deg}.draw(Palette::Yellow);
+            Triangle{to,20,0_deg}.draw(Palette::Yellow);
         }
         else if(to.y>from.y+0.5){
-            Triangle{to,15,180_deg}.draw(Palette::Yellow);
+            Triangle{to,20,180_deg}.draw(Palette::Yellow);
         }
     }
 }
