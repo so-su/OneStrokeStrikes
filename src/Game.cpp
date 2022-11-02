@@ -1,6 +1,6 @@
 #include "Game.hpp"
 
-Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none),attack_mode(false) {
+Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none),attack_mode(false),speed_up(false) {
 }
 
 void Game::update() {
@@ -89,7 +89,7 @@ void Game::update() {
         }
     }
     
-    bool speed_up=size(enemy_idx_queue)==3;
+    speed_up=size(enemy_idx_queue)==3;
     if(speed_up){
         if(not stop_watch.isRunning()){
             stop_watch.start();
@@ -158,4 +158,10 @@ void Game::draw() const {
     alpha_enemy.draw_gauges();
     
     mask.draw(ColorF{0.0,0.0,0.0,mask_alpha_transition.value()*0.5});
+    
+    if(speed_up){
+        speed_up_rect.drawFrame(2,2,Palette::Black);
+        speed_up_triangle_left.draw(Palette::Black);
+        speed_up_triangle_right.draw(Palette::Black);
+    }
 }
