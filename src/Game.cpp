@@ -169,10 +169,8 @@ void Game::draw() const {
     alpha_enemy.draw();
     alpha_enemy.draw_gauges();
     
-    mask.draw(ColorF{0.0,0.0,0.0,mask_alpha_transition.value()*0.5});
-    
-    // スピードアップ中なら、マークを描画
-    if(speed_up){
+    // 早送り中ならマークを描画
+    if(speed_up and not attack_mode){
         const double t=speed_up_stop_watch_2nd.msF();
         
         if(t>=600.0){
@@ -188,4 +186,7 @@ void Game::draw() const {
             speed_up_triangle_left.draw(ColorF{0.0,0.0,0.0,(t-200.0)/150.0});
         }
     }
+    
+    // アタックモード中のマスクを描画
+    mask.draw(ColorF{0.0,0.0,0.0,mask_alpha_transition.value()*0.5});
 }

@@ -130,9 +130,11 @@ void AlphaEnemy::get_damaged(size_t remove_num,Point pos){
         
         // シャッフルしなおしておく
         shuffled_filled_cells.shuffle();
+        
+        --remove_num;
     }
     
-    get_damaged(remove_num-1);
+    get_damaged(remove_num);
 }
 
 bool AlphaEnemy::is_alive()const{
