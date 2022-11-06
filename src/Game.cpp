@@ -4,11 +4,16 @@ Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),En
 }
 
 void Game::update() {
+    // エフェクトの更新
+    for(auto& enemy:enemies){
+        enemy.update_effect();
+    }
+    
     mask_alpha_transition.update(attack_mode);
     // アタックモードのときの処理
     if(attack_mode){
         // アタックモードに入ってからターゲットせずに10秒経過したらターゲットせずに攻撃
-        if(attack_mode_timer.sF()>=10.0){
+        if(attack_mode_timer.sF()>=30.0){
             alpha_enemy.get_damaged(5);
             attack_mode=false;
         }
@@ -26,8 +31,15 @@ void Game::update() {
     for(auto enemy_idx: step(3)){
         auto& enemy=enemies[enemy_idx];
         if (enemy.is_vanishing() and not enemy.has_vanished()) {
-            if (enemy.vanish()) {
-                enemy_idx_queue.push(enemy_idx);
+            auto& timer=vanishing_timers[enemy_idx];
+            timer+=Scene::DeltaTime();
+            if(timer>=0.33){
+                // 消滅を進める
+                bool has_vanished = enemy.vanish();
+                if (has_vanished) {
+                    enemy_idx_queue.push(enemy_idx);
+                }
+                timer-=0.03;
             }
         }
     }
@@ -36,7 +48,9 @@ void Game::update() {
     if(KeyF.down() and player.sp_is_full() and size(enemy_idx_queue)<3){
         drawing_path_idx=none;
         player.reset_sp();
-        for(auto& enemy : enemies){
+        for(auto enemy_idx:step(3)){
+            auto& enemy=enemies[enemy_idx];
+            vanishing_timers[enemy_idx]=0.0;
             // 有効なセルをシャッフルして消滅の準備をする
             enemy.prepare_to_randomly_vanish();
             // スコアを得る
@@ -72,6 +86,8 @@ void Game::update() {
         auto& enemy=enemies[*drawing_path_idx];
         enemy.update_path(Cursor::Pos());
         if(enemy.is_vanishing()){
+            vanishing_timers[*drawing_path_idx]=0.0;
+            
             drawing_path_idx=none;
             
             // パスのスコアによって効果を得る
@@ -97,14 +113,14 @@ void Game::update() {
         if(speed_up_stop_watch.msF()>=50.0){
             player.get_ap(10);
             player.get_sp(10);
-            speed_up_stop_watch.restart();
+            speed_up_stop_watch.set(speed_up_stop_watch.elapsed()-50ms);
         }
         
         if(not speed_up_stop_watch_2nd.isRunning()){
             speed_up_stop_watch_2nd.start();
         }
         if(speed_up_stop_watch_2nd.msF()>=800.0){
-            speed_up_stop_watch_2nd.restart();
+            speed_up_stop_watch_2nd.set(speed_up_stop_watch_2nd.elapsed()-800ms);
         }
     }
     else{
@@ -154,6 +170,7 @@ void Game::update() {
 
 void Game::draw() const {
     Scene::SetBackground(ColorF{0.9});
+    Scene::SetLetterbox(ColorF{0.9});
     
     player.draw();
 

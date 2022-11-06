@@ -208,8 +208,24 @@ bool Polyomino::vanish() {
         vanished=true;
         return true;
     }
-    cells[path[*vanishing_idx].x][path[*vanishing_idx].y] = Cell::None;
+    
+    auto [i,j]=path[*vanishing_idx];
+    
+    Optional<double> base_hue;
+    if (cells[i][j] == Cell::Red) {
+        base_hue=0.0;
+    } else if (cells[i][j] == Cell::Blue) {
+        base_hue=225.0;
+    } else if (cells[i][j] == Cell::Green) {
+        base_hue=120.0;
+    }
+    if(base_hue.has_value()){
+        effect.add<SquareEffect>(rects[i][j]->center() , *base_hue);
+    }
+    
+    cells[i][j] = Cell::None;
     ++(*vanishing_idx);
+    
     return false;
 }
 
@@ -219,6 +235,10 @@ bool Polyomino::is_vanishing() const { return vanishing_idx.has_value(); }
 // ポリオミノが完全に消滅したかを返す
 bool Polyomino::has_vanished()const{
     return vanished;
+}
+
+void Polyomino::update_effect(){
+    effect.update();
 }
 
 // ポリオミノの初期化

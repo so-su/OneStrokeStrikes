@@ -46,9 +46,11 @@ class Game : public App::Scene {
     
     Stopwatch speed_up_stop_watch_2nd;
     
-    Triangle speed_up_triangle_left{650,500,50,90_deg};
+    std::array<double,3> vanishing_timers;
     
-    Triangle speed_up_triangle_center{700,500,50,90_deg};
+    const Triangle speed_up_triangle_left{650,500,50,90_deg};
     
-    Triangle speed_up_triangle_right{750,500,50,90_deg};
+    const Triangle speed_up_triangle_center{700,500,50,90_deg};
+    
+    const Triangle speed_up_triangle_right{750,500,50,90_deg};
 };

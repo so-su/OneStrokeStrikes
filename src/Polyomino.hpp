@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.hpp"
+#include "SquareEffect.hpp"
 
 // セルの情報をもつクラス
 enum class Cell : uint8 {
@@ -51,6 +52,8 @@ class Polyomino {
 
     // セルが埋められているかを返す
     bool is_filled(int32 x, int32 y) const;
+    
+    void update_effect();
     
     Score get_ordinary_score()const;
     
@@ -108,4 +111,6 @@ class Polyomino {
     
 private:
     static constexpr Color path_color=Color{250,245,0};
+    
+    Effect effect;
 };
