@@ -45,7 +45,7 @@ void Game::update() {
         player.reset_sp();
         for(auto enemy_idx:step(3)){
             auto& enemy=enemies[enemy_idx];
-            vanishing_timers[enemy_idx]=0.0;
+            vanishing_timers[enemy_idx]=0.5;
             // 有効なセルをシャッフルして消滅の準備をする
             enemy.prepare_to_randomly_vanish();
             // スコアを得る
@@ -168,15 +168,19 @@ void Game::draw() const {
     
     player.draw();
 
-    for(const auto& enemy:enemies){
-        if(not enemy.has_vanished()){
-            enemy.draw();
-            if (not enemy.is_vanishing()) {
-                enemy.draw_path();
-                enemy.draw_gauge();
-            }
+    for(auto enemy_idx:step(3)){
+        const auto& enemy=enemies[enemy_idx];
+        if(enemy.has_vanished())continue;
+        
+        enemy.draw();
+        if (not enemy.is_vanishing()) {
+            enemy.draw_path();
+            enemy.draw_gauge();
         }
-        enemy.draw_effect();
+        // 消滅が始まってもしばらくはパスを描画する
+        else if(vanishing_timers[enemy_idx]<=0.49){
+            enemy.draw_path();
+        }
     }
 
     alpha_enemy.draw();
@@ -198,6 +202,10 @@ void Game::draw() const {
         else if(t>=200.0){
             speed_up_triangle_left.draw(ColorF{0.0,0.0,0.0,(t-200.0)/150.0});
         }
+    }
+    
+    for(const auto& enemy:enemies){
+        enemy.draw_effect();
     }
     
     // アタックモード中のマスクを描画
