@@ -8,8 +8,6 @@ public:
 
     bool update(double t) override;
     
-    void draw()const;
-    
 private:
     struct Square
     {

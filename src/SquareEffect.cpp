@@ -36,5 +36,5 @@ bool SquareEffect::update(double t)
                 .drawFrame( 0.5 * (1.0 - easing) * square.scale, square.color);
     }
 
-    return (t < 1.3);
+    return t < 1.3;
 }

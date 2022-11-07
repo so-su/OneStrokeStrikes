@@ -4,11 +4,6 @@ Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),En
 }
 
 void Game::update() {
-    // エフェクトの更新
-    for(auto& enemy:enemies){
-        enemy.update_effect();
-    }
-    
     mask_alpha_transition.update(attack_mode);
     // アタックモードのときの処理
     if(attack_mode){
@@ -33,7 +28,7 @@ void Game::update() {
         if (enemy.is_vanishing() and not enemy.has_vanished()) {
             auto& timer=vanishing_timers[enemy_idx];
             timer+=Scene::DeltaTime();
-            if(timer>=0.33){
+            if(timer>=0.53){
                 // 消滅を進める
                 bool has_vanished = enemy.vanish();
                 if (has_vanished) {
@@ -170,17 +165,18 @@ void Game::update() {
 
 void Game::draw() const {
     Scene::SetBackground(ColorF{0.9});
-    Scene::SetLetterbox(ColorF{0.9});
     
     player.draw();
 
     for(const auto& enemy:enemies){
-        if(enemy.has_vanished())continue;
-        enemy.draw();
-        if (not enemy.is_vanishing()) {
-            enemy.draw_path();
-            enemy.draw_gauge();
+        if(not enemy.has_vanished()){
+            enemy.draw();
+            if (not enemy.is_vanishing()) {
+                enemy.draw_path();
+                enemy.draw_gauge();
+            }
         }
+        enemy.draw_effect();
     }
 
     alpha_enemy.draw();

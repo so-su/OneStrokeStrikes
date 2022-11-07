@@ -1,6 +1,7 @@
 #pragma once
 #include "Common.hpp"
 #include "SquareEffect.hpp"
+#include "RingEffect.hpp"
 
 // セルの情報をもつクラス
 enum class Cell : uint8 {
@@ -24,7 +25,7 @@ struct Score{
 
 class Polyomino {
    public:
-    Polyomino(Size max_grid_size,Size cell_size, Point upper_left);
+    Polyomino(Size max_grid_size,Size cell_size, Point center);
 
     // ポリオミノを描画する
     void draw() const;
@@ -53,7 +54,7 @@ class Polyomino {
     // セルが埋められているかを返す
     bool is_filled(int32 x, int32 y) const;
     
-    void update_effect();
+    void draw_effect()const;
     
     Score get_ordinary_score()const;
     
