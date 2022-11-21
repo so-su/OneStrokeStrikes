@@ -64,7 +64,7 @@ void Game::update() {
         }
         else{
             for(auto enemy_idx:step(3)){
-                if(enemy_frames[enemy_idx].contains(Cursor::Pos())){
+                if(enemy_frames[enemy_idx].contains(Cursor::Pos()) and not enemies[enemy_idx].is_vanishing()){
                     drawing_path_idx=enemy_idx;
                     break;
                 }
