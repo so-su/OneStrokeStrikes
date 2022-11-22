@@ -9,7 +9,7 @@ void Enemy::initialize(){
     Polyomino::initialize(Size{grid_len, grid_len}, grid_len*grid_len);
     
     gauge_len=0.0;
-    gauge_speed=0.0;
+    gauge_speed=1.0;
     perimeter.clear();
     
     // 隣接する点の座標
