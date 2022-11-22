@@ -122,7 +122,7 @@ void Polyomino::draw() const {
         }else if(cells[i][j] == Cell::Gray) {
             cell_color = ColorF{0.3};
         }
-        rects[i][j]->draw(cell_color).drawFrame(2, 2, Palette::Dimgray);
+        rects[i][j]->draw(cell_color).drawFrame(2, 2, ColorF{0.25});
     }
 }
 

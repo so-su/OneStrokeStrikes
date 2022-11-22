@@ -163,7 +163,7 @@ void Game::update() {
 }
 
 void Game::draw() const {
-    Scene::SetBackground(ColorF{0.9});
+    Scene::SetBackground(Color{0,0,50});
     
     player.draw();
 
@@ -185,12 +185,15 @@ void Game::draw() const {
     alpha_enemy.draw();
     alpha_enemy.draw_gauges();
     
-    for(const auto& enemy:enemies){
-        enemy.draw_effect();
+    {
+        const ScopedRenderStates2D blend{ BlendState::Additive };
+        for(const auto& enemy:enemies){
+            enemy.draw_effect();
+        }
     }
     
     if(all_clear_status==AllClearStatus::LastHasVanished){
-        FontAsset(U"Result")(U"All Clear!!!").drawAt(Scene::Center(), ColorF{0.25});
+        FontAsset(U"Result")(U"All Clear!!!").drawAt(Scene::Center(), ColorF{0.9});
     }
     
     // アタックモード中のマスクを描画

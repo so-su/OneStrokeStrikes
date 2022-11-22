@@ -17,7 +17,8 @@ void ProgressBar::update(double ratio_){
 }
 
 void ProgressBar::draw()const {
-    outer_bar.draw(ColorF{0.2});
+    outer_bar.draw(ColorF{0.5});
+    outer_bar.stretched(-3).draw(ColorF{0.2});
     if(inner_bar_polygon.has_value()){
         inner_bar_polygon->draw(color);
     }

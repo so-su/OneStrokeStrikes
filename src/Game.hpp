@@ -50,10 +50,4 @@ class Game : public App::Scene {
     };
     
     AllClearStatus all_clear_status;
-    
-    const Triangle speed_up_triangle_left{650,500,50,90_deg};
-    
-    const Triangle speed_up_triangle_center{700,500,50,90_deg};
-    
-    const Triangle speed_up_triangle_right{750,500,50,90_deg};
 };

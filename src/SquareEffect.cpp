@@ -8,7 +8,7 @@ SquareEffect::SquareEffect(Vec2 pos, double base_hue)
         Square square{
             RandomVec2(Circle{30}),
             Random(-0.3, 0.1),
-            Random(5.0, 30.0),
+            Random(5.0, 40.0),
             HSV{ base_hue + Random(-30.0, 30.0) }
         };
         squares << square;
