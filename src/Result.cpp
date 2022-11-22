@@ -15,10 +15,10 @@ void Result::draw() const {
     const auto& data = getData();
 
     if (data.win) {
-        FontAsset(U"Result")(U"Clear!!!").drawAt(Scene::Center(), ColorF{0.25});
+        FontAsset(U"Result")(U"WIN!").drawAt(Scene::Center(), ColorF{0.25});
     }
     else{
-        FontAsset(U"Result")(U"Failure...").drawAt(Scene::Center(), ColorF{0.25});
+        FontAsset(U"Result")(U"LOSE...").drawAt(Scene::Center(), ColorF{0.25});
     }
     
     if(getData().win_cnt>=2){

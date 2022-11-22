@@ -9,6 +9,7 @@ void Enemy::initialize(){
     Polyomino::initialize(Size{grid_len, grid_len}, grid_len*grid_len);
     
     gauge_len=0.0;
+    gauge_speed=0.0;
     perimeter.clear();
     
     // 隣接する点の座標
@@ -59,7 +60,7 @@ void Enemy::initialize(){
 
 // ゲージを更新し、満タンになったらtrueを返す
 bool Enemy::update_gauge(){
-    gauge_len+=Scene::DeltaTime();
+    gauge_len+=Scene::DeltaTime()*gauge_speed;
     
     if(static_cast<size_t>(gauge_len)==std::size(perimeter)){
         gauge_len=0.0;
@@ -90,4 +91,8 @@ void Enemy::draw_gauge()const{
 
 int32 Enemy::attack_value()const{
     return static_cast<int32>(200);
+}
+
+void Enemy::speed_up_gauge(int32 times){
+    gauge_speed+=0.5*times;
 }

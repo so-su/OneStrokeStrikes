@@ -1,6 +1,6 @@
 #include "Game.hpp"
 
-Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none),attack_mode(false),speed_up(false) {
+Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none),attack_mode(false),respawn_timers{0.0,0.0,0.0},respawn_time(6.0),all_clear_status{AllClearStatus::EnemyAliveExists} {
 }
 
 void Game::update() {
@@ -30,9 +30,13 @@ void Game::update() {
             timer+=Scene::DeltaTime();
             if(timer>=0.53){
                 // 消滅を進める
-                bool has_vanished = enemy.vanish();
-                if (has_vanished) {
-                    enemy_idx_queue.push(enemy_idx);
+                bool has_vanished=enemy.vanish();
+                if(all_clear_status==AllClearStatus::LastIsVanishing and has_vanished and enemies[0].has_vanished() and enemies[1].has_vanished() and enemies[2].has_vanished()){
+                    all_clear_status=AllClearStatus::LastHasVanished;
+                    player.get_healed(300);
+                    player.get_ap(300);
+                    player.get_sp(300);
+                    respawn_timers[0]=respawn_timers[1]=respawn_timers[2]=respawn_time-2.0;
                 }
                 timer-=0.03;
             }
@@ -40,12 +44,17 @@ void Game::update() {
     }
     
     // SPを消費してスペシャルを使い、敵を一掃する
-    if(KeyF.down() and player.sp_is_full() and size(enemy_idx_queue)<3){
+    if(KeyF.down() and player.sp_is_full()){
         drawing_path_idx=none;
         player.reset_sp();
         for(auto enemy_idx:step(3)){
             auto& enemy=enemies[enemy_idx];
+            if(enemy.is_vanishing() or enemy.has_vanished()){
+                continue;
+            }
             vanishing_timers[enemy_idx]=0.5;
+            // リスポーン時間は短かめ
+            respawn_timers[enemy_idx]=respawn_time-2.0;
             // 有効なセルをシャッフルして消滅の準備をする
             enemy.prepare_to_randomly_vanish();
             // スコアを得る
@@ -90,6 +99,13 @@ void Game::update() {
             player.get_healed(score.green);
             player.get_ap(score.red);
             player.get_sp(score.blue);
+            
+            bool all_clear = (enemies[0].is_vanishing() or enemies[0].has_vanished())
+            and (enemies[1].is_vanishing() or enemies[1].has_vanished())
+            and (enemies[2].is_vanishing() or enemies[2].has_vanished());
+            if(all_clear){
+                all_clear_status=AllClearStatus::LastIsVanishing;
+            }
         }
     }
     
@@ -100,41 +116,24 @@ void Game::update() {
         }
     }
     
-    speed_up=size(enemy_idx_queue)==3;
-    if(speed_up){
-        if(not speed_up_stop_watch.isRunning()){
-            speed_up_stop_watch.start();
+    // Enemyをスポーンさせる
+    for(auto enemy_idx:step(3)){
+        auto& timer=respawn_timers[enemy_idx];
+        if(enemies[enemy_idx].has_vanished()){
+            timer+=Scene::DeltaTime();
         }
-        if(speed_up_stop_watch.msF()>=50.0){
-            player.get_ap(10);
-            player.get_sp(10);
-            speed_up_stop_watch.set(speed_up_stop_watch.elapsed()-50ms);
-        }
-        
-        if(not speed_up_stop_watch_2nd.isRunning()){
-            speed_up_stop_watch_2nd.start();
-        }
-        if(speed_up_stop_watch_2nd.msF()>=800.0){
-            speed_up_stop_watch_2nd.set(speed_up_stop_watch_2nd.elapsed()-800ms);
-        }
-    }
-    else{
-        if(speed_up_stop_watch.isRunning()){
-            speed_up_stop_watch.reset();
-        }
-        if(speed_up_stop_watch_2nd.isRunning()){
-            speed_up_stop_watch_2nd.reset();
+        if(timer>=respawn_time and all_clear_status!=AllClearStatus::LastIsVanishing){
+            enemies[enemy_idx].initialize();
+            timer=0.0;
+            all_clear_status=AllClearStatus::EnemyAliveExists;
         }
     }
     
-    int32 full_num=alpha_enemy.update_gauges(speed_up);
-    while(not enemy_idx_queue.empty() and full_num>0){
-        int32 enemy_idx=enemy_idx_queue.front();
-        enemies[enemy_idx].initialize();
-        enemy_idx_queue.pop();
-        --full_num;
+    // AlphaEnemyのゲージを進める
+    int32 num_full_gauges=alpha_enemy.update_gauges(false);
+    for(auto& enemy:enemies){
+        enemy.speed_up_gauge(num_full_gauges);
     }
-    player.get_damaged(full_num*alpha_enemy.attack_value());
     
     // APを消費してアタックモードに切り替わる
     if(KeyD.down() and player.ap_is_full()){
@@ -186,26 +185,12 @@ void Game::draw() const {
     alpha_enemy.draw();
     alpha_enemy.draw_gauges();
     
-    // 早送り中ならマークを描画
-    if(speed_up and not attack_mode){
-        const double t=speed_up_stop_watch_2nd.msF();
-        
-        if(t>=600.0){
-            speed_up_triangle_left.draw(Palette::Black);
-            speed_up_triangle_center.draw(Palette::Black);
-            speed_up_triangle_right.draw(ColorF{0.0,0.0,0.0,(t-600.0)/150.0});
-        }
-        else if(t>=400.0){
-            speed_up_triangle_left.draw(Palette::Black);
-            speed_up_triangle_center.draw(ColorF{0.0,0.0,0.0,(t-400.0)/150.0});
-        }
-        else if(t>=200.0){
-            speed_up_triangle_left.draw(ColorF{0.0,0.0,0.0,(t-200.0)/150.0});
-        }
-    }
-    
     for(const auto& enemy:enemies){
         enemy.draw_effect();
+    }
+    
+    if(all_clear_status==AllClearStatus::LastHasVanished){
+        FontAsset(U"Result")(U"All Clear!!!").drawAt(Scene::Center(), ColorF{0.25});
     }
     
     // アタックモード中のマスクを描画

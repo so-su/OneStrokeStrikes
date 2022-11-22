@@ -19,6 +19,8 @@ class Enemy : public Polyomino {
     
     // 攻撃力を返す
     int32 attack_value()const;
+    
+    void speed_up_gauge(int32 times);
 
    private:
     // 外周のパス
@@ -26,6 +28,9 @@ class Enemy : public Polyomino {
     
     // 外周のゲージの長さ
     double gauge_len;
+    
+    // ゲージがたまる速さ
+    double gauge_speed;
     
     // ゲージの色
     static constexpr Color gauge_color=Color{255,153,0};

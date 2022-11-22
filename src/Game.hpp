@@ -4,7 +4,6 @@
 #include "Enemy.hpp"
 #include "ProgressBar.hpp"
 #include "Player.hpp"
-#include <queue>
 
 // ゲームシーン
 class Game : public App::Scene {
@@ -21,8 +20,6 @@ class Game : public App::Scene {
     std::array<Enemy,3> enemies;
 
     AlphaEnemy alpha_enemy;
-    
-    std::queue<int32> enemy_idx_queue;
 
     Optional<int32> drawing_path_idx;
     
@@ -40,13 +37,19 @@ class Game : public App::Scene {
     
     Stopwatch attack_mode_timer;
     
-    bool speed_up;
+    std::array<double,3> respawn_timers;
     
-    Stopwatch speed_up_stop_watch;
-    
-    Stopwatch speed_up_stop_watch_2nd;
+    double respawn_time;
     
     std::array<double,3> vanishing_timers;
+    
+    enum class AllClearStatus{
+        EnemyAliveExists,
+        LastIsVanishing,
+        LastHasVanished,
+    };
+    
+    AllClearStatus all_clear_status;
     
     const Triangle speed_up_triangle_left{650,500,50,90_deg};
     
