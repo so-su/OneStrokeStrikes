@@ -13,8 +13,6 @@ class AlphaEnemy : public Polyomino {
     
     void get_damaged(size_t remove_num);
     
-    void get_damaged(size_t remove_num,Point pos);
-    
     bool is_alive()const;
     
     int32 attack_value()const;

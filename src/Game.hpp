@@ -4,6 +4,7 @@
 #include "Enemy.hpp"
 #include "ProgressBar.hpp"
 #include "Player.hpp"
+#include "AttackShapes.hpp"
 
 // ゲームシーン
 class Game : public App::Scene {
@@ -50,4 +51,10 @@ class Game : public App::Scene {
     };
     
     AllClearStatus all_clear_status;
+    
+    AttackShapes attack_shapes;
+    
+    double roulette_pos;
+    
+    double roulette_duration;
 };

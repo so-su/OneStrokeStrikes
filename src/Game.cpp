@@ -7,19 +7,24 @@ void Game::update() {
     mask_alpha_transition.update(attack_mode);
     // アタックモードのときの処理
     if(attack_mode){
-        // アタックモードに入ってからターゲットせずに10秒経過したらターゲットせずに攻撃
-        if(attack_mode_timer.sF()>=30.0){
-            alpha_enemy.get_damaged(5);
-            attack_mode=false;
+        const double time=attack_mode_timer.sF();
+        if(time<1.0){
+            roulette_pos+=20.0*Scene::DeltaTime();
+        }else if(time<roulette_duration){
+            double roulette_speed=20.0*(1.0-attack_mode_timer.sF()/roulette_duration);
+            roulette_pos+=roulette_speed*Scene::DeltaTime();
+        }else if(time>=roulette_duration+1.0){
+            const int32 roulette_idx=static_cast<int>(roulette_pos)%4;
+            if(roulette_idx==3){
+                alpha_enemy.get_damaged(10);
+                attack_mode=false;
+            }
+            else{
+                alpha_enemy.get_damaged(5);
+                attack_mode=false;
+            }
+            attack_mode_timer.pause();
         }
-        else if(MouseL.down()){
-            alpha_enemy.get_damaged(5,Cursor::Pos());
-            attack_mode=false;
-        }
-        
-        // マウスオーバーで連結成分の色を変化させる
-        alpha_enemy.mouse_over(attack_mode?Cursor::Pos():Point{-1,-1});
-        
         return;
     }
     
@@ -139,6 +144,10 @@ void Game::update() {
     if(KeyD.down() and player.ap_is_full()){
         attack_mode=true;
         attack_mode_timer.restart();
+        
+        roulette_pos=0.0;
+        roulette_duration=Random(2.5,4.0);
+        
         player.reset_ap();
         
         for(auto& enemy:enemies){
@@ -185,6 +194,8 @@ void Game::draw() const {
     alpha_enemy.draw();
     alpha_enemy.draw_gauges();
     
+    attack_shapes.draw();
+    
     {
         const ScopedRenderStates2D blend{ BlendState::Additive };
         for(const auto& enemy:enemies){
@@ -198,4 +209,9 @@ void Game::draw() const {
     
     // アタックモード中のマスクを描画
     mask.draw(ColorF{0.0,0.0,0.0,mask_alpha_transition.value()*0.5});
+    
+    if(attack_mode){
+        int32 roulette_idx=static_cast<int>(roulette_pos)%4;
+        Triangle{ static_cast<double>(1130+70*roulette_idx), 100, 10, 180_deg }.draw(Palette::White);
+    }
 }

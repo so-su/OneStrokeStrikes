@@ -112,31 +112,6 @@ void AlphaEnemy::get_damaged(size_t remove_num){
     new_shape_initialize();
 }
 
-void AlphaEnemy::get_damaged(size_t remove_num,Point pos){
-    Optional<int32> id=get_component_id(pos);
-    
-    if(id.has_value()){
-        // shuffled_filled_cells を前から見ていき、同じ番号がついているもののうち、初めに現れたものを削除
-        for(size_t i=0;i<size(shuffled_filled_cells);++i){
-            if(auto [x,y]=shuffled_filled_cells[i];component_id[x][y]==id){
-                cells[x][y]=Cell::None;
-                rects[x][y]=none;
-                --cell_num;
-                shuffled_filled_cells[i]=shuffled_filled_cells.back();
-                shuffled_filled_cells.pop_back();
-                break;
-            }
-        }
-        
-        // シャッフルしなおしておく
-        shuffled_filled_cells.shuffle();
-        
-        --remove_num;
-    }
-    
-    get_damaged(remove_num);
-}
-
 bool AlphaEnemy::is_alive()const{
     return cell_num>0;
 }
