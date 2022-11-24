@@ -1,10 +1,18 @@
 #include "Game.hpp"
 
-Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none),attack_mode(false),respawn_timers{0.0,0.0,0.0},respawn_time(6.0),all_clear_status{AllClearStatus::EnemyAliveExists} {
+Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none),attack_mode(false),respawn_timers{0.0,0.0,0.0},respawn_time(6.0),all_clear_status{AllClearStatus::EnemyAliveExists},pause(false) {
 }
 
 void Game::update() {
-    mask_alpha_transition.update(attack_mode);
+    mask_alpha_transition.update(attack_mode or pause);
+
+    if(pause){
+        if(MouseL.down()){
+            pause=false;
+        }
+        return;
+    }
+    
     // アタックモードのときの処理
     if(attack_mode){
         const double time=attack_mode_timer.sF();
@@ -24,7 +32,13 @@ void Game::update() {
                 attack_mode=false;
             }
             attack_mode_timer.pause();
+            roulette.initialize();
         }
+        return;
+    }
+    
+    if(roulette.pressed()){
+        pause=true;
         return;
     }
     
@@ -105,6 +119,9 @@ void Game::update() {
             player.get_ap(score.red);
             player.get_sp(score.blue);
             
+            // パスの端点の色によってルーレットの割合を更新
+            roulette.update_value(score.green_bonus, score.red_bonus, score.blue_bonus);
+            
             bool all_clear = (enemies[0].is_vanishing() or enemies[0].has_vanished())
             and (enemies[1].is_vanishing() or enemies[1].has_vanished())
             and (enemies[2].is_vanishing() or enemies[2].has_vanished());
@@ -174,7 +191,12 @@ void Game::update() {
 void Game::draw() const {
     Scene::SetBackground(background_color);
     
+    Triangle{0,400,0,395,350,200}.draw(Palette::Dimgray);
+    Triangle{1400,400,1400,395,1050,200}.draw(Palette::Dimgray);
+    
     player.draw();
+    
+    roulette.draw_small_disk();
 
     for(auto enemy_idx:step(3)){
         const auto& enemy=enemies[enemy_idx];
@@ -194,7 +216,7 @@ void Game::draw() const {
     alpha_enemy.draw();
     alpha_enemy.draw_gauges();
     
-    attack_shapes.draw();
+    //attack_shapes.draw();
     
     {
         const ScopedRenderStates2D blend{ BlendState::Additive };
@@ -208,10 +230,15 @@ void Game::draw() const {
     }
     
     // アタックモード中のマスクを描画
-    mask.draw(ColorF{background_color,mask_alpha_transition.value()*0.5});
+    mask.draw(ColorF{background_color,mask_alpha_transition.value()*0.8});
     
     if(attack_mode){
         int32 roulette_idx=static_cast<int>(roulette_pos)%4;
         Triangle{ static_cast<double>(1130+70*roulette_idx), 100, 10, 180_deg }.draw(Palette::White);
+        roulette.draw();
+    }
+    
+    if(pause){
+        roulette.draw();
     }
 }

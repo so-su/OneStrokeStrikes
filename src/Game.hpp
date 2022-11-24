@@ -5,6 +5,7 @@
 #include "ProgressBar.hpp"
 #include "Player.hpp"
 #include "AttackShapes.hpp"
+#include "AttackRoulette.hpp"
 
 // ゲームシーン
 class Game : public App::Scene {
@@ -59,4 +60,8 @@ class Game : public App::Scene {
     double roulette_pos;
     
     double roulette_duration;
+    
+    AttackRoulette roulette;
+    
+    bool pause;
 };
