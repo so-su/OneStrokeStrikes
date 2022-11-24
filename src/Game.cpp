@@ -172,7 +172,7 @@ void Game::update() {
 }
 
 void Game::draw() const {
-    Scene::SetBackground(Color{0,0,50});
+    Scene::SetBackground(background_color);
     
     player.draw();
 
@@ -208,7 +208,7 @@ void Game::draw() const {
     }
     
     // アタックモード中のマスクを描画
-    mask.draw(ColorF{0.0,0.0,0.0,mask_alpha_transition.value()*0.5});
+    mask.draw(ColorF{background_color,mask_alpha_transition.value()*0.5});
     
     if(attack_mode){
         int32 roulette_idx=static_cast<int>(roulette_pos)%4;

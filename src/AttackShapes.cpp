@@ -31,7 +31,7 @@ void AttackShapes::draw()const{
             for(auto j:step(3)){
                 Rect cell=Rect{1100+shape_idx*70+20*i,120+20*j,20,20};
                 if(shapes[shape_idx][i][j]){
-                    cell.draw(ColorF{0.8});
+                    cell.draw(ColorF{0.9});
                 }
                 cell.drawFrame(1,1,ColorF{0.25});
             }
@@ -39,4 +39,3 @@ void AttackShapes::draw()const{
     }
     Rect{1310,120,60,60}.drawFrame(1,1,ColorF{0.25});
 }
-

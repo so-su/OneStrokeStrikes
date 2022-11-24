@@ -24,6 +24,8 @@ class Game : public App::Scene {
 
     Optional<int32> drawing_path_idx;
     
+    static constexpr Color background_color=Color{0,0,50};
+    
     static constexpr std::array<Rect,3> enemy_frames={Rect{50,300,400,400},Rect{500,300,400,400},Rect{950,300,400,400}};
     
     // これは今のところ使わないので消してもいい

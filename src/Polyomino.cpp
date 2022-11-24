@@ -118,7 +118,7 @@ void Polyomino::draw() const {
         } else if (cells[i][j] == Cell::Green) {
             cell_color = Color{53, 161, 107};
         } else if (cells[i][j] == Cell::Black) {
-            cell_color = Palette::Black;
+            cell_color = Palette::Yellow;
         }else if(cells[i][j] == Cell::Gray) {
             cell_color = ColorF{0.3};
         }
