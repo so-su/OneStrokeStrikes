@@ -94,5 +94,5 @@ int32 Enemy::attack_value()const{
 }
 
 void Enemy::speed_up_gauge(int32 times){
-    gauge_speed+=0.5*times;
+    gauge_speed+=0.3*times;
 }

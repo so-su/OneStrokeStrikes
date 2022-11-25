@@ -2,6 +2,12 @@
 #include "Common.hpp"
 #include "AttackShape.hpp"
 
+enum class AttackType{
+    Shape,
+    Num,
+    All,
+};
+
 class AttackRoulette {
 public:
     AttackRoulette();
@@ -26,10 +32,18 @@ public:
     
     void go_around(double speed);
     
+    AttackType get_attack_type()const;
+    
+    int32 get_attack_num()const;
+    
+    AttackShape* get_attack_shape();
+    
 private:
+    int32 chosen_index()const;
+    
     std::array<AttackShape,3> attack_shapes;
     
-    std::array<int32,3> attack_random_nums;
+    std::array<int32,3> attack_nums;
     
     std::array<int32,3> values;
 

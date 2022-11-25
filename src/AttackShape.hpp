@@ -9,8 +9,8 @@ public:
     
     void draw(Point center)const;
     
-private:
     Grid<bool> shape;
     
+private:
     Array<Point> cell_pos;
 };

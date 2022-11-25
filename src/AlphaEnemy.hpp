@@ -2,6 +2,7 @@
 #include "Common.hpp"
 #include "Polyomino.hpp"
 #include "ProgressBar.hpp"
+#include "AttackShape.hpp"
 
 class AlphaEnemy : public Polyomino {
    public:
@@ -12,6 +13,8 @@ class AlphaEnemy : public Polyomino {
     void new_shape_initialize();
     
     void get_damaged(size_t remove_num);
+    
+    void get_damaged(AttackShape* attack_shape);
     
     bool is_alive()const;
     

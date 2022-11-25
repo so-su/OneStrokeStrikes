@@ -1,6 +1,6 @@
 #include "Game.hpp"
 
-Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none),attack_mode(false),respawn_timers{0.0,0.0,0.0},respawn_time(6.0),all_clear_status{AllClearStatus::EnemyAliveExists},pause(false) {
+Game::Game(const InitData& init) : IScene{init},enemies{Enemy(Point{250,500}),Enemy(Point{700,500}),Enemy(Point{1150,500})},drawing_path_idx(none),attack_mode(false),respawn_timers{0.0,0.0,0.0},respawn_time(6.0),all_clear_status{AllClearStatus::EnemyAliveExists},pause(false),attack_shape(nullptr) {
 }
 
 void Game::update() {
@@ -13,28 +13,42 @@ void Game::update() {
         return;
     }
     
+    if(attack_shape!=nullptr){
+        if(MouseL.down()){
+            alpha_enemy.get_damaged(attack_shape);
+            
+            attack_shape=nullptr;
+            attack_mode=false;
+            attack_mode_timer.pause();
+            roulette.initialize();
+            pause=true;
+        }
+        return;
+    }
+    
     // アタックモードのときの処理
     if(attack_mode){
         const double time=attack_mode_timer.sF();
         if(time<1.0){
-            roulette_pos+=20.0*Scene::DeltaTime();
             roulette.go_around(20.0);
-        }else if(time<roulette_duration){
+        }
+        else if(time<roulette_duration){
             double roulette_speed=20.0*(1.0-attack_mode_timer.sF()/roulette_duration);
             roulette.go_around(roulette_speed);
-            roulette_pos+=roulette_speed*Scene::DeltaTime();
-        }else if(time>=roulette_duration+1.0){
-            const int32 roulette_idx=static_cast<int>(roulette_pos)%4;
-            if(roulette_idx==3){
-                alpha_enemy.get_damaged(10);
-                attack_mode=false;
+        }
+        else if(time>=roulette_duration+1.0){
+            AttackType attack_type=roulette.get_attack_type();
+            if(attack_type==AttackType::Shape){
+                attack_shape=roulette.get_attack_shape();
             }
-            else{
-                alpha_enemy.get_damaged(5);
+            else if(attack_type==AttackType::Num){
+                alpha_enemy.get_damaged(roulette.get_attack_num());
+                
                 attack_mode=false;
+                attack_mode_timer.pause();
+                roulette.initialize();
+                pause=true;
             }
-            attack_mode_timer.pause();
-            roulette.initialize();
         }
         return;
     }
@@ -163,8 +177,7 @@ void Game::update() {
     if(KeyD.down() and player.ap_is_full()){
         attack_mode=true;
         attack_mode_timer.restart();
-        
-        roulette_pos=0.0;
+
         roulette_duration=Random(2.5,4.0);
         
         player.reset_ap();
@@ -232,13 +245,15 @@ void Game::draw() const {
     // アタックモード中のマスクを描画
     mask.draw(ColorF{background_color,mask_alpha_transition.value()*0.8});
     
-    if(attack_mode){
-        int32 roulette_idx=static_cast<int>(roulette_pos)%4;
-        Triangle{ static_cast<double>(1130+70*roulette_idx), 100, 10, 180_deg }.draw(Palette::White);
-        roulette.draw();
+    if(attack_shape!=nullptr){
+        Point pos=Cursor::Pos();
+        Point upper_left=alpha_enemy.upper_left-Point{3000,3000};
+        
+        Point center=(pos-upper_left)/30*30+upper_left+Point{15,15};
+        attack_shape->draw(center);
     }
     
-    if(pause){
+    if(attack_mode or pause){
         roulette.draw();
     }
 }

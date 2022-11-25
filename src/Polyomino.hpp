@@ -61,6 +61,9 @@ class Polyomino {
     Score get_path_score()const;
     
     void prepare_to_randomly_vanish();
+    
+    // ポリオミノの左上の座標
+    Point upper_left;
 
    protected:
     // セルの大きさ
@@ -68,9 +71,6 @@ class Polyomino {
 
     // ポリオミノの中心の座標
     const Point center;
-    
-    // ポリオミノの左上の座標
-    Point upper_left;
     
     // グリッドの大きさ
     Size grid_size;

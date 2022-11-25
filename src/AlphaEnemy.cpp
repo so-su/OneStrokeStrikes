@@ -112,6 +112,27 @@ void AlphaEnemy::get_damaged(size_t remove_num){
     new_shape_initialize();
 }
 
+void AlphaEnemy::get_damaged(AttackShape* attack_shape){
+    const Point cursor_pos=Cursor::Pos();
+    for(auto i:step(3)){
+        for(auto j:step(3)){
+            if(not attack_shape->shape[i][j]){
+                continue;
+            }
+            const Point pos=cursor_pos+Point{30*(i-1),30*(j-1)};
+            for(auto [x, y] : step(grid_size)){
+                if(rects[x][y].has_value() and rects[x][y]->contains(pos)){
+                    cells[x][y]=Cell::None;
+                    rects[x][y]=none;
+                    --cell_num;
+                }
+            }
+        }
+    }
+    
+    new_shape_initialize();
+}
+
 bool AlphaEnemy::is_alive()const{
     return cell_num>0;
 }

@@ -55,11 +55,11 @@ class Game : public App::Scene {
     
     AllClearStatus all_clear_status;
     
-    double roulette_pos;
-    
     double roulette_duration;
     
     AttackRoulette roulette;
     
     bool pause;
+    
+    AttackShape* attack_shape;
 };

@@ -9,11 +9,11 @@ void AttackRoulette::initialize(){
     std::fill(begin(values),end(values),10);
     update_angles();
     triangle_angle=0.0;
-    std::fill(begin(attack_random_nums),end(attack_random_nums),0);
+    std::fill(begin(attack_nums),end(attack_nums),0);
     
     for(auto i:step(3)){
         if(RandomBool(0.3)){
-            attack_random_nums[i]=Random(5,10);
+            attack_nums[i]=Random(5,10);
         }
         else{
             attack_shapes[i].initialize();
@@ -46,9 +46,9 @@ void AttackRoulette::draw_small_disk()const{
 void AttackRoulette::draw_icons()const{
     for(auto i:step(3)){
         Point center=Vec2{700,425}.rotateAt(Point{700, 500},start_angles[i]+angles[i]/2).asPoint();
-        if(attack_random_nums[i]>0){
+        if(attack_nums[i]>0){
             Rect{Arg::center=center,92,92}.drawFrame(0,2,Palette::White);
-            FontAsset(U"Result")(U"{}"_fmt(attack_random_nums[i])).drawAt(center, Palette::White);
+            FontAsset(U"Result")(U"{}"_fmt(attack_nums[i])).drawAt(center, Palette::White);
         }
         else{
             attack_shapes[i].draw(center);
@@ -81,4 +81,37 @@ void AttackRoulette::update_angles(){
 void AttackRoulette::go_around(double speed){
     triangle_angle+=speed*Scene::DeltaTime();
     triangle_angle=std::fmod(triangle_angle,Math::TwoPi);
+}
+
+AttackType AttackRoulette::get_attack_type()const{
+    int32 attack_idx=chosen_index();
+    
+    if(attack_nums[attack_idx]>0){
+        return AttackType::Num;
+    }
+    else{
+        return AttackType::Shape;
+    }
+}
+
+int32 AttackRoulette::get_attack_num()const{
+    int32 attack_idx=chosen_index();
+    return attack_nums[attack_idx];
+}
+
+AttackShape* AttackRoulette::get_attack_shape(){
+    int32 attack_idx=chosen_index();
+    return &(attack_shapes[attack_idx]);
+}
+
+int32 AttackRoulette::chosen_index()const{
+    if(triangle_angle<start_angles[1]){
+        return 0;
+    }
+    else if(triangle_angle<start_angles[2]){
+        return 1;
+    }
+    else{
+        return 2;
+    }
 }
