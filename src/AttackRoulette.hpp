@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.hpp"
+#include "AttackShape.hpp"
 
 class AttackRoulette {
 public:
@@ -23,18 +24,24 @@ public:
     
     void update_angles();
     
-    void go_around();
+    void go_around(double speed);
     
 private:
-    //std::array<AttackShape,3> attack_shapes;
+    std::array<AttackShape,3> attack_shapes;
+    
+    std::array<int32,3> attack_random_nums;
     
     std::array<int32,3> values;
 
-    std::array<double,4> start_angles;
+    std::array<double,3> start_angles;
     
-    std::array<double,4> angles;
+    std::array<double,3> angles;
+    
+    double triangle_angle;
     
     static constexpr Circle small_circle{1280,760,25};
     
     static constexpr Circle large_circle{700,500,150};
+    
+    static constexpr Triangle triangle {680,330,720,330,700,400};
 };

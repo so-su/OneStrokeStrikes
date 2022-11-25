@@ -18,8 +18,10 @@ void Game::update() {
         const double time=attack_mode_timer.sF();
         if(time<1.0){
             roulette_pos+=20.0*Scene::DeltaTime();
+            roulette.go_around(20.0);
         }else if(time<roulette_duration){
             double roulette_speed=20.0*(1.0-attack_mode_timer.sF()/roulette_duration);
+            roulette.go_around(roulette_speed);
             roulette_pos+=roulette_speed*Scene::DeltaTime();
         }else if(time>=roulette_duration+1.0){
             const int32 roulette_idx=static_cast<int>(roulette_pos)%4;
@@ -215,8 +217,6 @@ void Game::draw() const {
 
     alpha_enemy.draw();
     alpha_enemy.draw_gauges();
-    
-    //attack_shapes.draw();
     
     {
         const ScopedRenderStates2D blend{ BlendState::Additive };
