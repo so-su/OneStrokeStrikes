@@ -51,7 +51,7 @@ void AttackRoulette::draw_icons()const{
             FontAsset(U"Result")(U"{}"_fmt(attack_nums[i])).drawAt(center, Palette::White);
         }
         else{
-            attack_shapes[i].draw(center,1.0);
+            attack_shapes[i].draw(center,Palette::White);
         }
     }
 }
@@ -102,6 +102,19 @@ int32 AttackRoulette::get_attack_num()const{
 AttackShape* AttackRoulette::get_attack_shape(){
     int32 attack_idx=chosen_index();
     return &(attack_shapes[attack_idx]);
+}
+
+Color AttackRoulette::chosen_color()const{
+    int32 idx=chosen_index();
+    if(idx==0){
+        return MyColor::Green;
+    }
+    else if(idx==1){
+        return MyColor::Red;
+    }
+    else{
+        return MyColor::Blue;
+    }
 }
 
 int32 AttackRoulette::chosen_index()const{

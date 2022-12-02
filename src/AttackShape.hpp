@@ -7,7 +7,7 @@ public:
     
     void initialize();
     
-    void draw(Point center,double alpha)const;
+    void draw(Point center, Color color)const;
     
     Grid<bool> shape;
     

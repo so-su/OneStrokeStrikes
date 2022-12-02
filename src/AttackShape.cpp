@@ -20,11 +20,11 @@ void AttackShape::initialize(){
     }
 }
 
-void AttackShape::draw(Point center,double alpha)const{
+void AttackShape::draw(Point center,Color color)const{
     for(auto i:step(3)){
         for(auto j:step(3)){
             if(shape[i][j]){
-                Rect{Arg::center=center+Point{(i-1)*30,(j-1)*30},28,28}.draw(HSV{0,0,100,alpha});
+                Rect{Arg::center=center+Point{(i-1)*30,(j-1)*30},28,28}.draw(color);
             }
         }
     }

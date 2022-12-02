@@ -37,6 +37,8 @@ public:
     int32 get_attack_num()const;
     
     AttackShape* get_attack_shape();
+
+    Color chosen_color()const;
     
 private:
     int32 chosen_index()const;
