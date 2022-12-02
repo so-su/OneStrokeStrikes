@@ -33,5 +33,5 @@ class Enemy : public Polyomino {
     double gauge_speed;
     
     // ゲージの色
-    static constexpr Color gauge_color=Color{255,153,0};
+    static constexpr Color gauge_color=MyColor::Orange;
 };

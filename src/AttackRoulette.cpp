@@ -24,14 +24,14 @@ void AttackRoulette::initialize(){
 void AttackRoulette::draw()const{
     draw_large_disk();
     draw_icons();
-    triangle.rotatedAt(700,500,triangle_angle).draw(Color{255,153,0});
+    triangle.rotatedAt(700,500,triangle_angle).draw(MyColor::Orange);
 }
 
 void AttackRoulette::draw_disk(const Circle& circle)const{
     circle
-        .drawPie(start_angles[0], angles[0], Color{53, 161, 107})
-        .drawPie(start_angles[1], angles[1], Color{255, 40, 0})
-        .drawPie(start_angles[2], angles[2], Color{0, 65, 255})
+        .drawPie(start_angles[0], angles[0], MyColor::Green)
+        .drawPie(start_angles[1], angles[1], MyColor::Red)
+        .drawPie(start_angles[2], angles[2], MyColor::Blue)
         .drawFrame(circle.r*0.05,0,ColorF{0.9});
 }
 
@@ -51,7 +51,7 @@ void AttackRoulette::draw_icons()const{
             FontAsset(U"Result")(U"{}"_fmt(attack_nums[i])).drawAt(center, Palette::White);
         }
         else{
-            attack_shapes[i].draw(center);
+            attack_shapes[i].draw(center,1.0);
         }
     }
 }

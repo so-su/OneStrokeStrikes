@@ -131,15 +131,20 @@ void AlphaEnemy::get_damaged(AttackShape* attack_shape){
     }
     
     new_shape_initialize();
+    
+    shuffled_filled_cells.clear();
+    for (auto [i, j] : step(grid_size)) {
+        if (is_filled(i,j)){
+            shuffled_filled_cells.emplace_back(i,j);
+        }
+    }
+    shuffled_filled_cells.shuffle();
 }
 
 bool AlphaEnemy::is_alive()const{
     return cell_num>0;
 }
 
-int32 AlphaEnemy::attack_value()const{
-    return 10;
-}
 
 // ゲージを更新し、満タンになったらtrueを返す
 int32 AlphaEnemy::update_gauges(bool speed_up){

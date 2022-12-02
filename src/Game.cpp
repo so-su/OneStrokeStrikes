@@ -250,7 +250,7 @@ void Game::draw() const {
         Point upper_left=alpha_enemy.upper_left-Point{3000,3000};
         
         Point center=(pos-upper_left)/30*30+upper_left+Point{15,15};
-        attack_shape->draw(center);
+        attack_shape->draw(center,Periodic::Jump0_1(2s));
     }
     
     if(attack_mode or pause){

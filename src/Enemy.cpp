@@ -90,7 +90,7 @@ void Enemy::draw_gauge()const{
 }
 
 int32 Enemy::attack_value()const{
-    return static_cast<int32>(200);
+    return 100;
 }
 
 void Enemy::speed_up_gauge(int32 times){

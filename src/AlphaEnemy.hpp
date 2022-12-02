@@ -18,8 +18,6 @@ class AlphaEnemy : public Polyomino {
     
     bool is_alive()const;
     
-    int32 attack_value()const;
-    
     // ゲージを更新し、満タンになったゲージの個数を返す
     int32 update_gauges(bool speed_up);
     
@@ -52,5 +50,5 @@ class AlphaEnemy : public Polyomino {
     Optional<int32> get_component_id(Point pos)const;
     
     // ゲージの色
-    static constexpr Color gauge_color=Color{255,153,0};
+    static constexpr Color gauge_color=MyColor::Orange;
 };
