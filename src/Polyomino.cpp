@@ -185,7 +185,7 @@ bool Polyomino::update_path(Point pos) {
             // パスがポリオミノを覆ったならポリオミノの消滅が始まる
             if (size(path) == cell_num) {
                 vanishing_idx = 0;
-                effect.add<RingEffect>(center,40*Max(grid_size.x,grid_size.y));
+                add_ring_effect();
             }
             return true;
         }
@@ -193,6 +193,10 @@ bool Polyomino::update_path(Point pos) {
 
     // posがポリオミノ外のとき
     return false;
+}
+
+void Polyomino::add_ring_effect()const{
+    effect.add<RingEffect>(center,40*Max(grid_size.x,grid_size.y));
 }
 
 // パスを削除

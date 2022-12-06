@@ -16,10 +16,9 @@ void Title::update() {
 void Title::draw() const {
     Scene::SetBackground(ColorF{0.9});
 
-    FontAsset(U"TitleFont")(U"One Stroke Strikes")
-        .drawAt(70, Vec2{700, 150},Palette::Black);
+    FontAsset(U"Kaisotai")(U"すとすと").drawAt(700,150,Palette::Black);
 
     m_startButton.draw(ColorF{0.9}).drawFrame(2,Palette::Black);
 
-    FontAsset(U"Menu")(U"PLAY").drawAt(m_startButton.center(), ColorF{0.25});
+    FontAsset(U"Menu")(U"みならいモード").drawAt(m_startButton.center(), Palette::Black);
 }

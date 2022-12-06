@@ -21,7 +21,9 @@ void Game::update() {
             attack_mode=false;
             attack_mode_timer.pause();
             roulette.initialize();
-            pause=true;
+            if(alpha_enemy.is_alive()){
+                pause=true;
+            }
         }
         return;
     }
@@ -47,7 +49,9 @@ void Game::update() {
                 attack_mode=false;
                 attack_mode_timer.pause();
                 roulette.initialize();
-                pause=true;
+                if(alpha_enemy.is_alive()){
+                    pause=true;
+                }
             }
         }
         return;
@@ -87,11 +91,13 @@ void Game::update() {
             if(enemy.is_vanishing() or enemy.has_vanished()){
                 continue;
             }
-            vanishing_timers[enemy_idx]=0.5;
+            vanishing_timers[enemy_idx]=0.0;
             // リスポーン時間は短かめ
             respawn_timers[enemy_idx]=respawn_time-2.0;
             // 有効なセルをシャッフルして消滅の準備をする
             enemy.prepare_to_randomly_vanish();
+            // エフェクトを描画
+            enemy.add_ring_effect();
             // スコアを得る
             auto score=enemy.get_ordinary_score();
             player.get_healed(score.green);
@@ -223,7 +229,8 @@ void Game::draw() const {
             enemy.draw_gauge();
         }
         // 消滅が始まってもしばらくはパスを描画する
-        else if(vanishing_timers[enemy_idx]<=0.49){
+        // ただし、SPを使って倒した場合は描画しない
+        else if(vanishing_timers[enemy_idx]<=0.49 and respawn_timers[enemy_idx]<0.5){
             enemy.draw_path();
         }
     }
@@ -239,21 +246,21 @@ void Game::draw() const {
     }
     
     if(all_clear_status==AllClearStatus::LastHasVanished){
-        FontAsset(U"Result")(U"All Clear!!!").drawAt(Scene::Center(), ColorF{0.9});
+        FontAsset(U"Kaisotai")(U"All Clear!!").drawAt(100,700,500,Palette::White);
     }
     
     // アタックモード中のマスクを描画
     mask.draw(ColorF{background_color,mask_alpha_transition.value()*0.8});
+    
+    if(attack_mode or pause){
+        roulette.draw();
+    }
     
     if(attack_shape!=nullptr){
         Point pos=Cursor::Pos();
         Point upper_left=alpha_enemy.upper_left-Point{3000,3000};
         
         Point center=(pos-upper_left)/30*30+upper_left+Point{15,15};
-        attack_shape->draw(center,roulette.chosen_color().withAlpha(static_cast<int>(255*(0.3+Periodic::Jump0_1(2s)*0.7))));
-    }
-    
-    if(attack_mode or pause){
-        roulette.draw();
+        attack_shape->draw(center,roulette.chosen_color().withAlpha(static_cast<uint32>(255*(0.3+Periodic::Jump0_1(2s)*0.7))));
     }
 }

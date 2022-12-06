@@ -35,6 +35,9 @@ class Polyomino {
 
     // カーソルの座標を受け取ってパスを更新
     bool update_path(Point pos);
+    
+    // RingEffectを発生させる
+    void add_ring_effect()const;
 
     // パスを削除
     void clear_path();

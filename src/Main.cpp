@@ -5,10 +5,9 @@
 
 void Main() {
     Window::Resize(1400, 800);
+    System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 
-    FontAsset::Register(U"TitleFont", FontMethod::MSDF, 50,
-                        U"example/font/RocknRoll/RocknRollOne-Regular.ttf");
-    FontAsset(U"TitleFont").setBufferThickness(4);
+    FontAsset::Register(U"Kaisotai", FontMethod::MSDF, 150, U"example/font/kaiso_up/Kaisotai-Next-UP-B.ttf");
     FontAsset::Register(U"Menu", FontMethod::MSDF, 40, Typeface::Medium);
     FontAsset::Register(U"Result", 40, Typeface::Heavy);
     FontAsset::Register(U"GameScore", 30, Typeface::Light);
@@ -19,7 +18,7 @@ void Main() {
     manager.add<Result>(State::Result);
 
     // ゲームシーンから開始したい場合はこのコメントを外す
-    manager.init(State::Game);
+    //manager.init(State::Game);
 
     while (System::Update()) {
         if (not manager.update()) {
