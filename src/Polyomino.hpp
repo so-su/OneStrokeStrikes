@@ -9,8 +9,7 @@ enum class Cell : uint8 {
     Red,
     Blue,
     Green,
-    Poison,
-    Black,
+    Yellow,
     Gray,
 };
 
@@ -113,8 +112,7 @@ class Polyomino {
     
     bool vanished;
     
-private:
-    static constexpr Color path_color=Color{250,245,0};
+    static constexpr Color path_color=MyColor::Yellow;
     
     Effect effect;
 };

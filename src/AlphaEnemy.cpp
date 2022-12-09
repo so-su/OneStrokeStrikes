@@ -5,7 +5,7 @@ AlphaEnemy::AlphaEnemy():Polyomino(Size{8,20},Size{30,30},Point{700,150}),compon
 }
 
 void AlphaEnemy::initialize(){
-    Polyomino::initialize(Size{20, 8}, 100, Cell::Black);
+    Polyomino::initialize(Size{20, 8}, 100, Cell::Yellow);
     new_shape_initialize();
 }
 
@@ -183,6 +183,7 @@ void AlphaEnemy::draw_gauges()const{
 }
 
 // マウスオーバーで色を変化させる
+/*
 void AlphaEnemy::mouse_over(Point pos){
     Optional<int32> id=get_component_id(pos);
     
@@ -203,6 +204,7 @@ void AlphaEnemy::mouse_over(Point pos){
         }
     }
 }
+ */
 
 // 座標 pos にあるセルが属する連結成分の番号を返す
 Optional<int32> AlphaEnemy::get_component_id(Point pos)const{
