@@ -60,7 +60,7 @@ void Button::draw()const{
 
 void Button::draw_gauge()const{
     const double gauge_len=std::size(perimeter)*(mouseover_transition.value()+1e-10);
-    const int32 len_int=static_cast<int32>(gauge_len);
+    const size_t len_int=static_cast<size_t>(gauge_len);
     
     for(auto i:step(len_int)){
         perimeter[i].draw(12,Palette::Black);

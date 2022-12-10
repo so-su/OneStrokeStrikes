@@ -18,7 +18,7 @@ void Title::update() {
         changeScene(State::Game,4000);
     }
     if(buttons[2].completed()){
-        changeScene(State::Game);
+        changeScene(State::Ranking,4000);
     }
     if(buttons[3].completed()){
         System::LaunchBrowser(U"https://github.com/so-su/OneStrokeStrikes");
@@ -53,6 +53,6 @@ void Title::draw() const {
     } else if(buttons[3].contains(Cursor::Pos())){
         FontAsset(U"Regular")(U"ルールをよむ").drawAt(message_window.center(),Palette::White);
     } else{
-        FontAsset(U"Regular")(U"長押しで決定").drawAt(message_window.center(),Palette::White);
+        FontAsset(U"Regular")(U"モードをえらんで長押しで決定").drawAt(message_window.center(),Palette::White);
     }
 }

@@ -2,6 +2,7 @@
 #include "Game.hpp"
 #include "Result.hpp"
 #include "Title.hpp"
+#include "Ranking.hpp"
 
 void Main() {
     Window::Resize(1400, 800);
@@ -15,6 +16,7 @@ void Main() {
     manager.add<Title>(State::Title);
     manager.add<Game>(State::Game);
     manager.add<Result>(State::Result);
+    manager.add<Ranking>(State::Ranking);
 
     // ゲームシーンから開始したい場合はこのコメントを外す
     //manager.init(State::Game);
