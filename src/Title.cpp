@@ -4,6 +4,8 @@ Title::Title(const InitData& init) : IScene{init} {
     for(auto button_idx:step(std::size(paths))){
         buttons.emplace_back(paths[button_idx],grid_sizes[button_idx],cell_size,upper_lefts[button_idx],colors[button_idx]);
     }
+    
+    getData().score=Random(5,100);
 }
 
 void Title::update() {
@@ -12,9 +14,11 @@ void Title::update() {
     }
     
     if(buttons[0].completed()){
+        getData().easy_mode=true;
         changeScene(State::Game,4000);
     }
     if(buttons[1].completed()){
+        getData().easy_mode=false;
         changeScene(State::Game,4000);
     }
     if(buttons[2].completed()){

@@ -11,4 +11,5 @@ class Result : public App::Scene {
     void draw() const override;
 
    private:
+    static constexpr Rect frame{100,150,1200,600};
 };

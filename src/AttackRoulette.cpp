@@ -48,7 +48,7 @@ void AttackRoulette::draw_icons()const{
         Point center=Vec2{700,425}.rotateAt(Point{700, 500},start_angles[i]+angles[i]/2).asPoint();
         if(attack_nums[i]>0){
             Rect{Arg::center=center,92,92}.drawFrame(0,2,Palette::White);
-            FontAsset(U"Result")(U"{}"_fmt(attack_nums[i])).drawAt(center, Palette::White);
+            FontAsset(U"Black")(U"{}"_fmt(attack_nums[i])).drawAt(50,center, Palette::White);
         }
         else{
             attack_shapes[i].draw(center,Palette::White);

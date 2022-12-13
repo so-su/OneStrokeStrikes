@@ -11,8 +11,24 @@ enum class State {
 
 // 共有するデータ
 struct GameData {
-    bool win;
-    int32 win_cnt=0;
+    uint32 win;
+    
+    uint32 enemy;
+    
+    uint32 green;
+    
+    uint32 red;
+    
+    uint32 blue;
+    
+    uint32 score;
+    
+    bool easy_mode;
+    
+    String player_id;
+    
+    // ResultからRankingに飛んだときにtrueにする
+    bool display_player_score=true;
 };
 
 using App = SceneManager<State, GameData>;

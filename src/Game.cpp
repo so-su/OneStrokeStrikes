@@ -196,15 +196,17 @@ void Game::update() {
     
     // プレイヤーの勝ち
     if(not alpha_enemy.is_alive()){
-        getData().win=true;
-        ++getData().win_cnt;
-        changeScene(State::Result);
+        ++getData().win;
+        if(getData().easy_mode){
+            changeScene(State::Result);
+        }
+        else{
+            changeScene(State::Game);
+        }
     }
     
     // プレイヤーの負け
     if(not player.is_alive()){
-        getData().win=false;
-        getData().win_cnt=0;
         changeScene(State::Result);
     }
 }
