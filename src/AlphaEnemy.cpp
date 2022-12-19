@@ -18,6 +18,9 @@ void AlphaEnemy::new_shape_initialize(){
     Grid<bool> seen(grid_size.y,grid_size.x,false);
     Array<Point> tmp;
     Grid<std::array<Optional<Point>,4>> graph(grid_size.y+1,grid_size.x+1);
+    for(auto &ary:graph){
+        ary.fill(none);
+    }
     
     for(auto [i,j]:step(grid_size)){
         if(not is_filled(i,j) or seen[i][j]){
@@ -28,13 +31,7 @@ void AlphaEnemy::new_shape_initialize(){
         
         // 連結成分に新しい番号をふる
         component_id[i][j]=num_component;
-        
-        for(auto &ary:graph){
-            ary.fill(none);
-        }
-        
-        Point component_upper_left{grid_size};
-        
+
         seen[i][j]=true;
         tmp.emplace_back(i,j);
         
@@ -43,13 +40,6 @@ void AlphaEnemy::new_shape_initialize(){
             tmp.pop_back();
             
             component_id[x][y]=num_component;
-            
-            if(y<component_upper_left.y){
-                component_upper_left={x,y};
-            }
-            else if(y==component_upper_left.y){
-                component_upper_left.x=Min(x,component_upper_left.x);
-            }
             
             if(not is_filled(x,y-1)){
                 graph[x][y][0]=Point{x+1,y};
@@ -76,10 +66,11 @@ void AlphaEnemy::new_shape_initialize(){
                 tmp.emplace_back(x-1,y);
             }
         }
+        
         // 一行目の最左の点をスタート点としてパスをつくる
-        Point now=component_upper_left;
+        Point now=Point{i,j};
         int32 prev=3;
-        perimeters.resize(num_component+1); // TODO よい書き方？
+        perimeters.emplace_back();
         do{
             for(int32 d=1;d<=4;++d){
                 int32 next=(prev+d)%4;
@@ -90,7 +81,7 @@ void AlphaEnemy::new_shape_initialize(){
                     break;
                 }
             }
-        }while(now!=component_upper_left);
+        }while(now!=Point{i,j});
         
         ++num_component;
     }
@@ -146,7 +137,7 @@ bool AlphaEnemy::is_alive()const{
 }
 
 
-// ゲージを更新し、満タンになったらtrueを返す
+// ゲージを更新し、満タンになったゲージの個数を返す
 int32 AlphaEnemy::update_gauges(bool speed_up){
     int32 full=0;
     for(auto gauge_idx:step(num_component)){
