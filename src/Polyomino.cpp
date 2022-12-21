@@ -1,93 +1,85 @@
 #include "Polyomino.hpp"
 
-Polyomino::Polyomino(Size max_grid_size,Size cell_size, Point center)
+Polyomino::Polyomino(Size max_grid_size, Size cell_size, Point center)
     : cell_size(cell_size),
       center(center),
       cells{max_grid_size, Cell::None},
-      rects{max_grid_size,none} {
-}
+      rects{max_grid_size, none} {}
 
 // セルが埋められているかを返す
 bool Polyomino::is_filled(int32 x, int32 y) const {
-    if(x<0 or grid_size.x<=x or y<0 or grid_size.y<=y){
+    if (x < 0 or grid_size.x <= x or y < 0 or grid_size.y <= y) {
         return false;
     }
     return cells[x][y] != Cell::None;
 }
 
-Score Polyomino::get_ordinary_score()const{
-    Score score{0,0,0,0,0,0};
-    for(auto [i,j]:step(grid_size)){
-        if(cells[i][j]==Cell::Green){
-            score.green+=10;
-        }
-        else if(cells[i][j]==Cell::Red){
-            score.red+=10;
-        }
-        else if(cells[i][j]==Cell::Blue){
-            score.blue+=10;
+Score Polyomino::get_ordinary_score() const {
+    Score score{0, 0, 0, 0, 0, 0};
+    for (auto [i, j] : step(grid_size)) {
+        if (cells[i][j] == Cell::Green) {
+            score.green += 10;
+        } else if (cells[i][j] == Cell::Red) {
+            score.red += 10;
+        } else if (cells[i][j] == Cell::Blue) {
+            score.blue += 10;
         }
     }
     return score;
 }
 
-Score Polyomino::get_path_score()const{
-    Score path_score=get_ordinary_score();
-    Cell now_color=cells[path.front().x][path.front().y];
-    int cnt=1;
-    for(size_t path_idx=1;path_idx<size(path);++path_idx){
-        if(cells[path[path_idx].x][path[path_idx].y]==now_color){
+Score Polyomino::get_path_score() const {
+    Score path_score = get_ordinary_score();
+    Cell now_color = cells[path.front().x][path.front().y];
+    int cnt = 1;
+    for (size_t path_idx = 1; path_idx < size(path); ++path_idx) {
+        if (cells[path[path_idx].x][path[path_idx].y] == now_color) {
             ++cnt;
-        }
-        else{
+        } else {
             // スコア計算
-            if(now_color==Cell::Green){
-                path_score.green+=cnt*cnt;
-            }else if(now_color==Cell::Red){
-                path_score.red+=cnt*cnt;
-            }else if(now_color==Cell::Blue){
-                path_score.blue+=cnt*cnt;
+            if (now_color == Cell::Green) {
+                path_score.green += cnt * cnt;
+            } else if (now_color == Cell::Red) {
+                path_score.red += cnt * cnt;
+            } else if (now_color == Cell::Blue) {
+                path_score.blue += cnt * cnt;
             }
-            
-            now_color=cells[path[path_idx].x][path[path_idx].y];
-            cnt=1;
+
+            now_color = cells[path[path_idx].x][path[path_idx].y];
+            cnt = 1;
         }
     }
     // 最後の連続部分のスコア計算
-    if(now_color==Cell::Green){
-        path_score.green+=cnt*cnt;
-    }else if(now_color==Cell::Red){
-        path_score.red+=cnt*cnt;
-    }else if(now_color==Cell::Blue){
-        path_score.blue+=cnt*cnt;
+    if (now_color == Cell::Green) {
+        path_score.green += cnt * cnt;
+    } else if (now_color == Cell::Red) {
+        path_score.red += cnt * cnt;
+    } else if (now_color == Cell::Blue) {
+        path_score.blue += cnt * cnt;
     }
-    
+
     // 端点ボーナス
-    if(cells[path.front().x][path.front().y]==Cell::Green){
+    if (cells[path.front().x][path.front().y] == Cell::Green) {
         ++path_score.green_bonus;
-    }
-    else if(cells[path.front().x][path.front().y]==Cell::Red){
+    } else if (cells[path.front().x][path.front().y] == Cell::Red) {
         ++path_score.red_bonus;
-    }
-    else if(cells[path.front().x][path.front().y]==Cell::Blue){
+    } else if (cells[path.front().x][path.front().y] == Cell::Blue) {
         ++path_score.blue_bonus;
     }
-    
-    if(cells[path.back().x][path.back().y]==Cell::Green){
+
+    if (cells[path.back().x][path.back().y] == Cell::Green) {
         ++path_score.green_bonus;
-    }
-    else if(cells[path.back().x][path.back().y]==Cell::Red){
+    } else if (cells[path.back().x][path.back().y] == Cell::Red) {
         ++path_score.red_bonus;
-    }
-    else if(cells[path.back().x][path.back().y]==Cell::Blue){
+    } else if (cells[path.back().x][path.back().y] == Cell::Blue) {
         ++path_score.blue_bonus;
     }
 
     return path_score;
 }
 
-void Polyomino::prepare_to_randomly_vanish(){
-    path=shuffled_filled_cells;
+void Polyomino::prepare_to_randomly_vanish() {
+    path = shuffled_filled_cells;
     vanishing_idx = 0;
 }
 
@@ -119,7 +111,7 @@ void Polyomino::draw() const {
             cell_color = MyColor::Green;
         } else if (cells[i][j] == Cell::Yellow) {
             cell_color = MyColor::Yellow;
-        }else if(cells[i][j] == Cell::Gray) {
+        } else if (cells[i][j] == Cell::Gray) {
             cell_color = ColorF{0.3};
         }
         rects[i][j]->draw(cell_color).drawFrame(2, 2, ColorF{0.25});
@@ -128,32 +120,31 @@ void Polyomino::draw() const {
 
 // パスを描画する
 void Polyomino::draw_path() const {
-    if(path.empty()){
+    if (path.empty()) {
         return;
     }
-    
+
     for (size_t path_idx = 0; path_idx + 1 < size(path); ++path_idx) {
         Vec2 from = rects[path[path_idx].x][path[path_idx].y]->center();
         Vec2 to = rects[path[path_idx + 1].x][path[path_idx + 1].y]->center();
         Line{from, to}.draw(3, path_color);
     }
-    
-    Circle{rects[path.front().x][path.front().y]->center(),5}.draw(path_color);
 
-    if(size(path)>=2){
-        Vec2 from=rects[next(std::rbegin(path))->x][next(std::rbegin(path))->y]->center();
-        Vec2 to=rects[path.back().x][path.back().y]->center();
-        if(to.x<from.x-0.5){
-            Triangle{to,20,270_deg}.draw(path_color);
-        }
-        else if(to.x>from.x+0.5){
-            Triangle{to,20,90_deg}.draw(path_color);
-        }
-        else if(to.y<from.y-0.5){
-            Triangle{to,20,0_deg}.draw(path_color);
-        }
-        else if(to.y>from.y+0.5){
-            Triangle{to,20,180_deg}.draw(path_color);
+    Circle{rects[path.front().x][path.front().y]->center(), 5}.draw(path_color);
+
+    if (size(path) >= 2) {
+        Vec2 from =
+            rects[next(std::rbegin(path))->x][next(std::rbegin(path))->y]
+                ->center();
+        Vec2 to = rects[path.back().x][path.back().y]->center();
+        if (to.x < from.x - 0.5) {
+            Triangle{to, 20, 270_deg}.draw(path_color);
+        } else if (to.x > from.x + 0.5) {
+            Triangle{to, 20, 90_deg}.draw(path_color);
+        } else if (to.y < from.y - 0.5) {
+            Triangle{to, 20, 0_deg}.draw(path_color);
+        } else if (to.y > from.y + 0.5) {
+            Triangle{to, 20, 180_deg}.draw(path_color);
         }
     }
 }
@@ -195,42 +186,42 @@ bool Polyomino::update_path(Point pos) {
     return false;
 }
 
-void Polyomino::add_ring_effect()const{
-    effect.add<RingEffect>(center,40*Max(grid_size.x,grid_size.y));
+void Polyomino::add_ring_effect() const {
+    effect.add<RingEffect>(center, 40 * Max(grid_size.x, grid_size.y));
 }
 
 // パスを削除
 void Polyomino::clear_path() { path.clear(); }
 
 // パスを逆順にする
-void Polyomino::reverse_path(){
-    std::reverse(std::begin(path),std::end(path));
+void Polyomino::reverse_path() {
+    std::reverse(std::begin(path), std::end(path));
 }
 
 // ポリオミノの消滅を進める、すべて消滅したらtrueを返す
 bool Polyomino::vanish() {
     if (vanishing_idx == cell_num) {
-        vanished=true;
+        vanished = true;
         return true;
     }
-    
-    auto [i,j]=path[*vanishing_idx];
-    
+
+    auto [i, j] = path[*vanishing_idx];
+
     Optional<double> base_hue;
     if (cells[i][j] == Cell::Red) {
-        base_hue=0.0;
+        base_hue = 0.0;
     } else if (cells[i][j] == Cell::Blue) {
-        base_hue=225.0;
+        base_hue = 225.0;
     } else if (cells[i][j] == Cell::Green) {
-        base_hue=120.0;
+        base_hue = 120.0;
     }
-    if(base_hue.has_value()){
-        effect.add<SquareEffect>(rects[i][j]->center() , *base_hue);
+    if (base_hue.has_value()) {
+        effect.add<SquareEffect>(rects[i][j]->center(), *base_hue);
     }
-    
+
     cells[i][j] = Cell::None;
     ++(*vanishing_idx);
-    
+
     return false;
 }
 
@@ -238,31 +229,28 @@ bool Polyomino::vanish() {
 bool Polyomino::is_vanishing() const { return vanishing_idx.has_value(); }
 
 // ポリオミノが完全に消滅したかを返す
-bool Polyomino::has_vanished()const{
-    return vanished;
-}
+bool Polyomino::has_vanished() const { return vanished; }
 
-void Polyomino::draw_effect()const{
-    effect.update();
-}
+void Polyomino::draw_effect() const { effect.update(); }
 
 // ポリオミノの初期化
-void Polyomino::initialize(Size grid_size_,const int32 tolerance, Cell designated){
-    grid_size=grid_size_;
+void Polyomino::initialize(Size grid_size_, const int32 tolerance,
+                           Cell designated) {
+    grid_size = grid_size_;
     cells.fill(Cell::None);
     rects.fill(none);
-    cell_num=1;
+    cell_num = 1;
     clear_path();
-    vanishing_idx=none;
-    vanished=false;
+    vanishing_idx = none;
+    vanished = false;
     shuffled_filled_cells.clear();
-    
+
     // スタートする点をランダムに決め、セルを埋める
-    int32 start_x=Random<int32>(grid_size.x - 1);
-    int32 start_y=Random<int32>(grid_size.y - 1);
+    int32 start_x = Random<int32>(grid_size.x - 1);
+    int32 start_y = Random<int32>(grid_size.y - 1);
     cells[start_x][start_y] = generate_cell(designated);
-    
-    for(auto _ :step(2)){
+
+    for (auto _ : step(2)) {
         int32 now_x = start_x;
         int32 now_y = start_y;
 
@@ -295,42 +283,43 @@ void Polyomino::initialize(Size grid_size_,const int32 tolerance, Cell designate
             prev = cells[now_x][now_y];
         }
     }
-    
+
     // 余白を詰める
     resize();
-    
+
     // ポリオミノの左上の座標を求める
-    upper_left=center-cell_size.x*grid_size/2;
+    upper_left = center - cell_size.x * grid_size / 2;
 
     // rects と shuffled_filled_cells の初期化
     for (auto [i, j] : step(grid_size)) {
-        if (not is_filled(i,j))continue;
+        if (not is_filled(i, j)) continue;
         rects[i][j] = Rect{upper_left.x + i * cell_size.x,
                            upper_left.y + j * cell_size.y, cell_size};
-        shuffled_filled_cells.emplace_back(i,j);
+        shuffled_filled_cells.emplace_back(i, j);
     }
-    
+
     shuffled_filled_cells.shuffle();
 }
 
-void Polyomino::resize(){
-    int32 exist_min_x=grid_size.x;
-    int32 exist_max_x=-1;
-    int32 exist_min_y=grid_size.y;
-    int32 exist_max_y=-1;
-    for(auto [x,y]:step(grid_size)){
-        if(cells[x][y]==Cell::None)continue;
-        exist_min_x=Min(x,exist_min_x);
-        exist_max_x=Max(x,exist_max_x);
-        exist_min_y=Min(y,exist_min_y);
-        exist_max_y=Max(y,exist_max_y);
+void Polyomino::resize() {
+    int32 exist_min_x = grid_size.x;
+    int32 exist_max_x = -1;
+    int32 exist_min_y = grid_size.y;
+    int32 exist_max_y = -1;
+    for (auto [x, y] : step(grid_size)) {
+        if (cells[x][y] == Cell::None) continue;
+        exist_min_x = Min(x, exist_min_x);
+        exist_max_x = Max(x, exist_max_x);
+        exist_min_y = Min(y, exist_min_y);
+        exist_max_y = Max(y, exist_max_y);
     }
-    auto tmp=cells;
+    auto tmp = cells;
     cells.fill(Cell::None);
-    
-    grid_size=Size{exist_max_x+1-exist_min_x,exist_max_y+1-exist_min_y};
-    for(auto [i,j]:step(grid_size)){
-        cells[i][j]=tmp[exist_min_x+i][exist_min_y+j];
+
+    grid_size =
+        Size{exist_max_x + 1 - exist_min_x, exist_max_y + 1 - exist_min_y};
+    for (auto [i, j] : step(grid_size)) {
+        cells[i][j] = tmp[exist_min_x + i][exist_min_y + j];
     }
 }
 

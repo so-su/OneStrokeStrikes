@@ -2,15 +2,15 @@
 #include "Common.hpp"
 
 class AttackShape {
-public:
+   public:
     AttackShape();
-    
+
     void initialize();
-    
-    void draw(Point center, Color color)const;
-    
+
+    void draw(Point center, Color color) const;
+
     Grid<bool> shape;
-    
-private:
+
+   private:
     Array<Point> cell_pos;
 };
