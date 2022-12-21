@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.hpp"
+#include "SimpleButton.hpp"
 
 // リザルトシーン
 class Result : public App::Scene {
@@ -11,5 +12,9 @@ class Result : public App::Scene {
     void draw() const override;
 
    private:
-    static constexpr Rect frame{100,150,1200,600};
+    static constexpr Rect frame{300,150,800,400};
+    
+    SimpleButton see_ranking{Rect{Arg::center=Point{550,700},180,50},MyColor::Orange,5};
+    
+    SimpleButton back_to_title{Rect{Arg::center=Point{850,700},180,50},MyColor::Orange,5};
 };

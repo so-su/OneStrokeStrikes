@@ -51,7 +51,7 @@ void Ranking::update(){
         input_mode=true;
     }
     else if(backward.down()){
-        changeScene(State::Result);
+        changeScene(State::Title);
     }
 }
 

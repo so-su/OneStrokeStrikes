@@ -28,7 +28,7 @@ struct GameData {
     String player_id;
     
     // ResultからRankingに飛んだときにtrueにする
-    bool display_player_score=true;
+    bool display_player_score=false;
 };
 
 using App = SceneManager<State, GameData>;
