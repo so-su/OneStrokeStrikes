@@ -11,10 +11,19 @@ Title::Title(const InitData& init) : IScene{init} {
 }
 
 void Title::update() {
+    alpha_transition.update(pause);
+    
+    if(pause){
+        if(MouseL.down()){
+            pause = false;
+        }
+        return;
+    }
+    
     for (auto& button : buttons) {
         button.update();
     }
-
+    
     if (buttons[0].completed()) {
         getData().easy_mode = true;
         getData().win = 0;
@@ -29,6 +38,7 @@ void Title::update() {
         changeScene(State::Ranking, 4000);
     }
     if (buttons[3].completed()) {
+        pause = true;
         System::LaunchBrowser(U"https://github.com/so-su/OneStrokeStrikes");
     }
 }
@@ -73,4 +83,6 @@ void Title::draw() const {
         FontAsset(U"Regular")(U"モードをえらんで長押しで決定")
             .drawAt(message_window.center(), Palette::White);
     }
+    
+    Scene::Rect().draw(ColorF{Palette::Black, 0.7*alpha_transition.value()});
 }

@@ -29,17 +29,17 @@ void Result::draw() const {
 
     if (getData().easy_mode) {
         if (getData().win > 0) {
-            FontAsset(U"Black")(U"勝った！")
+            FontAsset(U"Black")(U"あなたの勝ち！")
                 .drawAt(50, Scene::Center(), Palette::Black);
         } else {
-            FontAsset(U"Black")(U"負けた...")
+            FontAsset(U"Black")(U"あなたの負け...")
                 .drawAt(50, Scene::Center(), Palette::Black);
         }
     } else {
         FontAsset(U"Black")(U"連勝数 {}"_fmt(getData().win))
-            .drawAt(50, 700, 300, Palette::Black);
+            .drawAt(50, 700, 350, Palette::Black);
         FontAsset(U"Black")(U"スコア {}"_fmt(getData().score))
-            .drawAt(50, 700, 380, Palette::Black);
+            .drawAt(50, 700, 430, Palette::Black);
     }
 
     if (not getData().easy_mode) {

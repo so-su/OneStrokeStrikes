@@ -9,7 +9,7 @@ void AttackRoulette::initialize() {
     std::fill(begin(attack_nums), end(attack_nums), 0);
 
     for (auto i : step(3)) {
-        if (RandomBool(0.3)) {
+        if (RandomBool(0.5)) {
             attack_nums[i] = Random(5, 10);
         } else {
             attack_shapes[i].initialize();

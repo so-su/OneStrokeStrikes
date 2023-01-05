@@ -14,6 +14,10 @@ class Title : public App::Scene {
    private:
     Array<Button> buttons;
 
+    bool pause{false};
+    
+    Transition alpha_transition{1.0s,0.5s};
+
     static constexpr int32 cell_size = 80;
 
     const Array<Array<Point>> paths = {

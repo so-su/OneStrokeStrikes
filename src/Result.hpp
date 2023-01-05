@@ -12,7 +12,7 @@ class Result : public App::Scene {
     void draw() const override;
 
    private:
-    static constexpr Rect frame{300, 150, 800, 400};
+    static constexpr Rect frame{300, 150, 800, 500};
 
     SimpleButton see_ranking{Rect{Arg::center = Point{550, 700}, 180, 50},
                              MyColor::Orange, 5};

@@ -9,7 +9,7 @@ void Main() {
     System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 
     FontAsset::Register(U"Kaisotai", FontMethod::MSDF, 150,
-                        U"example/font/kaiso_up/Kaisotai-Next-UP-B.ttf");
+                        U"font/kaiso_up/Kaisotai-Next-UP-B.ttf");
     FontAsset::Register(U"Black", FontMethod::MSDF, 80, Typeface::Black);
     FontAsset::Register(U"Regular", FontMethod::MSDF, 30, Typeface::Regular);
 
