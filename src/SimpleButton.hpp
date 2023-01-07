@@ -3,7 +3,7 @@
 
 class SimpleButton {
    public:
-    SimpleButton(const Rect& rect_, Color gauge_color_, int32 thickness_);
+    SimpleButton(const Rect& rect_, Color inner_color_,Color gauge_color_, int32 thickness_);
 
     void draw() const;
 
@@ -12,6 +12,8 @@ class SimpleButton {
     bool down() const;
 
     Point center() const;
+    
+    void set_inner_color(Color color);
 
    private:
     const Rect rect;
@@ -22,10 +24,12 @@ class SimpleButton {
     const Line left;
 
     const double full_len;
+    
+    Color inner_color;
 
     const Color gauge_color;
 
     const int32 thickness;
 
-    Transition mouseover_transition;
+    Transition mouseover_transition{0.2s, 0.1s};
 };

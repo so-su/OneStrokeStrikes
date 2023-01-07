@@ -1,5 +1,6 @@
 #pragma once
 #include "Button.hpp"
+#include "SimpleButton.hpp"
 #include "Common.hpp"
 
 // タイトルシーン
@@ -13,14 +14,16 @@ class Title : public App::Scene {
 
    private:
     Array<Button> buttons;
-
-    bool pause{false};
     
-    Transition alpha_transition{1.0s,0.5s};
+    bool launch_browser_confirm{false};
+    
+    static constexpr RoundRect confirm_window{400, 300, 600, 200, 30};
+    
+    Transition mask_alpha_transition{0.5s,0.5s};
+    
+    static constexpr int32 cell_size{80};
 
-    static constexpr int32 cell_size = 80;
-
-    const Array<Array<Point>> paths = {
+    const Array<Array<Point>> paths{
         {
             {0, 0},
             {1, 0},
@@ -61,18 +64,24 @@ class Title : public App::Scene {
             {1, 0},
         }};
 
-    const Array<Size> grid_sizes = {
+    const Array<Size> grid_sizes{
         {6, 2},
         {7, 5},
         {4, 3},
         {3, 2},
     };
 
-    const Array<Point> upper_lefts = {
+    const Array<Point> upper_lefts{
         {700, 200}, {150, 200}, {600, 400}, {970, 400}};
 
-    const Array<Color> colors = {MyColor::Green, MyColor::Red, MyColor::Blue,
+    const Array<Color> colors{MyColor::Green, MyColor::Red, MyColor::Blue,
                                  MyColor::Yellow};
+    
+    const Array<double> alpha_mins{0.7, 0.7, 0.7, 0.5};
 
-    static constexpr Rect message_window = Rect{50, 700, 1300, 50};
+    static constexpr Rect message_window{0, 700, 1400, 50};
+    
+    SimpleButton backward{Rect{580, 420, 100, 40}, MyColor::Backward, MyColor::Orange, 5};
+
+    SimpleButton open{Rect{720, 420, 100, 40}, MyColor::Forward, MyColor::Orange, 5};
 };

@@ -22,7 +22,7 @@ void Result::update() {
 }
 
 void Result::draw() const {
-    Scene::SetBackground(ColorF{0.9});
+    Scene::SetBackground(MyColor::White);
 
     FontAsset(U"Kaisotai")(U"リザルト").drawAt(80, 700, 100, Palette::Black);
     frame.drawFrame(1, 1, Palette::Dimgray);

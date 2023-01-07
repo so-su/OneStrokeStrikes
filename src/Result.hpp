@@ -15,8 +15,8 @@ class Result : public App::Scene {
     static constexpr Rect frame{300, 150, 800, 500};
 
     SimpleButton see_ranking{Rect{Arg::center = Point{550, 700}, 180, 50},
-                             MyColor::Orange, 5};
+                             MyColor::Forward,MyColor::Orange, 5};
 
     SimpleButton back_to_title{Rect{Arg::center = Point{850, 700}, 180, 50},
-                               MyColor::Orange, 5};
+                               MyColor::Backward, MyColor::Orange, 5};
 };

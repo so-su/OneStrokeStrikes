@@ -30,6 +30,7 @@ void Ranking::update() {
     if (input_mode) {
         send.update();
         input_backward.update();
+        
         if (send.down()) {
             if (is_valid(text_edit.text)) {
                 send_score();
@@ -40,6 +41,14 @@ void Ranking::update() {
         } else if (input_backward.down()) {
             input_mode = false;
         }
+        
+        if (is_valid(text_edit.text)) {
+            send.set_inner_color(MyColor::Forward);
+        }
+        else{
+            send.set_inner_color(MyColor::Backward);
+        }
+        
         return;
     }
 
@@ -54,7 +63,7 @@ void Ranking::update() {
 }
 
 void Ranking::draw() const {
-    Scene::SetBackground(ColorF{0.9});
+    Scene::SetBackground(MyColor::White);
 
     FontAsset(U"Kaisotai")(U"ランキング").drawAt(80, 700, 100, Palette::Black);
 
@@ -73,7 +82,7 @@ void Ranking::draw() const {
     if (input_mode) {
         Scene::Rect().draw(
             ColorF{Palette::Black, mask_alpha_transition.value() * 0.6});
-        round_rect.draw(ColorF{0.9});
+        round_rect.draw(MyColor::White);
         FontAsset(U"Regular")(U"ニックネームを入力してください")
             .drawAt(700, 310, Palette::Black);
         FontAsset(U"Regular")(
@@ -83,10 +92,6 @@ void Ranking::draw() const {
 
         // テキストボックスを描画
         SimpleGUI::TextBox(text_edit, Vec2{500, 400}, 400, 16);
-
-        if (is_valid(text_edit.text)) {
-            Rect{580, 460, 100, 40}.draw(ColorF{MyColor::Orange, 0.2});
-        }
 
         send.draw();
         FontAsset(U"Regular")(U"登録").drawAt(20, send.center(),

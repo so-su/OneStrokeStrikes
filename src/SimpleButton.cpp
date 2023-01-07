@@ -1,6 +1,6 @@
 #include "SimpleButton.hpp"
 
-SimpleButton::SimpleButton(const Rect& rect_, Color gauge_color_,
+SimpleButton::SimpleButton(const Rect& rect_, Color inner_color_, Color gauge_color_,
                            int32 thickness_)
     : rect(rect_),
       top{rect.top()},
@@ -8,12 +8,13 @@ SimpleButton::SimpleButton(const Rect& rect_, Color gauge_color_,
       bottom{rect.bottom()},
       left{rect.left()},
       full_len{(top.length() + right.length()) * 2},
+      inner_color{inner_color_},
       gauge_color(gauge_color_),
-      thickness(thickness_),
-      mouseover_transition{0.2s, 0.1s} {}
+      thickness(thickness_)
+    {}
 
 void SimpleButton::draw() const {
-    rect.drawFrame(2, 2, Palette::Dimgray);
+    rect.draw(inner_color).drawFrame(2, 2, Palette::Dimgray);
 
     double gauge_len = full_len * mouseover_transition.value();
 
@@ -63,3 +64,7 @@ bool SimpleButton::down() const {
 }
 
 Point SimpleButton::center() const { return rect.center().asPoint(); }
+
+void SimpleButton::set_inner_color(Color color){
+    inner_color=color;
+}

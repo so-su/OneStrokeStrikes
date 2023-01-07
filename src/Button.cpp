@@ -1,14 +1,14 @@
 #include "Button.hpp"
 
 Button::Button(const Array<Point>& path_, Size grid_size_, int32 cell_size_,
-               Point upper_left, Color color_)
+               Point upper_left, Color color_, double alpha_min_)
     :grid_size(grid_size_),
      cell_size(cell_size_),
      color(color_),
      path(path_),
      rects(grid_size_, none),
-      
-      alpha_transitions(std::size(path), Transition{0.1s, 0.05s}) {
+     alpha_transitions(std::size(path), Transition{0.1s, 0.05s}),
+     alpha_min{alpha_min_}{
     for (const auto& cell_pos : path) {
         rects[cell_pos] =
             Rect{upper_left + cell_size * cell_pos, cell_size, cell_size};
@@ -74,7 +74,7 @@ Button::Button(const Array<Point>& path_, Size grid_size_, int32 cell_size_,
 void Button::draw() const {
     for (auto cell_idx : step(std::size(path))) {
         rects[path[cell_idx]]->draw(
-            ColorF{color, 0.7 + 0.3 * alpha_transitions[cell_idx].value()});
+            ColorF{color, alpha_min + (1.0 - alpha_min) * alpha_transitions[cell_idx].value()});
     }
 }
 
@@ -109,7 +109,9 @@ void Button::draw_gauge() const {
 void Button::update() {
     const bool contains_cursor{contains(Cursor::Pos())};
 
-    if (contains_cursor and MouseL.down() and pressed_transition.isZero()) {
+    // ボタンが押されたとき
+    if (not pressed and MouseL.down() and contains_cursor) {
+        pressed = true;
         for (auto cell_idx : step(std::size(path))) {
             if (rects[path[cell_idx]]->contains(Cursor::Pos())) {
                 start_index = cell_idx;
@@ -119,7 +121,7 @@ void Button::update() {
     }
 
     mouseover_transition.update(contains_cursor);
-    pressed_transition.update(contains_cursor and MouseL.pressed());
+    pressed_transition.update(pressed);
 
     const double path_len{static_cast<double>(std::size(path))};
 
@@ -144,6 +146,15 @@ bool Button::contains(Point pos) const {
 bool Button::completed() const {
     const auto path_len{std::size(path)};
     return alpha_transitions[(start_index + path_len - 1) % path_len].isOne();
+}
+
+// ゲージのリセット
+void Button::reset(){
+    for(auto& transition:alpha_transitions){
+        transition = Transition{0.1s, 0.05s};
+    }
+
+    pressed = false;
 }
 
 // セルが埋まっているかを返す

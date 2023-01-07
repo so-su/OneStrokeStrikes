@@ -42,9 +42,9 @@ class Ranking : public App::Scene {
 
     const FilePath save_file_path = U"ranking.json";
 
-    SimpleButton ranking_register{Rect{1020, 670, 160, 50}, MyColor::Orange, 5};
+    SimpleButton ranking_register{Rect{1020, 670, 160, 50}, MyColor::Forward, MyColor::Orange, 5};
 
-    SimpleButton backward{Rect{1200, 670, 100, 50}, MyColor::Orange, 5};
+    SimpleButton backward{Rect{1200, 670, 100, 50}, MyColor::Backward, MyColor::Orange, 5};
 
     bool input_mode{false};
 
@@ -54,9 +54,9 @@ class Ranking : public App::Scene {
 
     mutable TextEditState text_edit{U""};
 
-    SimpleButton send{Rect{580, 460, 100, 40}, MyColor::Orange, 5};
+    SimpleButton send{Rect{720, 460, 100, 40}, MyColor::Forward ,MyColor::Orange, 5};
 
-    SimpleButton input_backward{Rect{720, 460, 100, 40}, MyColor::Orange, 5};
+    SimpleButton input_backward{Rect{580, 460, 100, 40}, MyColor::Backward, MyColor::Orange, 5};
 
     bool display_register_button{false};
 };

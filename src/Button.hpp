@@ -4,7 +4,7 @@
 class Button {
    public:
     Button(const Array<Point>& path, Size grid_size_, int32 cell_size_,
-           Point upper_left, Color color_);
+           Point upper_left, Color color_, double alpha_min_);
 
     // ボタンの描画
     void draw() const;
@@ -20,6 +20,9 @@ class Button {
 
     // ゲージが満タンになっているかを返す
     bool completed() const;
+    
+    // ゲージのリセット
+    void reset();
 
    private:
     // セルが埋まっているかを返す
@@ -39,9 +42,13 @@ class Button {
 
     Transition mouseover_transition{0.2s, 0.1s};
     
+    bool pressed{false};
+    
     size_t start_index;
 
     Transition pressed_transition{0.8s, 0.4s};
 
     Array<Transition> alpha_transitions;
+    
+    const double alpha_min;
 };
