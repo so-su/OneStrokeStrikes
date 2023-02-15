@@ -86,12 +86,12 @@ void Ranking::draw() const {
         FontAsset(U"Regular")(U"ニックネームを入力してください")
             .drawAt(700, 310, Palette::Black);
         FontAsset(U"Regular")(
-            U"3文字以上16文字以下で、半角英数字, -, _ "
-            U"が使えます。\nまた、アルファベットから始まる必要があります。")
+            U"3文字以上12文字以下で、半角英数字と3種の記号（- _ .）が使えます。\n"
+            U"ただし、アルファベットから始まる必要があります。")
             .drawAt(15, 700, 360, Palette::Dimgray);
 
         // テキストボックスを描画
-        SimpleGUI::TextBox(text_edit, Vec2{500, 400}, 400, 16);
+        SimpleGUI::TextBox(text_edit, Vec2{500, 400}, 400, 12);
 
         send.draw();
         FontAsset(U"Regular")(U"登録").drawAt(20, send.center(),
@@ -167,6 +167,6 @@ void Ranking::draw_ranking() const {
 bool Ranking::is_valid(const String& user_id) {
     return std::size(user_id) >= 3 and IsAlpha(user_id.front()) and
            user_id.all([](char32 c) -> bool {
-               return IsAlnum(c) or c == '-' or c == '_';
+               return IsAlnum(c) or c == '-' or c == '_' or c == '.';
            });
 }
