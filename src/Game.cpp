@@ -152,8 +152,8 @@ void Game::update() {
             player.get_sp(score.blue);
 
             // パスの端点の色によってルーレットの割合を更新
-            roulette.update_value(score.green_bonus, score.red_bonus,
-                                  score.blue_bonus);
+            roulette.update_value(score.green_endpoint, score.red_endpoint,
+                                  score.blue_endpoint);
 
             bool all_clear =
                 (enemies[0].is_vanishing() or enemies[0].has_vanished()) and
@@ -187,7 +187,7 @@ void Game::update() {
     }
 
     // AlphaEnemyのゲージを進める
-    int32 num_full_gauges = alpha_enemy.update_gauges(false);
+    int32 num_full_gauges = alpha_enemy.update_gauges();
     for (auto& enemy : enemies) {
         enemy.speed_up_gauge(num_full_gauges);
     }

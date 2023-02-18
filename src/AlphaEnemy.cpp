@@ -1,14 +1,14 @@
 #include "AlphaEnemy.hpp"
 
 AlphaEnemy::AlphaEnemy()
-    : Polyomino(Size{8, 20}, Size{30, 30}, Point{700, 150}),
-      component_id{8, 20} {
+    : Polyomino(Size{20, 8}, 30, Point{700, 150}),
+      component_id{20, 8, none} {
     initialize();
 }
 
 // 初期化する
 void AlphaEnemy::initialize() {
-    generate_polyomino(Size{20, 8}, 100, Cell::Yellow);
+    Polyomino::initialize(Size{20, 8}, Cell::Yellow);
     compute_perimeters();
 }
 
@@ -16,76 +16,93 @@ void AlphaEnemy::initialize() {
 void AlphaEnemy::compute_perimeters() {
     perimeters.clear();
     component_id.fill(none);
-
     num_components = 0;
-    Grid<bool> visited(grid_size.y, grid_size.x, false);
+    
+    // 訪問済みのセルかどうか
+    Grid<bool> visited(grid_size, false);
+    
+    // 訪問中のセルを入れておく配列
     Array<Point> stack;
-    Grid<std::array<Optional<Point>, 4>> graph(grid_size.y + 1,
-                                               grid_size.x + 1,{none, none, none, none});
+    
+    // 各格子点から出ていく辺を4方向について管理する
+    Grid<std::array<Optional<Point>, 4>> graph{grid_size + Size{1, 1} ,{none, none, none, none}};
 
-    // 深さ優先探索して連結成分ごとに見ていき、それぞれの外周を求める
-    for (auto [i, j] : step(grid_size)) {
-        if (not is_filled(i, j) or visited[i][j]) {
+    // 深さ優先探索しながら連結成分ごとに見ていき、それぞれの外周を求める
+    for (auto component_upper_left : step(grid_size)) {
+        if (not is_filled(component_upper_left) or visited[component_upper_left]) {
             continue;
         }
 
-        // ここを抜けるごとに新しい連結成分を処理
+        /* ここを抜けるごとに新しい連結成分を処理 */
 
         // 連結成分に新しい番号をふる
-        component_id[i][j] = num_components;
+        component_id[component_upper_left] = num_components;
 
-        visited[i][j] = true;
-        stack.emplace_back(i, j);
+        visited[component_upper_left] = true;
+        stack.emplace_back(component_upper_left);
 
         while (not stack.empty()) {
-            auto [x, y] = stack.back();
+            const auto [x, y] = stack.back();
             stack.pop_back();
 
-            component_id[x][y] = num_components;
+            component_id[y][x] = num_components;
 
+            // 上のセルが埋まっていないなら右向きに辺をはる
             if (not is_filled(x, y - 1)) {
-                graph[x][y][0] = Point{x + 1, y};
-            } else if (not visited[x][y - 1]) {
-                visited[x][y - 1] = true;
+                graph[y][x][0] = Point{x + 1, y};
+            } else if (not visited[y - 1][x]) {
+                visited[y - 1][x] = true;
                 stack.emplace_back(x, y - 1);
             }
+            
+            // 右のセルが埋まっていないなら下向きに辺をはる
             if (not is_filled(x + 1, y)) {
-                graph[x + 1][y][1] = Point{x + 1, y + 1};
-            } else if (not visited[x + 1][y]) {
-                visited[x + 1][y] = true;
+                graph[y][x + 1][1] = Point{x + 1, y + 1};
+            } else if (not visited[y][x + 1]) {
+                visited[y][x + 1] = true;
                 stack.emplace_back(x + 1, y);
             }
+            
+            // 下のセルが埋まっていないなら左向きに辺をはる
             if (not is_filled(x, y + 1)) {
-                graph[x + 1][y + 1][2] = Point{x, y + 1};
-            } else if (not visited[x][y + 1]) {
-                visited[x][y + 1] = true;
+                graph[y + 1][x + 1][2] = Point{x, y + 1};
+            } else if (not visited[y + 1][x]) {
+                visited[y + 1][x] = true;
                 stack.emplace_back(x, y + 1);
             }
+            
+            // 左のセルが埋まっていないなら上向きに辺をはる
             if (not is_filled(x - 1, y)) {
-                graph[x][y + 1][3] = Point{x, y};
-            } else if (not visited[x - 1][y]) {
-                visited[x - 1][y] = true;
+                graph[y + 1][x][3] = Point{x, y};
+            } else if (not visited[y][x - 1]) {
+                visited[y][x - 1] = true;
                 stack.emplace_back(x - 1, y);
             }
         }
 
-        // 一行目の最左の点をスタート点としてパスをつくる
-        Point now = Point{i, j};
-        int32 prev = 3;
+        // はじめに訪問したセルの左上を始点とする
+        Point now{component_upper_left};
+        
+        // 4方向のうち、直前に通ってきた方向をもっておく
+        int32 prev_dir{3};
+        
         perimeters.emplace_back();
+        
+        // ポリオミノの外周のパスをつくる
         do {
-            for (int32 d = 1; d <= 4; ++d) {
-                int32 next = (prev + d) % 4;
-                if (graph[now.x][now.y][next].has_value()) {
-                    perimeters[num_components].emplace_back(Line{
-                        upper_left + now * cell_size.x,
-                        upper_left + *graph[now.x][now.y][next] * cell_size.x});
-                    now = *graph[now.x][now.y][next];
-                    prev = next;
+            // 4方向を順番に見ていき辺がはられていたら先に進むのを、一周するまで繰り返す
+            for (auto d : Range(1, 5)) {
+                const auto next_dir{(prev_dir + d) % 4};
+                if (graph[now][next_dir].has_value()) {
+                    perimeters[num_components].emplace_back(
+                        upper_left + now * cell_size,
+                        upper_left + graph[now][next_dir].value() * cell_size);
+                    now = graph[now][next_dir].value();
+                    prev_dir = next_dir;
                     break;
                 }
             }
-        } while (now != Point{i, j});
+        } while (now != component_upper_left);
 
         ++num_components;
     }
@@ -96,10 +113,10 @@ void AlphaEnemy::compute_perimeters() {
 // 埋まっているセルを、指定した個数だけ削除する
 void AlphaEnemy::get_damaged(size_t remove_num) {
     while (remove_num > 0 and num_filled_cells > 0) {
-        auto [x, y] = shuffled_filled_cells.back();
+        const auto pos{shuffled_filled_cells.back()};
         shuffled_filled_cells.pop_back();
-        cells[x][y] = Cell::None;
-        rects[x][y] = none;
+        cells[pos] = Cell::None;
+        rects[pos] = none;
         --num_filled_cells;
         --remove_num;
     }
@@ -110,17 +127,20 @@ void AlphaEnemy::get_damaged(size_t remove_num) {
 
 // 埋まっているセルのうち、指定した図形と重なるものを削除する
 void AlphaEnemy::get_damaged(AttackShape* attack_shape) {
-    const Point cursor_pos = Cursor::Pos();
-    for (auto i : step(3)) {
-        for (auto j : step(3)) {
-            if (not attack_shape->shape[i][j]) {
+    const Point cursor_pos{Cursor::Pos()};
+    
+    // AttackShapeの埋まっている各セルの中心について、
+    // それを含む、ポリオミノの埋まっているセルが存在するか判定する
+    for (auto shape_y : step(3)) {
+        for (auto shape_x : step(3)) {
+            if (not attack_shape->shape[shape_y][shape_x]) {
                 continue;
             }
-            const Point pos = cursor_pos + Point{30 * (i - 1), 30 * (j - 1)};
-            for (auto [x, y] : step(grid_size)) {
-                if (rects[x][y].has_value() and rects[x][y]->contains(pos)) {
-                    cells[x][y] = Cell::None;
-                    rects[x][y] = none;
+            const Point center_pos{cursor_pos + Point{30 * (shape_x - 1), 30 * (shape_y - 1)}};
+            for (auto pos : step(grid_size)) {
+                if (rects[pos].has_value() and rects[pos]->contains(center_pos)) {
+                    cells[pos] = Cell::None;
+                    rects[pos] = none;
                     --num_filled_cells;
                 }
             }
@@ -130,9 +150,9 @@ void AlphaEnemy::get_damaged(AttackShape* attack_shape) {
     compute_perimeters();
 
     shuffled_filled_cells.clear();
-    for (auto [i, j] : step(grid_size)) {
-        if (is_filled(i, j)) {
-            shuffled_filled_cells.emplace_back(i, j);
+    for (auto pos : step(grid_size)) {
+        if (is_filled(pos)) {
+            shuffled_filled_cells.emplace_back(pos);
         }
     }
     shuffled_filled_cells.shuffle();
@@ -142,11 +162,12 @@ void AlphaEnemy::get_damaged(AttackShape* attack_shape) {
 bool AlphaEnemy::is_alive() const { return num_filled_cells > 0; }
 
 // ゲージを更新し、満タンになったゲージの個数を返す
-int32 AlphaEnemy::update_gauges(bool speed_up) {
-    int32 full = 0;
+int32 AlphaEnemy::update_gauges() {
+    int32 full{0};
     for (auto gauge_idx : step(num_components)) {
-        gauge_lens[gauge_idx] += Scene::DeltaTime() * (speed_up ? 10.0 : 1.0);
+        gauge_lens[gauge_idx] += Scene::DeltaTime();
 
+        // ゲージが満タンになったとき
         if (static_cast<size_t>(gauge_lens[gauge_idx]) ==
             std::size(perimeters[gauge_idx])) {
             gauge_lens[gauge_idx] = 0.0;
@@ -164,26 +185,28 @@ void AlphaEnemy::draw_gauges() const {
     for (auto gauge_idx : step(num_components)) {
         int32 len_int = static_cast<int32>(gauge_lens[gauge_idx]);
 
-        for (auto i : step(len_int)) {
-            perimeters[gauge_idx][i].draw(7, Palette::Black);
+        // ゲージを縁取りする
+        for (auto line_idx : step(len_int)) {
+            perimeters[gauge_idx][line_idx].draw(7, Palette::Black);
         }
         perimeters[gauge_idx][len_int]
             .stretched(0,
-                       cell_size.x * ((gauge_lens[gauge_idx] - len_int) - 1.0))
+                       cell_size * ((gauge_lens[gauge_idx] - len_int) - 1.0))
             .draw(7, Palette::Black);
 
-        for (auto i : step(len_int)) {
-            perimeters[gauge_idx][i].draw(5, gauge_color);
+        // ゲージの本体を描画する
+        for (auto line_idx : step(len_int)) {
+            perimeters[gauge_idx][line_idx].draw(5, gauge_color);
         }
         perimeters[gauge_idx][len_int]
             .stretched(0,
-                       cell_size.x * ((gauge_lens[gauge_idx] - len_int) - 1.0))
+                       cell_size * ((gauge_lens[gauge_idx] - len_int) - 1.0))
             .draw(5, gauge_color);
     }
 }
 
-// マウスオーバーで色を変化させる
 /*
+// マウスオーバーで色を変化させる
 void AlphaEnemy::mouse_over(Point pos){
     Optional<int32> id=get_component_id(pos);
 

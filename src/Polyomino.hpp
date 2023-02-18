@@ -10,21 +10,20 @@ enum class Cell : uint8 {
     Blue,
     Green,
     Yellow,
-    Gray,
 };
 
 struct Score {
     int32 green;
     int32 red;
     int32 blue;
-    int32 green_bonus;
-    int32 red_bonus;
-    int32 blue_bonus;
+    int32 green_endpoint;
+    int32 red_endpoint;
+    int32 blue_endpoint;
 };
 
 class Polyomino {
    public:
-    Polyomino(Size max_grid_size, Size cell_size, Point center);
+    Polyomino(Size max_grid_size, int32 cell_size, Point center);
 
     // ポリオミノを描画する
     void draw() const;
@@ -36,7 +35,7 @@ class Polyomino {
     void draw_effect() const;
 
     // カーソルの座標を受け取ってパスを更新
-    bool update_path(Point pos);
+    void update_path(Point cursor_pos);
     
     // パスを削除する
     void clear_path();
@@ -56,6 +55,9 @@ class Polyomino {
     // セルが埋められているかを返す
     bool is_filled(int32 x, int32 y) const;
     
+    // セルが埋められているかを返す
+    bool is_filled(Point pos) const;
+    
     // RingEffectを発生させる
     void add_ring_effect() const;
 
@@ -72,12 +74,11 @@ class Polyomino {
     Point upper_left;
 
    protected:
-    // ポリオミノを生成する
-    void generate_polyomino(Size grid_size, int32 tolerance,
-                    Cell designated = Cell::None);
+    // ポリオミノを初期化する
+    void initialize(Size grid_size, Cell designated = Cell::None);
     
     // セルの大きさ
-    const Size cell_size;
+    const int cell_size;
 
     // ポリオミノの中心の座標
     const Point center;
@@ -97,18 +98,17 @@ class Polyomino {
     // 一筆書き中のパス
     Array<Point> path;
 
-    // 4方向
-    static constexpr std::array<Point, 4> directions = {
-        Point{1, 0}, Point{0, 1}, Point{-1, 0}, Point{0, -1}};
-
     Array<Point> shuffled_filled_cells;
 
    private:
-    // 余白を詰める
-    void resize();
-
+    // 一筆書き可能なポリオミノを生成する
+    void generate_polyomino(Cell designated);
+    
     // セルを生成する
     Cell generate_cell(Cell designated) const;
+    
+    // ポリオミノをグリッドの左上に寄せてgrid_sizeを詰める
+    void shrink_to_fit();
 
     // ポリオミノが倒されて消滅していく最中のインデックス
     Optional<size_t> vanishing_idx = none;
@@ -116,4 +116,6 @@ class Polyomino {
     bool vanished;
 
     Effect effect;
+    
+    static constexpr Color path_color{MyColor::Yellow};
 };

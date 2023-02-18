@@ -24,7 +24,7 @@ class AlphaEnemy : public Polyomino {
     bool is_alive() const;
 
     // ゲージを更新し、満タンになったゲージの個数を返す
-    int32 update_gauges(bool speed_up);
+    int32 update_gauges();
 
     // ゲージをリセットする
     void reset_gauge();

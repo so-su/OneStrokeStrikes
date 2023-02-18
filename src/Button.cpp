@@ -14,60 +14,63 @@ Button::Button(const Array<Point>& path_, Size grid_size_, int32 cell_size_,
             Rect{upper_left + cell_size * cell_pos, cell_size, cell_size};
     }
 
-    /* グリッドの格子点を頂点として有向グラフを構築し、外周を計算する */
-    // 隣接リスト
-    Grid<std::array<Optional<Point>, 4>> graph(grid_size+Size{1,1});
-    for (auto& ary : graph) {
-        ary.fill(none);
+    // 各格子点から出ていく辺を4方向について管理する
+         Grid<std::array<Optional<Point>, 4>> graph{grid_size+Size{1,1},{none,none,none,none}};
+
+    // ポリオミノの各セルを見ていき、グラフを構成する
+    for (auto [x,y] : step(grid_size)){
+        if (not is_filled(x, y)) continue;
+        
+        // 上のセルが埋まっていないなら右向きに辺をはる
+        if (not is_filled(x, y - 1)) {
+            graph[y][x][0] = Point{x + 1, y};
+        }
+        
+        // 上のセルが埋まっていないなら下向きに辺をはる
+        if (not is_filled(x + 1, y)) {
+            graph[y][x+1][1] = Point{x + 1, y + 1};
+        }
+        
+        // 上のセルが埋まっていないなら左向きに辺をはる
+        if (not is_filled(x, y + 1)) {
+            graph[y + 1][x + 1][2] = Point{x, y + 1};
+        }
+        
+        // 上のセルが埋まっていないなら上向きに辺をはる
+        if (not is_filled(x - 1, y)) {
+            graph[y+1][x][3] = Point{x, y};
+        }
     }
 
-    // 有向辺をはる
-    for (auto y : step(grid_size.y)){
-        for(auto x: step(grid_size.x)){
-            if (not is_filled(x, y)) continue;
-            if (not is_filled(x, y - 1)) {
-                graph[y][x][0] = Point{x + 1, y};
-            }
-            if (not is_filled(x + 1, y)) {
-                graph[y][x+1][1] = Point{x + 1, y + 1};
-            }
-            if (not is_filled(x, y + 1)) {
-                graph[y + 1][x + 1][2] = Point{x, y + 1};
-            }
-            if (not is_filled(x - 1, y)) {
-                graph[y+1][x][3] = Point{x, y};
-            }
-        }
-    }
-
-    // 埋まっているセルのうち、1行目の最左のものの左上を始点とする
-    Point start;
-    for (auto x : step(grid_size.x)) {
-        if (is_filled(x, 0)) {
-            start = Point{x, 0};
-            break;
-        }
-    }
-          
-    // 4方向のうち、直前に通ってきた方向をもっておく
-    int32 prev{3};
-    
-    // 外周のパスをつくる
-    Point now{start};
-    do {
-        // 4方向を順番に見ていき辺がはられていたら先に進むのを、一周するまで繰り返す
-        for (int32 d = 1; d <= 4; ++d) {
-            const int32 next{(prev + d) % 4};
-            if (graph[now][next].has_value()) {
-                perimeter.emplace_back(
-                    upper_left + now * cell_size,
-                    upper_left + *graph[now][next] * cell_size);
-                now = *graph[now][next];
-                prev = next;
-                break;
-            }
-        }
-    } while (now != start);
+     // 埋まっているセルのうち、y=0でxが最小のセルの左上を始点とする
+     Point start;
+     for (auto x : step(grid_size.x)) {
+         if (is_filled(x, 0)) {
+             start = Point{x, 0};
+             break;
+         }
+     }
+     
+     Point now{start};
+     
+     // 4方向のうち、直前に通ってきた方向をもっておく
+     int32 prev_dir{3};
+     
+     // ポリオミノの外周のパスをつくる
+     do {
+         // 4方向を順番に見ていき辺がはられていたら先に進むのを、一周するまで繰り返す
+         for (auto d : Range(1,5)) {
+             const auto next_dir{(prev_dir + d) % 4};
+             if (graph[now][next_dir].has_value()) {
+                 perimeter.emplace_back(
+                     upper_left + now * cell_size,
+                     upper_left + *graph[now][next_dir] * cell_size);
+                 now = *graph[now][next_dir];
+                 prev_dir = next_dir;
+                 break;
+             }
+         }
+     } while (now != start);
 }
 
 // ボタンの描画

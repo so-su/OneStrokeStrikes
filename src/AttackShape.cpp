@@ -21,10 +21,10 @@ void AttackShape::initialize() {
 }
 
 void AttackShape::draw(Point center, Color color) const {
-    for (auto i : step(3)) {
-        for (auto j : step(3)) {
-            if (shape[i][j]) {
-                Rect{Arg::center = center + Point{(i - 1) * 30, (j - 1) * 30},
+    for (auto y : step(3)) {
+        for (auto x : step(3)) {
+            if (shape[y][x]) {
+                Rect{Arg::center = center + Point{(x - 1) * 30, (y - 1) * 30},
                      28, 28}
                     .draw(color);
             }
