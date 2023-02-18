@@ -1,24 +1,27 @@
 #include "Enemy.hpp"
 
 Enemy::Enemy(Point center)
-    : Polyomino(Size{8, 8}, Size{50, 50}, center), gauge_len(0.0) {
+    : Polyomino(Size{8, 8}, Size{50, 50}, center){
     initialize();
 }
 
+// 初期化する
 void Enemy::initialize() {
-    int32 grid_len = Random(3, 8);
-    Polyomino::initialize(Size{grid_len, grid_len}, grid_len * grid_len);
-
-    gauge_len = 0.0;
+    const int32 grid_len = Random(3, 8);
+    generate_polyomino(Size{grid_len, grid_len}, grid_len * grid_len);
+    
     gauge_speed = 1.0;
+    compute_perimeter();
+}
+
+// 外周を計算する
+void Enemy::compute_perimeter() {
+    gauge_len = 0.0;
     perimeter.clear();
 
     // 隣接する点の座標
     Grid<std::array<Optional<Point>, 4>> graph(grid_size.y + 1,
-                                               grid_size.x + 1);
-    for (auto &ary : graph) {
-        ary.fill(none);
-    }
+                                               grid_size.x + 1,{none,none,none,none});
 
     // ポリオミノの外周のパスを計算する
     for (auto [x, y] : step(grid_size)) {
@@ -95,6 +98,8 @@ void Enemy::draw_gauge() const {
         .draw(5, gauge_color);
 }
 
+// 攻撃力を返す
 int32 Enemy::attack_value() const { return 100; }
 
+// ゲージの周回速度を上昇させる
 void Enemy::speed_up_gauge(int32 times) { gauge_speed += 0.3 * times; }

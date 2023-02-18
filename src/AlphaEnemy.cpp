@@ -6,67 +6,66 @@ AlphaEnemy::AlphaEnemy()
     initialize();
 }
 
+// 初期化する
 void AlphaEnemy::initialize() {
-    Polyomino::initialize(Size{20, 8}, 100, Cell::Yellow);
-    new_shape_initialize();
+    generate_polyomino(Size{20, 8}, 100, Cell::Yellow);
+    compute_perimeters();
 }
 
-void AlphaEnemy::new_shape_initialize() {
+// 各連結成分の外周を計算する
+void AlphaEnemy::compute_perimeters() {
     perimeters.clear();
     component_id.fill(none);
 
-    // 幅優先探索して連結成分ごとに見ていき、それぞれの外周を求める
-    num_component = 0;
-    Grid<bool> seen(grid_size.y, grid_size.x, false);
-    Array<Point> tmp;
+    num_components = 0;
+    Grid<bool> visited(grid_size.y, grid_size.x, false);
+    Array<Point> stack;
     Grid<std::array<Optional<Point>, 4>> graph(grid_size.y + 1,
-                                               grid_size.x + 1);
-    for (auto& ary : graph) {
-        ary.fill(none);
-    }
+                                               grid_size.x + 1,{none, none, none, none});
 
+    // 深さ優先探索して連結成分ごとに見ていき、それぞれの外周を求める
     for (auto [i, j] : step(grid_size)) {
-        if (not is_filled(i, j) or seen[i][j]) {
+        if (not is_filled(i, j) or visited[i][j]) {
             continue;
         }
 
         // ここを抜けるごとに新しい連結成分を処理
 
         // 連結成分に新しい番号をふる
-        component_id[i][j] = num_component;
+        component_id[i][j] = num_components;
 
-        seen[i][j] = true;
-        tmp.emplace_back(i, j);
+        visited[i][j] = true;
+        stack.emplace_back(i, j);
 
-        while (not tmp.empty()) {
-            auto [x, y] = tmp.back();
-            tmp.pop_back();
+        while (not stack.empty()) {
+            auto [x, y] = stack.back();
+            stack.pop_back();
 
-            component_id[x][y] = num_component;
+            component_id[x][y] = num_components;
 
             if (not is_filled(x, y - 1)) {
                 graph[x][y][0] = Point{x + 1, y};
-            } else if (not seen[x][y - 1]) {
-                seen[x][y - 1] = true;
-                tmp.emplace_back(x, y - 1);
+            } else if (not visited[x][y - 1]) {
+                visited[x][y - 1] = true;
+                stack.emplace_back(x, y - 1);
             }
             if (not is_filled(x + 1, y)) {
                 graph[x + 1][y][1] = Point{x + 1, y + 1};
-            } else if (not seen[x + 1][y]) {
-                seen[x + 1][y] = true;
-                tmp.emplace_back(x + 1, y);
+            } else if (not visited[x + 1][y]) {
+                visited[x + 1][y] = true;
+                stack.emplace_back(x + 1, y);
             }
             if (not is_filled(x, y + 1)) {
                 graph[x + 1][y + 1][2] = Point{x, y + 1};
-            } else if (not seen[x][y + 1]) {
-                seen[x][y + 1] = true;
-                tmp.emplace_back(x, y + 1);
+            } else if (not visited[x][y + 1]) {
+                visited[x][y + 1] = true;
+                stack.emplace_back(x, y + 1);
             }
             if (not is_filled(x - 1, y)) {
                 graph[x][y + 1][3] = Point{x, y};
-            } else if (not seen[x - 1][y]) {
-                seen[x - 1][y] = true;
-                tmp.emplace_back(x - 1, y);
+            } else if (not visited[x - 1][y]) {
+                visited[x - 1][y] = true;
+                stack.emplace_back(x - 1, y);
             }
         }
 
@@ -78,7 +77,7 @@ void AlphaEnemy::new_shape_initialize() {
             for (int32 d = 1; d <= 4; ++d) {
                 int32 next = (prev + d) % 4;
                 if (graph[now.x][now.y][next].has_value()) {
-                    perimeters[num_component].emplace_back(Line{
+                    perimeters[num_components].emplace_back(Line{
                         upper_left + now * cell_size.x,
                         upper_left + *graph[now.x][now.y][next] * cell_size.x});
                     now = *graph[now.x][now.y][next];
@@ -88,26 +87,28 @@ void AlphaEnemy::new_shape_initialize() {
             }
         } while (now != Point{i, j});
 
-        ++num_component;
+        ++num_components;
     }
 
-    gauge_lens.assign(num_component, 0.0);
+    gauge_lens.assign(num_components, 0.0);
 }
 
+// 埋まっているセルを、指定した個数だけ削除する
 void AlphaEnemy::get_damaged(size_t remove_num) {
-    // 埋まっているセルの中から remove_num 個選んで削除する
-    while (remove_num > 0 and cell_num > 0) {
+    while (remove_num > 0 and num_filled_cells > 0) {
         auto [x, y] = shuffled_filled_cells.back();
         shuffled_filled_cells.pop_back();
         cells[x][y] = Cell::None;
         rects[x][y] = none;
-        --cell_num;
+        --num_filled_cells;
         --remove_num;
     }
 
-    new_shape_initialize();
+    compute_perimeters();
 }
 
+
+// 埋まっているセルのうち、指定した図形と重なるものを削除する
 void AlphaEnemy::get_damaged(AttackShape* attack_shape) {
     const Point cursor_pos = Cursor::Pos();
     for (auto i : step(3)) {
@@ -120,13 +121,13 @@ void AlphaEnemy::get_damaged(AttackShape* attack_shape) {
                 if (rects[x][y].has_value() and rects[x][y]->contains(pos)) {
                     cells[x][y] = Cell::None;
                     rects[x][y] = none;
-                    --cell_num;
+                    --num_filled_cells;
                 }
             }
         }
     }
 
-    new_shape_initialize();
+    compute_perimeters();
 
     shuffled_filled_cells.clear();
     for (auto [i, j] : step(grid_size)) {
@@ -137,12 +138,13 @@ void AlphaEnemy::get_damaged(AttackShape* attack_shape) {
     shuffled_filled_cells.shuffle();
 }
 
-bool AlphaEnemy::is_alive() const { return cell_num > 0; }
+// 埋まっているセルがあるかを返す
+bool AlphaEnemy::is_alive() const { return num_filled_cells > 0; }
 
 // ゲージを更新し、満タンになったゲージの個数を返す
 int32 AlphaEnemy::update_gauges(bool speed_up) {
     int32 full = 0;
-    for (auto gauge_idx : step(num_component)) {
+    for (auto gauge_idx : step(num_components)) {
         gauge_lens[gauge_idx] += Scene::DeltaTime() * (speed_up ? 10.0 : 1.0);
 
         if (static_cast<size_t>(gauge_lens[gauge_idx]) ==
@@ -157,9 +159,9 @@ int32 AlphaEnemy::update_gauges(bool speed_up) {
 // ゲージをリセットする
 void AlphaEnemy::reset_gauge() { gauge_lens.fill(0.0); }
 
-// 外周のゲージを描画する
+// ゲージを描画する
 void AlphaEnemy::draw_gauges() const {
-    for (auto gauge_idx : step(num_component)) {
+    for (auto gauge_idx : step(num_components)) {
         int32 len_int = static_cast<int32>(gauge_lens[gauge_idx]);
 
         for (auto i : step(len_int)) {
@@ -205,7 +207,8 @@ void AlphaEnemy::mouse_over(Point pos){
 }
  */
 
-// 座標 pos にあるセルが属する連結成分の番号を返す
+/*
+// 与えられた座標にあるセルが属する連結成分の番号を返す
 Optional<int32> AlphaEnemy::get_component_id(Point pos) const {
     Optional<int32> id = none;
 
@@ -219,3 +222,4 @@ Optional<int32> AlphaEnemy::get_component_id(Point pos) const {
 
     return id;
 }
+*/

@@ -109,7 +109,7 @@ void Game::update() {
             // エフェクトを描画
             enemy.add_ring_effect();
             // スコアを得る
-            auto score = enemy.get_ordinary_score();
+            auto score{enemy.get_basic_score()};
             player.get_healed(score.green);
             player.get_ap(score.red);
             player.get_sp(score.blue);
