@@ -26,100 +26,18 @@ void Polyomino::draw() const {
     }
 }
 
-// パスを描画する
-void Polyomino::draw_path() const {
-    if (path.empty()) {
-        return;
-    }
-
-    // 線を描く
-    for (size_t path_idx = 0; path_idx + 1 < std::size(path); ++path_idx) {
-        const Vec2 from{rects[path[path_idx]]->center()};
-        const Vec2 to{rects[path[path_idx + 1]]->center()};
-        Line{from, to}.draw(3, path_color);
-    }
-
-    // 始点に円を描く
-    Circle{rects[path.front()]->center(), 5}.draw(path_color);
-
-    // 終点に三角形を描く
-    if (std::size(path) >= 2) {
-        const Vec2 from {rects[*next(std::rbegin(path))]->center()};
-        const Vec2 to{rects[path.back()]->center()};
-        
-        // 最後の2点の座標を見て三角形の方向を決める
-        // 誤差も考慮して判定する
-        if (to.x < from.x - 0.5) {
-            Triangle{to, 20, 270_deg}.draw(path_color);
-        } else if (to.x > from.x + 0.5) {
-            Triangle{to, 20, 90_deg}.draw(path_color);
-        } else if (to.y < from.y - 0.5) {
-            Triangle{to, 20, 0_deg}.draw(path_color);
-        } else if (to.y > from.y + 0.5) {
-            Triangle{to, 20, 180_deg}.draw(path_color);
-        }
-    }
-}
-
 // エフェクトを描画する
 void Polyomino::draw_effect() const { effect.update(); }
 
-// カーソルの座標を受け取ってパスを更新
-void Polyomino::update_path(Point cursor_pos) {
-    for (auto pos : step(grid_size)) {
-        if (rects[pos] and rects[pos]->contains(cursor_pos)) {
-            if (not path.empty()) {
-                // パスの末尾のセルに隣接していないなら拒否
-                if (not(std::abs(pos.x - path.back().x) + std::abs(pos.y - path.back().y) == 1)) {
-                    return;
-                }
-
-                // パスに既に含まれていたら拒否
-                // ただし、末尾から2番目ならパスの末尾を削除
-                for (auto path_idx : step(std::size(path))) {
-                    if (path[path_idx] == pos) {
-                        if (path_idx + 2 == std::size(path)) {
-                            path.pop_back();
-                        }
-                        return;
-                    }
-                }
-            }
-            
-            /* ここを抜けたときにパスが伸びる */
-            
-            path.emplace_back(pos);
-            
-            // パスがポリオミノを覆ったならポリオミノの消滅が始まる
-            if (std::size(path) == num_filled_cells) {
-                vanishing_idx = 0;
-                add_ring_effect();
-            }
-            
-            return;
-        }
-    }
-    
-    /* cursor_posがポリオミノ外にあるとき、ここに到達する */
-}
-
-// パスを削除する
-void Polyomino::clear_path() { path.clear(); }
-
-// パスを反転させる
-void Polyomino::reverse_path() {
-    std::reverse(std::begin(path), std::end(path));
-}
-
-// ポリオミノの消滅を進め、すべて消滅したらtrueを返す
+// ポリオミノの消滅を進め、消滅させるセルがなくなったらtrueを返す
 bool Polyomino::vanish() {
-    // すべて消滅したとき
-    if (vanishing_idx == num_filled_cells) {
-        vanished = true;
+    // 削除するセルがないとき
+    if (cells_to_erase.empty()) {
         return true;
     }
 
-    const auto pos{path[*vanishing_idx]};
+    const auto pos{cells_to_erase.back()};
+    cells_to_erase.pop_back();
 
     // SquareEffectを発生させる
     Optional<double> base_hue;
@@ -136,16 +54,16 @@ bool Polyomino::vanish() {
 
     // 埋められたセルをひとつ消滅させる
     cells[pos] = Cell::None;
-    ++(*vanishing_idx);
+    --num_filled_cells;
 
-    return false;
+    return cells_to_erase.empty();
 }
 
 // ポリオミノが消滅中かを返す
-bool Polyomino::is_vanishing() const { return vanishing_idx.has_value(); }
+bool Polyomino::is_vanishing() const { return not cells_to_erase.empty(); }
 
-// ポリオミノが完全に消滅したかを返す
-bool Polyomino::has_vanished() const { return vanished; }
+// 埋まっているセルがあるかを返す
+bool Polyomino::is_alive() const { return num_filled_cells > 0; }
 
 // セルが埋められているかを返す
 bool Polyomino::is_filled(int32 x, int32 y) const {
@@ -160,77 +78,6 @@ bool Polyomino::is_filled(Point pos) const{
     return is_filled(pos.x, pos.y);
 }
 
-// 倒したときにもらえる基礎スコアを計算
-Score Polyomino::get_basic_score() const {
-    Score score{0, 0, 0, 0, 0, 0};
-    for (auto pos : step(grid_size)) {
-        if (cells[pos] == Cell::Green) {
-            score.green += 10;
-        } else if (cells[pos] == Cell::Red) {
-            score.red += 10;
-        } else if (cells[pos] == Cell::Blue) {
-            score.blue += 10;
-        }
-    }
-    return score;
-}
-
-// 一筆書きのスコアを計算する
-Score Polyomino::get_path_score() const {
-    Score score{get_basic_score()};
-    
-    Cell now_color{cells[path.front()]};
-    int32 len{1};
-    
-    // ボーナスを加算するためのラムダ式
-    auto add_bonus=[&score, &now_color, &len]()->void{
-        const auto bonus{len * len}; // 長さの2乗
-        if (now_color == Cell::Green) {
-            score.green += bonus;
-        } else if (now_color == Cell::Red) {
-            score.red += bonus;
-        } else if (now_color == Cell::Blue) {
-            score.blue += bonus;
-        }
-    };
-    
-    // パスをセルの色でランレングス圧縮し、それぞれに対して長さによるボーナスを加算する
-    for (size_t path_idx = 1; path_idx < std::size(path); ++path_idx) {
-        if (cells[path[path_idx]] == now_color) {
-            ++len;
-        } else {
-            add_bonus();
-            now_color = cells[path[path_idx]];
-            len = 1;
-        }
-    }
-    // 最後の連続部分のボーナスも忘れずに加算する
-    add_bonus();
-    
-    // 端点の色を計上するためのラムダ式
-    auto add_endpoint=[&score](Cell cell)->void{
-        if (cell == Cell::Green) {
-            ++score.green_endpoint;
-        } else if (cell == Cell::Red) {
-            ++score.red_endpoint;
-        } else if (cell == Cell::Blue) {
-            ++score.blue_endpoint;
-        }
-    };
-
-    // 始点と終点の色を計上する
-    add_endpoint(cells[path.front()]);
-    add_endpoint(cells[path.back()]);
-
-    return score;
-}
-
-// ランダムで消滅する準備をする
-void Polyomino::prepare_to_randomly_vanish() {
-    path = shuffled_filled_cells;
-    vanishing_idx = 0;
-}
-
 // RingEffectを発生させる
 void Polyomino::add_ring_effect() const {
     const int32 effect_size{35 * Max(grid_size.x, grid_size.y)};
@@ -243,9 +90,6 @@ void Polyomino::initialize(Size grid_size_, Cell designated) {
     cells.fill(Cell::None);
     rects.fill(none);
     num_filled_cells = 1;
-    clear_path();
-    vanishing_idx = none;
-    vanished = false;
     shuffled_filled_cells.clear();
 
     generate_polyomino(designated);

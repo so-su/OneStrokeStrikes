@@ -2,8 +2,6 @@
 
 Game::Game(const InitData& init)
     : IScene{init},
-      enemies{Enemy(Point{250, 500}), Enemy(Point{700, 500}),
-              Enemy(Point{1150, 500})},
       drawing_path_idx(none),
       attack_mode(false),
       respawn_timers{0.0, 0.0, 0.0},
@@ -24,7 +22,9 @@ void Game::update() {
 
     if (attack_shape != nullptr) {
         if (MouseL.down()) {
-            alpha_enemy.get_damaged(attack_shape);
+            if(not alpha_enemy.get_damaged(attack_shape)){
+                return;
+            }
 
             attack_shape = nullptr;
             attack_mode = false;
@@ -71,15 +71,15 @@ void Game::update() {
 
     for (auto enemy_idx : step(3)) {
         auto& enemy = enemies[enemy_idx];
-        if (enemy.is_vanishing() and not enemy.has_vanished()) {
+        if (enemy.is_vanishing() and enemy.is_alive()) {
             auto& timer = vanishing_timers[enemy_idx];
             timer += Scene::DeltaTime();
             if (timer >= 0.53) {
                 // 消滅を進める
                 bool has_vanished = enemy.vanish();
                 if (all_clear_status == AllClearStatus::LastIsVanishing and
-                    has_vanished and enemies[0].has_vanished() and
-                    enemies[1].has_vanished() and enemies[2].has_vanished()) {
+                    has_vanished and (not enemies[0].is_alive()) and
+                    (not enemies[1].is_alive()) and (not enemies[2].is_alive())) {
                     all_clear_status = AllClearStatus::LastHasVanished;
                     player.get_healed(300);
                     player.get_ap(300);
@@ -98,7 +98,7 @@ void Game::update() {
         player.reset_sp();
         for (auto enemy_idx : step(3)) {
             auto& enemy = enemies[enemy_idx];
-            if (enemy.is_vanishing() or enemy.has_vanished()) {
+            if (enemy.is_vanishing() or not enemy.is_alive()) {
                 continue;
             }
             vanishing_timers[enemy_idx] = 0.0;
@@ -156,9 +156,9 @@ void Game::update() {
                                   score.blue_endpoint);
 
             bool all_clear =
-                (enemies[0].is_vanishing() or enemies[0].has_vanished()) and
-                (enemies[1].is_vanishing() or enemies[1].has_vanished()) and
-                (enemies[2].is_vanishing() or enemies[2].has_vanished());
+                (enemies[0].is_vanishing() or not enemies[0].is_alive()) and
+                (enemies[1].is_vanishing() or not enemies[1].is_alive()) and
+                (enemies[2].is_vanishing() or not enemies[2].is_alive());
             if (all_clear) {
                 all_clear_status = AllClearStatus::LastIsVanishing;
             }
@@ -166,7 +166,7 @@ void Game::update() {
     }
 
     for (auto& enemy : enemies) {
-        if (enemy.has_vanished()) continue;
+        if (not enemy.is_alive()) continue;
         if (enemy.update_gauge()) {
             player.get_damaged(enemy.attack_value());
         }
@@ -175,7 +175,7 @@ void Game::update() {
     // Enemyをスポーンさせる
     for (auto enemy_idx : step(3)) {
         auto& timer = respawn_timers[enemy_idx];
-        if (enemies[enemy_idx].has_vanished()) {
+        if (not enemies[enemy_idx].is_alive()) {
             timer += Scene::DeltaTime();
         }
         if (timer >= respawn_time and
@@ -235,7 +235,7 @@ void Game::draw() const {
 
     for (auto enemy_idx : step(3)) {
         const auto& enemy = enemies[enemy_idx];
-        if (enemy.has_vanished()) continue;
+        if (not enemy.is_alive()) continue;
 
         enemy.draw();
         if (not enemy.is_vanishing()) {

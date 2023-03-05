@@ -18,10 +18,7 @@ class AlphaEnemy : public Polyomino {
     void get_damaged(size_t remove_num);
 
     // 埋まっているセルのうち、指定した図形と重なるものを削除する
-    void get_damaged(AttackShape* attack_shape);
-
-    // 埋まっているセルがあるかを返す
-    bool is_alive() const;
+    bool get_damaged(AttackShape* attack_shape);
 
     // ゲージを更新し、満タンになったゲージの個数を返す
     int32 update_gauges();

@@ -126,8 +126,9 @@ void AlphaEnemy::get_damaged(size_t remove_num) {
 
 
 // 埋まっているセルのうち、指定した図形と重なるものを削除する
-void AlphaEnemy::get_damaged(AttackShape* attack_shape) {
-    const Point cursor_pos{Cursor::Pos()};
+bool AlphaEnemy::get_damaged(AttackShape* attack_shape) {
+    // 1つ以上削除できたか
+    bool success{false};
     
     // AttackShapeの埋まっている各セルの中心について、
     // それを含む、ポリオミノの埋まっているセルが存在するか判定する
@@ -136,30 +137,32 @@ void AlphaEnemy::get_damaged(AttackShape* attack_shape) {
             if (not attack_shape->shape[shape_y][shape_x]) {
                 continue;
             }
-            const Point center_pos{cursor_pos + Point{30 * (shape_x - 1), 30 * (shape_y - 1)}};
+            const Point center_pos{Cursor::Pos() + Point{30 * (shape_x - 1), 30 * (shape_y - 1)}};
             for (auto pos : step(grid_size)) {
                 if (rects[pos].has_value() and rects[pos]->contains(center_pos)) {
                     cells[pos] = Cell::None;
                     rects[pos] = none;
                     --num_filled_cells;
+                    success = true;
                 }
             }
         }
     }
+    
+    if(success){
+        compute_perimeters();
 
-    compute_perimeters();
-
-    shuffled_filled_cells.clear();
-    for (auto pos : step(grid_size)) {
-        if (is_filled(pos)) {
-            shuffled_filled_cells.emplace_back(pos);
+        shuffled_filled_cells.clear();
+        for (auto pos : step(grid_size)) {
+            if (is_filled(pos)) {
+                shuffled_filled_cells.emplace_back(pos);
+            }
         }
+        shuffled_filled_cells.shuffle();
     }
-    shuffled_filled_cells.shuffle();
+    
+    return success;
 }
-
-// 埋まっているセルがあるかを返す
-bool AlphaEnemy::is_alive() const { return num_filled_cells > 0; }
 
 // ゲージを更新し、満タンになったゲージの個数を返す
 int32 AlphaEnemy::update_gauges() {
