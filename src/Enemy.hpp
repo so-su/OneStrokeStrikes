@@ -4,7 +4,7 @@
 
 class Enemy : public Polyomino {
    public:
-    Enemy(Point center);
+    Enemy(Point center, bool easy);
 
     // 初期化する
     void initialize();
@@ -60,6 +60,9 @@ class Enemy : public Polyomino {
 
     // ゲージがたまる速さ
     double gauge_speed;
+    
+    // セルの大きさ
+    static constexpr int32 cell_size{50};
 
     // 一筆書きのパスの色
     static constexpr Color path_color{MyColor::Yellow};

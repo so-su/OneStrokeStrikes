@@ -6,7 +6,7 @@
 
 class AlphaEnemy : public Polyomino {
    public:
-    AlphaEnemy();
+    AlphaEnemy(bool easy);
 
     // 初期化する
     void initialize();
@@ -35,6 +35,9 @@ class AlphaEnemy : public Polyomino {
    private:
     // 与えられた座標にあるセルが属する連結成分の番号を返す
     //Optional<int32> get_component_id(Point pos) const;
+
+    // セルの大きさ
+    static constexpr int32 cell_size{30};
     
     // 外周のパスの、各連結成分ごとの配列
     Array<Array<Line>> perimeters;
@@ -43,14 +46,11 @@ class AlphaEnemy : public Polyomino {
     Array<double> gauge_lens;
 
     // 連結成分の番号
-    Grid<Optional<int32>> component_id;
+    Grid<Optional<int32>> component_id{20, 8, none};
 
     // 連結成分の個数
     int32 num_components;
 
-    // 名前
-    String name;
-
     // ゲージの色
-    static constexpr Color gauge_color = MyColor::Orange;
+    static constexpr Color gauge_color{MyColor::Orange};
 };

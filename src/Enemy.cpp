@@ -1,16 +1,24 @@
 #include "Enemy.hpp"
 
-Enemy::Enemy(Point center)
-    : Polyomino(Size{8, 8}, 50, center){
+Enemy::Enemy(Point center, bool easy)
+: Polyomino(Size{Parameter::enemy_max_grid_size,Parameter::enemy_max_grid_size}, cell_size, center){
+    easy_mode = easy;
     initialize();
 }
 
 // 初期化する
 void Enemy::initialize() {
-    const int32 grid_len{Random(3, 8)};
+    int32 grid_len;
+    if(easy_mode){
+        grid_len=Random(Parameter::enemy_min_grid_size, Parameter::enemy_max_grid_size_easy);
+    }
+    else{
+        grid_len=Random(Parameter::enemy_min_grid_size, Parameter::enemy_max_grid_size);
+    }
     Polyomino::initialize(Size{grid_len, grid_len});
+    
     compute_perimeter();
-    gauge_speed = 1.0;
+    gauge_speed = Parameter::enemy_gauge_initial_speed;
     clear_path();
 }
 
@@ -201,10 +209,10 @@ void Enemy::draw_gauge() const {
 }
 
 // 攻撃力を返す
-int32 Enemy::attack_value() const { return 100; }
+int32 Enemy::attack_value() const { return Parameter::enemy_attack_value; }
 
 // ゲージの周回速度を上昇させる
-void Enemy::speed_up_gauge(int32 times) { gauge_speed += 0.3 * times; }
+void Enemy::speed_up_gauge(int32 times) { gauge_speed += Parameter::gauge_speed_up_rate * times; }
 
 // ランダムで消滅する準備をする
 void Enemy::prepare_to_randomly_vanish() {
@@ -216,11 +224,11 @@ Score Enemy::get_basic_score() const {
     Score score{0, 0, 0, 0, 0, 0};
     for (auto pos : step(grid_size)) {
         if (cells[pos] == Cell::Green) {
-            score.green += 10;
+            score.green += Parameter::basic_point_per_cell;
         } else if (cells[pos] == Cell::Red) {
-            score.red += 10;
+            score.red += Parameter::basic_point_per_cell;
         } else if (cells[pos] == Cell::Blue) {
-            score.blue += 10;
+            score.blue += Parameter::basic_point_per_cell;
         }
     }
     return score;

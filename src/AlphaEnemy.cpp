@@ -1,14 +1,21 @@
 #include "AlphaEnemy.hpp"
 
-AlphaEnemy::AlphaEnemy()
-    : Polyomino(Size{20, 8}, 30, Point{700, 150}),
-      component_id{20, 8, none} {
+AlphaEnemy::AlphaEnemy(bool easy)
+: Polyomino(Parameter::alpha_enemy_max_grid_size, cell_size, Point{700, 150}) {
+    easy_mode = easy;
     initialize();
 }
 
 // 初期化する
 void AlphaEnemy::initialize() {
-    Polyomino::initialize(Size{20, 8}, Cell::Yellow);
+    Size grid_size;
+    if(easy_mode){
+        grid_size = Parameter::alpha_enemy_max_grid_size_easy;
+    }
+    else{
+        grid_size = Parameter::alpha_enemy_max_grid_size;
+    }
+    Polyomino::initialize(grid_size, Cell::Yellow);
     compute_perimeters();
 }
 
@@ -168,7 +175,7 @@ bool AlphaEnemy::get_damaged(AttackShape* attack_shape) {
 int32 AlphaEnemy::update_gauges() {
     int32 full{0};
     for (auto gauge_idx : step(num_components)) {
-        gauge_lens[gauge_idx] += Scene::DeltaTime();
+        gauge_lens[gauge_idx] += Parameter::alpha_enemy_gauge_speed * Scene::DeltaTime();
 
         // ゲージが満タンになったとき
         if (static_cast<size_t>(gauge_lens[gauge_idx]) ==

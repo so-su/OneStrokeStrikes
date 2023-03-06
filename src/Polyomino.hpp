@@ -56,8 +56,11 @@ class Polyomino {
     // ポリオミノを初期化する
     void initialize(Size grid_size, Cell designated = Cell::None);
     
+    // easy modeかどうか
+    bool easy_mode;
+    
     // セルの大きさ
-    const int cell_size;
+    const int32 cell_size;
 
     // ポリオミノの中心の座標
     const Point center;

@@ -1,5 +1,6 @@
 #pragma once
 #include <Siv3D.hpp>
+#include "Parameter.hpp"
 
 // シーンの名前
 enum class State {

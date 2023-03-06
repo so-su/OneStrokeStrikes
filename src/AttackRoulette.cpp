@@ -3,10 +3,10 @@
 AttackRoulette::AttackRoulette() { initialize(); }
 
 void AttackRoulette::initialize() {
-    std::fill(begin(values), end(values), 10);
+    std::fill(std::begin(values), std::end(values), 10);
     update_angles();
     triangle_angle = 0.0;
-    std::fill(begin(attack_nums), end(attack_nums), 0);
+    std::fill(std::begin(attack_nums), std::end(attack_nums), 0);
 
     for (auto i : step(3)) {
         if (RandomBool(0.5)) {
