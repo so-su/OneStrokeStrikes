@@ -1,6 +1,5 @@
-/*
-!/src/
-!README.md
-!/screenshot/
-!document.pdf
-!.gitignore
+App/
+Info.plist
+icon.icns
+one-stroke-strikes.xcodeproj
+.DS_Store
