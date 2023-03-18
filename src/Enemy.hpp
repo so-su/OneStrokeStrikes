@@ -2,6 +2,16 @@
 #include "Common.hpp"
 #include "Polyomino.hpp"
 
+// Enemyを倒したときに得られるスコアを表す構造体
+struct Score {
+    int32 green;
+    int32 red;
+    int32 blue;
+    int32 green_endpoint;
+    int32 red_endpoint;
+    int32 blue_endpoint;
+};
+
 class Enemy : public Polyomino {
    public:
     Enemy(Point center, bool easy);

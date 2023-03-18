@@ -12,15 +12,6 @@ enum class Cell : uint8 {
     Yellow,
 };
 
-struct Score {
-    int32 green;
-    int32 red;
-    int32 blue;
-    int32 green_endpoint;
-    int32 red_endpoint;
-    int32 blue_endpoint;
-};
-
 class Polyomino {
    public:
     Polyomino(Size max_grid_size, int32 cell_size, Point center);
