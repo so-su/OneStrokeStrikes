@@ -17,7 +17,7 @@ SimpleButton::SimpleButton(const Rect& rect_, Color inner_color_, Color gauge_co
 void SimpleButton::draw() const {
     rect.draw(inner_color).drawFrame(2, 2, Palette::Dimgray);
 
-    double gauge_len{full_len * mouseover_transition.value()};
+    double gauge_len{full_len * gauge_transition.value()};
 
     // 上の辺
     if (top.length() <= gauge_len) {
@@ -60,9 +60,21 @@ void SimpleButton::draw() const {
     }
 }
 
-// ボタンの状態を更新
-void SimpleButton::update() {
-    mouseover_transition.update(rect.contains(Cursor::Pos()));
+// ボタンの状態を更新し、ボタンが押されたかを返す
+// can_pressは、ボタンがまだ押されていないならば押されることを許容するか
+bool SimpleButton::update(bool can_press) {
+    if(down()){
+        pressed = true;
+    }
+    gauge_transition.update(pressed or (rect.contains(Cursor::Pos()) and can_press));
+    
+    return pressed;
+}
+
+// ボタンの状態をリセットする
+void SimpleButton::reset(){
+    gauge_transition = Transition{0.2s, 0.1s};
+    pressed = false;
 }
 
 // ボタンが押されたかを返す
@@ -70,10 +82,15 @@ bool SimpleButton::down() const {
     return MouseL.down() and rect.contains(Cursor::Pos());
 }
 
+// ボタンが押されていて、かつゲージが満タンの状態かを返す
+bool SimpleButton::completed() const {
+    return pressed and gauge_transition.isOne();
+}
+
 // ボタンの中心座標を返す
 Point SimpleButton::center() const { return rect.center().asPoint(); }
 
 // ボタン内部の色を変更する
 void SimpleButton::set_inner_color(Color color){
-    inner_color=color;
+    inner_color = color;
 }

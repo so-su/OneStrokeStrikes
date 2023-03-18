@@ -15,7 +15,7 @@ Button::Button(const Array<Point>& path_, Size grid_size_, int32 cell_size_,
     }
 
     // 各格子点から出ていく辺を4方向について管理する
-         Grid<std::array<Optional<Point>, 4>> graph{grid_size+Size{1,1},{none,none,none,none}};
+    Grid<std::array<Optional<Point>, 4>> graph{grid_size+Size{1,1},{none,none,none,none}};
 
     // ポリオミノの各セルを見ていき、グラフを構成する
     for (auto [x,y] : step(grid_size)){
@@ -108,12 +108,13 @@ void Button::draw_gauge() const {
     }
 }
 
-// ボタンの状態を更新
-void Button::update() {
+// ボタンの状態を更新し、ボタンが押されたかを返す
+// can_pressは、ボタンがまだ押されていないならば押されることを許容するか
+bool Button::update(bool can_press) {
     const bool contains_cursor{contains(Cursor::Pos())};
-
+    
     // ボタンが押されたとき
-    if (not pressed and MouseL.down() and contains_cursor) {
+    if (not pressed and can_press and MouseL.down() and contains_cursor) {
         pressed = true;
         for (auto cell_idx : step(std::size(path))) {
             if (rects[path[cell_idx]]->contains(Cursor::Pos())) {
@@ -123,16 +124,19 @@ void Button::update() {
         }
     }
 
-    mouseover_transition.update(contains_cursor);
+    mouseover_transition.update(pressed or (contains_cursor and can_press));
     pressed_transition.update(pressed);
 
     const double path_len{static_cast<double>(std::size(path))};
 
     for (auto dist : step(std::size(path))) {
+        // 余りをとってループさせる
         const auto cell_idx{(start_index + dist) % std::size(path)};
         alpha_transitions[cell_idx].update(pressed_transition.value() >=
                                            (dist + 1) / path_len);
     }
+    
+    return pressed;
 }
 
 // 入力された座標がボタンと重なっているかを返す
@@ -145,7 +149,7 @@ bool Button::contains(Point pos) const {
     return false;
 }
 
-// ゲージが満タンになっているかを返す
+// 一筆書きが終了したかを返す
 bool Button::completed() const {
     const auto path_len{std::size(path)};
     return alpha_transitions[(start_index + path_len - 1) % path_len].isOne();

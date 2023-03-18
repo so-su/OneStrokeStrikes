@@ -7,15 +7,19 @@ Result::Result(const InitData& init) : IScene{init} {
 
 void Result::update() {
     if (not getData().easy_mode) {
-        see_ranking.update();
-        if (see_ranking.down()) {
+        if(see_ranking.update(can_press_button)){
+            can_press_button = false;
+        }
+        if (see_ranking.completed()) {
             getData().display_player_score = true;
             changeScene(State::Ranking);
         }
     }
 
-    back_to_title.update();
-    if (back_to_title.down()) {
+    if(back_to_title.update(can_press_button)){
+        can_press_button = true;
+    }
+    if (back_to_title.completed()) {
         getData().display_player_score = false;
         changeScene(State::Title);
     }

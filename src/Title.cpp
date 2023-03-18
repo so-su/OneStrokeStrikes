@@ -13,22 +13,32 @@ void Title::update() {
     mask_alpha_transition.update(launch_browser_confirm);
     
     if(launch_browser_confirm){
-        backward.update();
-        open.update();
-        
-        if(backward.down()){
-            launch_browser_confirm = false;
+        if(backward.update(can_press_button)){
+            can_press_button = false;
         }
-        else if(open.down()){
+        else if(open.update(can_press_button)){
+            can_press_button = true;
+        }
+        
+        if(backward.completed()){
+            launch_browser_confirm = false;
+            can_press_button = true;
+            backward.reset();
+        }
+        else if(open.completed()){
             System::LaunchBrowser(U"https://github.com/so-su/OneStrokeStrikes");
             launch_browser_confirm = false;
+            can_press_button = true;
+            open.reset();
         }
         
         return;
     }
     
     for (auto& button : buttons) {
-        button.update();
+        if(button.update(can_press_button)){
+            can_press_button = false;
+        }
     }
     
     if (buttons[0].completed()) {
@@ -47,6 +57,8 @@ void Title::update() {
     else if (buttons[3].completed()) {
         launch_browser_confirm = true;
         buttons[3].reset();
+        can_press_button = true;
+        
     }
 }
 

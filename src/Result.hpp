@@ -19,4 +19,6 @@ class Result : public App::Scene {
 
     SimpleButton back_to_title{Rect{Arg::center = Point{850, 700}, 180, 50},
                                MyColor::Backward, MyColor::Orange, 5};
+    
+    bool can_press_button{true};
 };

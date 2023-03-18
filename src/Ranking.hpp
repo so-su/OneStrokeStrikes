@@ -59,4 +59,7 @@ class Ranking : public App::Scene {
     SimpleButton input_backward{Rect{580, 460, 100, 40}, MyColor::Backward, MyColor::Orange, 5};
 
     bool display_register_button{false};
+    
+    // ボタンがまだ押されていない
+    bool can_press_button{true};
 };

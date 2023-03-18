@@ -28,18 +28,23 @@ void Ranking::update() {
     mask_alpha_transition.update(input_mode);
 
     if (input_mode) {
-        send.update();
-        input_backward.update();
+        if(send.update(can_press_button)){
+            can_press_button = false;
+        }
+        if(input_backward.update(can_press_button)){
+            can_press_button = false;
+        }
         
-        if (send.down()) {
+        if (send.completed()) {
             if (is_valid(text_edit.text)) {
                 send_score();
                 getData().display_player_score = false;
                 getData().player_id = text_edit.text;
                 changeScene(State::Ranking);
             }
-        } else if (input_backward.down()) {
+        } else if (input_backward.completed()) {
             input_mode = false;
+            can_press_button = true;
         }
         
         if (is_valid(text_edit.text)) {
@@ -52,12 +57,17 @@ void Ranking::update() {
         return;
     }
 
-    ranking_register.update();
-    backward.update();
+    if(ranking_register.update(can_press_button)){
+        can_press_button = false;
+    }
+    if(backward.update(can_press_button)){
+        can_press_button = false;
+    }
 
-    if (ranking_register.down() and display_register_button) {
+    if (ranking_register.completed() and display_register_button) {
         input_mode = true;
-    } else if (backward.down()) {
+        can_press_button = true;
+    } else if (backward.completed()) {
         changeScene(State::Title);
     }
 }

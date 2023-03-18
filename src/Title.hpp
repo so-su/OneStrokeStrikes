@@ -84,4 +84,7 @@ class Title : public App::Scene {
     SimpleButton backward{Rect{580, 420, 100, 40}, MyColor::Backward, MyColor::Orange, 5};
 
     SimpleButton open{Rect{720, 420, 100, 40}, MyColor::Forward, MyColor::Orange, 5};
+    
+    // ボタンがまだ押されていない
+    bool can_press_button{true};
 };
