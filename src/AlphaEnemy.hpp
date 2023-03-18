@@ -28,16 +28,14 @@ class AlphaEnemy : public Polyomino {
 
     // ゲージを描画する
     void draw_gauges() const;
+    
+    // セルの大きさ
+    static constexpr int32 cell_size{30};
 
     // マウスオーバーで色を変化させる
     //void mouse_over(Point pos);
 
    private:
-    // 与えられた座標にあるセルが属する連結成分の番号を返す
-    //Optional<int32> get_component_id(Point pos) const;
-
-    // セルの大きさ
-    static constexpr int32 cell_size{30};
     
     // 外周のパスの、各連結成分ごとの配列
     Array<Array<Line>> perimeters;
@@ -53,4 +51,7 @@ class AlphaEnemy : public Polyomino {
 
     // ゲージの色
     static constexpr Color gauge_color{MyColor::Orange};
+    
+    // 与えられた座標にあるセルが属する連結成分の番号を返す
+    //Optional<int32> get_component_id(Point pos) const;
 };
