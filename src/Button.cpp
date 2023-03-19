@@ -1,14 +1,14 @@
 #include "Button.hpp"
 
-Button::Button(const Array<Point>& path_, Size grid_size_, int32 cell_size_,
-               Point upper_left, Color color_, double alpha_min_)
-    :grid_size(grid_size_),
-     cell_size(cell_size_),
-     color(color_),
-     path(path_),
-     rects(grid_size_, none),
+Button::Button(Size grid_size, const Array<Point>& path, int32 cell_size,
+               Point upper_left, Color color, double alpha_min)
+    :grid_size(grid_size),
+     path(path),
+     cell_size(cell_size),
+     color(color),
+     rects(grid_size, none),
      alpha_transitions(std::size(path), Transition{0.1s, 0.05s}),
-     alpha_min{alpha_min_}{
+     alpha_min(alpha_min){
     for (const auto& cell_pos : path) {
         rects[cell_pos] =
             Rect{upper_left + cell_size * cell_pos, cell_size, cell_size};

@@ -125,6 +125,7 @@ void Game::update() {
     }
 }
 
+// 図形で攻撃する位置を選んでいるときの処理
 void Game::shape_attack_update(){
     if (not MouseL.down()) return;
     

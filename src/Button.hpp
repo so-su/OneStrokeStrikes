@@ -3,8 +3,8 @@
 
 class Button {
    public:
-    Button(const Array<Point>& path, Size grid_size_, int32 cell_size_,
-           Point upper_left, Color color_, double alpha_min_);
+    Button(Size grid_size, const Array<Point>& path, int32 cell_size,
+           Point upper_left, Color color, double alpha_min);
 
     // ボタンの描画
     void draw() const;
@@ -31,15 +31,15 @@ class Button {
     
     // グリッドの大きさ
     const Size grid_size;
+    
+    // ボタンを押したときに一筆書きされるパス
+    const Array<Point> path;
 
     // セルの一辺の長さ
     const int32 cell_size;
 
     // ボタンの色
     const Color color;
-    
-    // ボタンを押したときに一筆書きされるパス
-    const Array<Point> path;
 
     // グリッドの各セルを表す正方形の配列
     Grid<Optional<Rect>> rects;

@@ -50,7 +50,7 @@ class SimpleButton {
     Color inner_color;
 
     // 外周のゲージの進み具合
-    Transition gauge_transition{0.2s, 0.1s};
+    Transition gauge_transition{0.3s, 0.15s};
     
     // ボタンが押されたか
     bool pressed{false};
