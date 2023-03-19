@@ -29,7 +29,7 @@ void Game::update() {
     }
 
     // 小さなルーレットが押されたらポーズ画面に遷移
-    if (roulette.pressed()) {
+    if (roulette.down()) {
         pause = true;
         return;
     }

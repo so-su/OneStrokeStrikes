@@ -8,9 +8,9 @@ SimpleButton::SimpleButton(const Rect& rect_, Color inner_color_, Color gauge_co
       bottom{rect.bottom()},
       left{rect.left()},
       full_len{(top.length() + right.length()) * 2},
-      inner_color{inner_color_},
       gauge_color(gauge_color_),
-      thickness(thickness_)
+      thickness(thickness_),
+      inner_color{inner_color_}
     {}
 
 // ボタンの描画
