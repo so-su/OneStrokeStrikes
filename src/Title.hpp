@@ -9,13 +9,13 @@ class Title : public App::Scene {
     Title(const InitData& init);
 
     void update() override;
-    
-    // ブラウザを立ち上げる確認中の処理
-    void confirm_update();
 
     void draw() const override;
 
    private:
+    // ブラウザを立ち上げる確認中の処理
+    void confirm_update();
+    
     // ボタンの配列
     Array<Button> buttons;
     

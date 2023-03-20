@@ -125,6 +125,78 @@ void Game::update() {
     }
 }
 
+void Game::draw() const {
+    Scene::SetBackground(background_color);
+
+    // 奥行きを見せるための背景の線
+    //Triangle{0, 400, 0, 395, 350, 200}.draw(Palette::Dimgray);
+    //Triangle{1400, 400, 1400, 395, 1050, 200}.draw(Palette::Dimgray);
+
+    // プレイヤーのステータスを描画
+    player.draw();
+
+    // 小さいルーレットを画面右下に描画
+    roulette.draw_small_disk();
+
+    // Enemyたちの描画
+    for (auto enemy_idx : step(3)) {
+        const auto& enemy{enemies[enemy_idx]};
+        if (not enemy.is_alive()) continue;
+
+        enemy.draw();
+        
+        // 消滅中は描画しない
+        if (not enemy.is_vanishing()) {
+            enemy.draw_path();
+            enemy.draw_gauge();
+        }
+        // 消滅が始まってもしばらくはパスを描画する
+        // ただし、SPを使って倒した場合は描画しない
+        else if (vanishing_timers[enemy_idx] < Parameter::time_until_vanishing and
+                 respawn_timers[enemy_idx] < Parameter::respawn_time - Parameter::short_respawn_time - 1e-5) {
+            enemy.draw_path();
+        }
+    }
+
+    // AlphaEnemyの描画
+    alpha_enemy.draw();
+    alpha_enemy.draw_gauges();
+
+    {
+        // エフェクトは加算ブレンドで描画する
+        const ScopedRenderStates2D blend{BlendState::Additive};
+        for (const auto& enemy : enemies) {
+            enemy.draw_effect();
+        }
+    }
+
+    if (all_clear_status == AllClearStatus::LastHasVanished) {
+        FontAsset(U"Kaisotai")(U"All Clear!!")
+            .drawAt(100, 700, 500, Palette::White);
+    }
+
+    // アタックモード中のマスクを描画
+    mask.draw(ColorF{background_color, mask_alpha_transition.value() * 0.8});
+
+    if (attack_mode or pause) {
+        // 中央に大きなルーレットを描画する
+        roulette.draw();
+    }
+
+    // 図形で攻撃する位置を選んでいるとき
+    if (attack_shape != nullptr) {
+        const Point upper_left = alpha_enemy.upper_left - Point{3000, 3000};
+        const Point center =
+            (Cursor::Pos() - upper_left) / 30 * 30 + upper_left + Point{15, 15};
+        
+        // 透過率を調整して、点滅するようAttackShapeを描画する
+        attack_shape->draw(
+            center, roulette.chosen_color().withAlpha(static_cast<uint32>(
+                        255 * (0.3 + Periodic::Jump0_1(2s) * 0.7))));
+    }
+}
+
+
 // 図形で攻撃する位置を選んでいるときの処理
 void Game::shape_attack_update(){
     if (not MouseL.down()) return;
@@ -287,75 +359,4 @@ void Game::use_ap(){
 
     // ルーレットが回る時間をランダムで決める
     roulette_duration = Random(Parameter::roulette_rotation_min_duration, Parameter::roulette_rotation_max_duration);
-}
-
-void Game::draw() const {
-    Scene::SetBackground(background_color);
-
-    // 奥行きを見せるための背景の線
-    //Triangle{0, 400, 0, 395, 350, 200}.draw(Palette::Dimgray);
-    //Triangle{1400, 400, 1400, 395, 1050, 200}.draw(Palette::Dimgray);
-
-    // プレイヤーのステータスを描画
-    player.draw();
-
-    // 小さいルーレットを画面右下に描画
-    roulette.draw_small_disk();
-
-    // Enemyたちの描画
-    for (auto enemy_idx : step(3)) {
-        const auto& enemy{enemies[enemy_idx]};
-        if (not enemy.is_alive()) continue;
-
-        enemy.draw();
-        
-        // 消滅中は描画しない
-        if (not enemy.is_vanishing()) {
-            enemy.draw_path();
-            enemy.draw_gauge();
-        }
-        // 消滅が始まってもしばらくはパスを描画する
-        // ただし、SPを使って倒した場合は描画しない
-        else if (vanishing_timers[enemy_idx] < Parameter::time_until_vanishing and
-                 respawn_timers[enemy_idx] < Parameter::respawn_time - Parameter::short_respawn_time - 1e-5) {
-            enemy.draw_path();
-        }
-    }
-
-    // AlphaEnemyの描画
-    alpha_enemy.draw();
-    alpha_enemy.draw_gauges();
-
-    {
-        // エフェクトは加算ブレンドで描画する
-        const ScopedRenderStates2D blend{BlendState::Additive};
-        for (const auto& enemy : enemies) {
-            enemy.draw_effect();
-        }
-    }
-
-    if (all_clear_status == AllClearStatus::LastHasVanished) {
-        FontAsset(U"Kaisotai")(U"All Clear!!")
-            .drawAt(100, 700, 500, Palette::White);
-    }
-
-    // アタックモード中のマスクを描画
-    mask.draw(ColorF{background_color, mask_alpha_transition.value() * 0.8});
-
-    if (attack_mode or pause) {
-        // 中央に大きなルーレットを描画する
-        roulette.draw();
-    }
-
-    // 図形で攻撃する位置を選んでいるとき
-    if (attack_shape != nullptr) {
-        const Point upper_left = alpha_enemy.upper_left - Point{3000, 3000};
-        const Point center =
-            (Cursor::Pos() - upper_left) / 30 * 30 + upper_left + Point{15, 15};
-        
-        // 透過率を調整して、点滅するようAttackShapeを描画する
-        attack_shape->draw(
-            center, roulette.chosen_color().withAlpha(static_cast<uint32>(
-                        255 * (0.3 + Periodic::Jump0_1(2s) * 0.7))));
-    }
 }

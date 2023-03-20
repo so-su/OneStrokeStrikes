@@ -10,6 +10,63 @@ Title::Title(const InitData& init) : IScene{init} {
     }
 }
 
+void Title::draw() const {
+    Scene::SetBackground(MyColor::White);
+
+    FontAsset(U"Kaisotai")(U"すとすと").drawAt(700, 100, Palette::Black);
+
+    // ボタンの描画
+    for (const auto& button : buttons) {
+        button.draw();
+        button.draw_gauge();
+    }
+
+    FontAsset(U"Black")(U"ちょっとあそぶ")
+        .drawAt(TextStyle::Outline(0.5, Palette::Black), 50, 940, 280,
+                ColorF{0.9});
+    FontAsset(U"Black")(U"あそぶ").drawAt(
+        TextStyle::Outline(0.5, Palette::Black), 390, 380, ColorF{0.9});
+    FontAsset(U"Black")(U"ランキング")
+        .drawAt(TextStyle::Outline(0.5, Palette::Black), 40, 760, 560,
+                ColorF{0.9});
+    FontAsset(U"Black")(U"あそびかた")
+        .drawAt(TextStyle::Outline(0.5, Palette::Black), 40, 1090, 480,
+                ColorF{0.9});
+
+    // メッセージウィンドウの描画
+    message_window.draw(ColorF{0.0, 0.4});
+    if (buttons[0].contains(Cursor::Pos())) {
+        FontAsset(U"Regular")(U"はじめてのかたはこちらから")
+            .drawAt(message_window.center(), Palette::White);
+    } else if (buttons[1].contains(Cursor::Pos())) {
+        FontAsset(U"Regular")(U"連勝めざしてひたすら一筆書き！")
+            .drawAt(message_window.center(), Palette::White);
+    } else if (buttons[2].contains(Cursor::Pos())) {
+        FontAsset(U"Regular")(U"ランキングをみる")
+            .drawAt(message_window.center(), Palette::White);
+    } else if (buttons[3].contains(Cursor::Pos())) {
+        FontAsset(U"Regular")(U"ルールをよむ")
+            .drawAt(message_window.center(), Palette::White);
+    }
+    
+    // マスクの描画
+    Scene::Rect().draw(ColorF{Palette::Black, mask_alpha_transition.value() * 0.7});
+    
+    if(launch_browser_confirm){
+        confirm_window.draw(MyColor::White);
+        
+        FontAsset(U"Regular")(U"外部のウェブサイトを開きます").drawAt(30,700,370 , Palette::Black);
+        
+        // もどるボタン
+        backward.draw();
+        FontAsset(U"Regular")(U"もどる").drawAt(20, backward.center(), Palette::Black);
+        
+        // ひらくボタン
+        open.draw();
+        FontAsset(U"Regular")(U"ひらく").drawAt(20, open.center(), Palette::Black);
+    }
+}
+
 void Title::update() {
     // マスクの透過率の更新
     mask_alpha_transition.update(launch_browser_confirm);
@@ -69,63 +126,5 @@ void Title::confirm_update(){
         launch_browser_confirm = false;
         can_press_button = true;
         open.reset();
-    }
-}
-
-
-void Title::draw() const {
-    Scene::SetBackground(MyColor::White);
-
-    FontAsset(U"Kaisotai")(U"すとすと").drawAt(700, 100, Palette::Black);
-
-    // ボタンの描画
-    for (const auto& button : buttons) {
-        button.draw();
-        button.draw_gauge();
-    }
-
-    FontAsset(U"Black")(U"ちょっとあそぶ")
-        .drawAt(TextStyle::Outline(0.5, Palette::Black), 50, 940, 280,
-                ColorF{0.9});
-    FontAsset(U"Black")(U"あそぶ").drawAt(
-        TextStyle::Outline(0.5, Palette::Black), 390, 380, ColorF{0.9});
-    FontAsset(U"Black")(U"ランキング")
-        .drawAt(TextStyle::Outline(0.5, Palette::Black), 40, 760, 560,
-                ColorF{0.9});
-    FontAsset(U"Black")(U"あそびかた")
-        .drawAt(TextStyle::Outline(0.5, Palette::Black), 40, 1090, 480,
-                ColorF{0.9});
-
-    // メッセージウィンドウの描画
-    message_window.draw(ColorF{0.0, 0.4});
-    if (buttons[0].contains(Cursor::Pos())) {
-        FontAsset(U"Regular")(U"はじめてのかたはこちらから")
-            .drawAt(message_window.center(), Palette::White);
-    } else if (buttons[1].contains(Cursor::Pos())) {
-        FontAsset(U"Regular")(U"連勝めざしてひたすら一筆書き！")
-            .drawAt(message_window.center(), Palette::White);
-    } else if (buttons[2].contains(Cursor::Pos())) {
-        FontAsset(U"Regular")(U"ランキングをみる")
-            .drawAt(message_window.center(), Palette::White);
-    } else if (buttons[3].contains(Cursor::Pos())) {
-        FontAsset(U"Regular")(U"ルールをよむ")
-            .drawAt(message_window.center(), Palette::White);
-    }
-    
-    // マスクの描画
-    Scene::Rect().draw(ColorF{Palette::Black, mask_alpha_transition.value() * 0.7});
-    
-    if(launch_browser_confirm){
-        confirm_window.draw(MyColor::White);
-        
-        FontAsset(U"Regular")(U"外部のウェブサイトを開きます").drawAt(30,700,370 , Palette::Black);
-        
-        // もどるボタン
-        backward.draw();
-        FontAsset(U"Regular")(U"もどる").drawAt(20, backward.center(), Palette::Black);
-        
-        // ひらくボタン
-        open.draw();
-        FontAsset(U"Regular")(U"ひらく").drawAt(20, open.center(), Palette::Black);
     }
 }

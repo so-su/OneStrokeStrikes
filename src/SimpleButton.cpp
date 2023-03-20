@@ -63,7 +63,7 @@ void SimpleButton::draw() const {
 // ボタンの状態を更新し、ボタンが押されたかを返す
 // can_pressは、ボタンがまだ押されていないならば押されることを許容するか
 bool SimpleButton::update(bool can_press) {
-    if(down()){
+    if(can_press and down()){
         pressed = true;
     }
     gauge_transition.update(pressed or (rect.contains(Cursor::Pos()) and can_press));

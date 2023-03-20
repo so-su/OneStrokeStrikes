@@ -2,8 +2,8 @@
 
 Result::Result(const InitData& init) : IScene{init} {
     // スコアを計算する
-    getData().score =
-        100 * getData().win * (getData().win + 1) / 2 + getData().enemy;
+    getData().score = 100;
+        //100 * getData().win * (getData().win + 1) / 2 + getData().enemy;
 }
 
 void Result::update() {

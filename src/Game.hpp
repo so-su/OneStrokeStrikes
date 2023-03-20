@@ -13,7 +13,10 @@ class Game : public App::Scene {
     Game(const InitData& init);
 
     void update() override;
-    
+
+    void draw() const override;
+
+   private:
     // 図形で攻撃する位置を選んでいるときの処理
     void shape_attack_update();
     
@@ -34,10 +37,7 @@ class Game : public App::Scene {
     
     // APを消費して攻撃モードに遷移する
     void use_ap();
-
-    void draw() const override;
-
-   private:
+    
     // プレイヤーのステータスを管理
     Player player;
 
