@@ -1,19 +1,24 @@
 #include "Ranking.hpp"
 
 Ranking::Ranking(const InitData& init) : IScene{init} {
+    // ランキングを取得して読み込む
     get_ranking();
     load_ranking();
 
+    // 各順位の枠
+    // 11個目は自分のスコアが入る
     for (auto rank : step(11)) {
         rects[rank] = Rect{400, 170 + 50 * rank, 600, 50};
     }
 
-    if (getData().display_player_score) {
+    if (getData().display_player_score) { // プレイヤーのスコアが表示できるとき
+        // ランキングに登録できるかを判定する
         display_register_button = (std::size(ranking) < 10) or
                                   (getData().score > ranking.back().score);
-
+        // 11位の位置にプレイヤーのスコアを表示
         player_place = 10;
-    } else {
+    } else { // プレイヤーのスコアが表示できないとき
+        // もしプレイヤーがランクインしていたら、player_placeを設定
         for (auto rank : step(std::size(ranking))) {
             const auto [user_id, score] = ranking[rank];
             if (user_id == getData().player_id and score == getData().score) {
@@ -27,36 +32,13 @@ Ranking::Ranking(const InitData& init) : IScene{init} {
 void Ranking::update() {
     mask_alpha_transition.update(input_mode);
 
+    // ユーザーidの入力中
     if (input_mode) {
-        if(send.update(can_press_button)){
-            can_press_button = false;
-        }
-        if(input_backward.update(can_press_button)){
-            can_press_button = false;
-        }
-        
-        if (send.completed()) {
-            if (is_valid(text_edit.text)) {
-                send_score();
-                getData().display_player_score = false;
-                getData().player_id = text_edit.text;
-                changeScene(State::Ranking);
-            }
-        } else if (input_backward.completed()) {
-            input_mode = false;
-            can_press_button = true;
-        }
-        
-        if (is_valid(text_edit.text)) {
-            send.set_inner_color(MyColor::Forward);
-        }
-        else{
-            send.set_inner_color(MyColor::Backward);
-        }
-        
+        input_mode_update();
         return;
     }
 
+    // ボタンの更新
     if(ranking_register.update(can_press_button)){
         can_press_button = false;
     }
@@ -64,7 +46,9 @@ void Ranking::update() {
         can_press_button = false;
     }
 
+    // ボタンが押されていて、かつゲージが満タンのときの処理
     if (ranking_register.completed() and display_register_button) {
+        ranking_register.reset();
         input_mode = true;
         can_press_button = true;
     } else if (backward.completed()) {
@@ -79,20 +63,26 @@ void Ranking::draw() const {
 
     draw_ranking();
 
+    // ランキングに登録できるとき、ランキング登録ボタンを表示
     if (display_register_button) {
         ranking_register.draw();
         FontAsset(U"Regular")(U"ランキング登録")
             .drawAt(20, ranking_register.center(), Palette::Black);
     }
 
+    // もどるボタン
     backward.draw();
     FontAsset(U"Regular")(U"もどる").drawAt(20, backward.center(),
                                             Palette::Black);
 
+    // ユーザーid入力中
     if (input_mode) {
+        // マスクを描画
         Scene::Rect().draw(
             ColorF{Palette::Black, mask_alpha_transition.value() * 0.6});
-        round_rect.draw(MyColor::White);
+        
+        window.draw(MyColor::White);
+        
         FontAsset(U"Regular")(U"ニックネームを入力してください")
             .drawAt(700, 310, Palette::Black);
         FontAsset(U"Regular")(
@@ -100,19 +90,55 @@ void Ranking::draw() const {
             U"ただし、アルファベットから始まる必要があります。")
             .drawAt(15, 700, 360, Palette::Dimgray);
 
-        // テキストボックスを描画
+        // ユーザーidを入力するテキストボックス
         SimpleGUI::TextBox(text_edit, Vec2{500, 400}, 400, 12);
 
+        // スコア送信ボタン
         send.draw();
         FontAsset(U"Regular")(U"登録").drawAt(20, send.center(),
                                               Palette::Black);
 
+        // 登録やめるボタン
         input_backward.draw();
         FontAsset(U"Regular")(U"もどる").drawAt(20, input_backward.center(),
                                                 Palette::Black);
     }
 }
 
+// ユーザーid入力中の更新処理
+void Ranking::input_mode_update(){
+    // ボタンの更新
+    if(send.update(can_press_button and is_valid(text_edit.text))){
+        can_press_button = false;
+    }
+    if(input_backward.update(can_press_button)){
+        can_press_button = false;
+    }
+    
+    // ボタンが押されて、かつゲージが満タンのときの処理
+    if (send.completed()) {
+        if (is_valid(text_edit.text)) {
+            send_score();
+            getData().display_player_score = false;
+            getData().player_id = text_edit.text;
+            changeScene(State::Ranking);
+        }
+    } else if (input_backward.completed()) {
+        input_backward.reset();
+        input_mode = false;
+        can_press_button = true;
+    }
+    
+    // 有効なユーザーidのときは、スコア送信ボタンの色を変える
+    if (is_valid(text_edit.text)) {
+        send.set_inner_color(MyColor::Forward);
+    }
+    else{
+        send.set_inner_color(MyColor::Backward);
+    }
+}
+
+// ランキングを取得する
 bool Ranking::get_ranking() {
     if (SimpleHTTP::Get(url, {}, save_file_path)) {
         return true;
@@ -120,6 +146,7 @@ bool Ranking::get_ranking() {
     return false;
 }
 
+// 取得済みのランキングを読み込む
 void Ranking::load_ranking() {
     ranking.clear();
     const JSON users = JSON::Load(U"ranking.json");
@@ -129,6 +156,7 @@ void Ranking::load_ranking() {
     }
 }
 
+// スコアを送信する
 bool Ranking::send_score() const {
     const std::string data =
         (U"user_id={}&score={}"_fmt(text_edit.text, getData().score)).toUTF8();
@@ -138,6 +166,7 @@ bool Ranking::send_score() const {
     return false;
 }
 
+// ランキングを描画する
 void Ranking::draw_ranking() const {
     for (auto rank : step(10)) {
         rects[rank].drawFrame(1, 1, Palette::Dimgray);
@@ -147,7 +176,7 @@ void Ranking::draw_ranking() const {
     }
 
     for (auto rank : step(std::size(ranking))) {
-        const auto user = ranking[rank];
+        const auto& user{ranking[rank]};
         FontAsset(U"Regular")(user.user_id)
             .draw(Arg::leftCenter = Vec2{500, 170 + 50 * rank + 25},
                   Palette::Black);
@@ -156,13 +185,15 @@ void Ranking::draw_ranking() const {
                   Palette::Black);
     }
 
+    // プレイヤーの位置の左で三角形を左右に動かす
     if (player_place.has_value()) {
         Triangle{370, static_cast<double>(195 + 50 * player_place.value()), 30,
                  90_deg}
             .moveBy(7 * Math::Sin(5 * Scene::Time()), 0)
             .draw(Palette::Black);
     }
-
+    
+    // プレイヤーのスコアを表示
     if (getData().display_player_score) {
         rects[10].drawFrame(1, 1, Palette::Dimgray);
         FontAsset(U"Regular")(U"あなたのスコア")
@@ -174,7 +205,10 @@ void Ranking::draw_ranking() const {
     }
 }
 
+// 文字列がユーザーidとして有効かを返す
 bool Ranking::is_valid(const String& user_id) {
+    // 英数字または'-','_','.'からなる、3文字以上の文字列ならOK
+    // ただしアルファベットから始まらないとNG
     return std::size(user_id) >= 3 and IsAlpha(user_id.front()) and
            user_id.all([](char32 c) -> bool {
                return IsAlnum(c) or c == '-' or c == '_' or c == '.';
