@@ -2,16 +2,16 @@
 #include "Common.hpp"
 
 class ProgressBar {
-public:
-     ProgressBar(const Rect& outer_bar, Color color);
+   public:
+    ProgressBar(const Rect& outer_bar, Color color);
 
     // バーの更新
     void update(double ratio);
 
     // バーの描画
     void draw() const;
-    
-private:
+
+   private:
     // 外枠を含めた全体のRoundRect
     const RoundRect outer_bar;
 

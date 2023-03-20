@@ -11,13 +11,13 @@ Ranking::Ranking(const InitData& init) : IScene{init} {
         rects[rank] = Rect{400, 170 + 50 * rank, 600, 50};
     }
 
-    if (getData().display_player_score) { // プレイヤーのスコアが表示できるとき
+    if (getData().display_player_score) {  // プレイヤーのスコアが表示できるとき
         // ランキングに登録できるかを判定する
         display_register_button = (std::size(ranking) < 10) or
                                   (getData().score > ranking.back().score);
         // 11位の位置にプレイヤーのスコアを表示
         player_place = 10;
-    } else { // プレイヤーのスコアが表示できないとき
+    } else {  // プレイヤーのスコアが表示できないとき
         // もしプレイヤーがランクインしていたら、player_placeを設定
         for (auto rank : step(std::size(ranking))) {
             const auto [user_id, score] = ranking[rank];
@@ -39,10 +39,10 @@ void Ranking::update() {
     }
 
     // ボタンの更新
-    if(ranking_register.update(can_press_button)){
+    if (ranking_register.update(can_press_button)) {
         can_press_button = false;
     }
-    if(backward.update(can_press_button)){
+    if (backward.update(can_press_button)) {
         can_press_button = false;
     }
 
@@ -80,13 +80,14 @@ void Ranking::draw() const {
         // マスクを描画
         Scene::Rect().draw(
             ColorF{Palette::Black, mask_alpha_transition.value() * 0.6});
-        
+
         window.draw(MyColor::White);
-        
+
         FontAsset(U"Regular")(U"ニックネームを入力してください")
             .drawAt(700, 310, Palette::Black);
         FontAsset(U"Regular")(
-            U"3文字以上12文字以下で、半角英数字と3種の記号（- _ .）が使えます。\n"
+            U"3文字以上12文字以下で、半角英数字と3種の記号（- _ "
+            U".）が使えます。\n"
             U"ただし、アルファベットから始まる必要があります。")
             .drawAt(15, 700, 360, Palette::Dimgray);
 
@@ -106,15 +107,15 @@ void Ranking::draw() const {
 }
 
 // ユーザーid入力中の更新処理
-void Ranking::input_mode_update(){
+void Ranking::input_mode_update() {
     // ボタンの更新
-    if(send.update(can_press_button and is_valid(text_edit.text))){
+    if (send.update(can_press_button and is_valid(text_edit.text))) {
         can_press_button = false;
     }
-    if(input_backward.update(can_press_button)){
+    if (input_backward.update(can_press_button)) {
         can_press_button = false;
     }
-    
+
     // ボタンが押されて、かつゲージが満タンのときの処理
     if (send.completed()) {
         if (is_valid(text_edit.text)) {
@@ -128,12 +129,11 @@ void Ranking::input_mode_update(){
         input_mode = false;
         can_press_button = true;
     }
-    
+
     // 有効なユーザーidのときは、スコア送信ボタンの色を変える
     if (is_valid(text_edit.text)) {
         send.set_inner_color(MyColor::Forward);
-    }
-    else{
+    } else {
         send.set_inner_color(MyColor::Backward);
     }
 }
@@ -192,7 +192,7 @@ void Ranking::draw_ranking() const {
             .moveBy(7 * Math::Sin(5 * Scene::Time()), 0)
             .draw(Palette::Black);
     }
-    
+
     // プレイヤーのスコアを表示
     if (getData().display_player_score) {
         rects[10].drawFrame(1, 1, Palette::Dimgray);

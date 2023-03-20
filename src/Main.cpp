@@ -6,7 +6,7 @@
 
 void Main() {
     Window::Resize(1400, 800);
-    
+
     // ESCキーで終了しないように設定
     System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 

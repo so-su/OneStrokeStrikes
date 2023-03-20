@@ -8,9 +8,9 @@ Polyomino::Polyomino(Size max_grid_size, int32 cell_size, Point center)
 
 // ポリオミノを描画する
 void Polyomino::draw() const {
-    for(auto pos : step(grid_size)){
+    for (auto pos : step(grid_size)) {
         if (not is_filled(pos)) continue;
-        
+
         Color cell_color;
         if (cells[pos] == Cell::Red) {
             cell_color = MyColor::Red;
@@ -21,7 +21,7 @@ void Polyomino::draw() const {
         } else if (cells[pos] == Cell::Yellow) {
             cell_color = MyColor::Yellow;
         }
-        
+
         rects[pos]->draw(cell_color).drawFrame(2, 2, ColorF{0.25});
     }
 }
@@ -74,9 +74,7 @@ bool Polyomino::is_filled(int32 x, int32 y) const {
 }
 
 // セルが埋められているかを返す
-bool Polyomino::is_filled(Point pos) const{
-    return is_filled(pos.x, pos.y);
-}
+bool Polyomino::is_filled(Point pos) const { return is_filled(pos.x, pos.y); }
 
 // RingEffectを発生させる
 void Polyomino::add_ring_effect() const {
@@ -109,21 +107,22 @@ void Polyomino::initialize(Size grid_size_, Cell designated) {
 // 一筆書き可能なポリオミノを生成する
 void Polyomino::generate_polyomino(Cell designated) {
     // スタートする点をランダムに決め、セルを埋める
-    const Point start{Random<int32>(grid_size.x - 1),Random<int32>(grid_size.y - 1)};
+    const Point start{Random<int32>(grid_size.x - 1),
+                      Random<int32>(grid_size.y - 1)};
     cells[start] = generate_cell(designated);
 
     // 4方向を表す配列
     static constexpr std::array<Point, 4> directions{
         Point{1, 0}, Point{0, 1}, Point{-1, 0}, Point{0, -1}};
-    
+
     const int32 tolerance{grid_size.x * grid_size.y};
-    
+
     // 2方向に伸ばすことで、極端な図形になるのを防止する
     for (auto _ : step(2)) {
         Point now{start};
         Cell prev{cells[start]};
         int32 error_cnt{0};
-        
+
         // ランダムな方向に進みながらセルを埋め、ポリオミノをつくる
         while (error_cnt < tolerance) {
             const auto dir_idx = Random<size_t>(3);
@@ -162,8 +161,8 @@ Cell Polyomino::generate_cell(Cell designated) const {
 // ポリオミノをグリッドの左上に寄せてgrid_sizeを詰める
 void Polyomino::shrink_to_fit() {
     // 埋まっているセルのうち、最小、最大のxとy
-    int32 min_x{grid_size.x},max_x{-1};
-    int32 min_y{grid_size.y},max_y{-1};
+    int32 min_x{grid_size.x}, max_x{-1};
+    int32 min_y{grid_size.y}, max_y{-1};
     for (auto [x, y] : step(grid_size)) {
         if (not is_filled(x, y)) continue;
         min_x = Min(x, min_x);
@@ -171,11 +170,10 @@ void Polyomino::shrink_to_fit() {
         min_y = Min(y, min_y);
         max_y = Max(y, max_y);
     }
-    
+
     const auto tmp{cells};
     cells.fill(Cell::None);
-    grid_size =
-        Size{max_x - min_x + 1, max_y - min_y + 1};
+    grid_size = Size{max_x - min_x + 1, max_y - min_y + 1};
     for (auto [x, y] : step(grid_size)) {
         cells[y][x] = tmp[min_y + y][min_x + x];
     }

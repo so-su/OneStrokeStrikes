@@ -13,7 +13,7 @@ class AttackShape {
 
     // 図形を表すグリッド
     Grid<bool> shape;
-    
+
     // セルの一辺の長さ
     static constexpr int32 cell_size{30};
 

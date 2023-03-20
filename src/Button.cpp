@@ -2,90 +2,92 @@
 
 Button::Button(Size grid_size, const Array<Point>& path, int32 cell_size,
                Point upper_left, Color color, double alpha_min)
-    :grid_size(grid_size),
-     path(path),
-     cell_size(cell_size),
-     color(color),
-     rects(grid_size, none),
-     alpha_transitions(std::size(path), Transition{0.1s, 0.05s}),
-     alpha_min(alpha_min){
+    : grid_size(grid_size),
+      path(path),
+      cell_size(cell_size),
+      color(color),
+      rects(grid_size, none),
+      alpha_transitions(std::size(path), Transition{0.1s, 0.05s}),
+      alpha_min(alpha_min) {
     for (const auto& cell_pos : path) {
         rects[cell_pos] =
             Rect{upper_left + cell_size * cell_pos, cell_size, cell_size};
     }
 
     // 各格子点から出ていく辺を4方向について管理する
-    Grid<std::array<Optional<Point>, 4>> graph{grid_size+Size{1,1},{none,none,none,none}};
+    Grid<std::array<Optional<Point>, 4>> graph{grid_size + Size{1, 1},
+                                               {none, none, none, none}};
 
     // ポリオミノの各セルを見ていき、グラフを構成する
-    for (auto [x,y] : step(grid_size)){
+    for (auto [x, y] : step(grid_size)) {
         if (not is_filled(x, y)) continue;
-        
+
         // 上のセルが埋まっていないなら右向きに辺をはる
         if (not is_filled(x, y - 1)) {
             graph[y][x][0] = Point{x + 1, y};
         }
-        
+
         // 上のセルが埋まっていないなら下向きに辺をはる
         if (not is_filled(x + 1, y)) {
-            graph[y][x+1][1] = Point{x + 1, y + 1};
+            graph[y][x + 1][1] = Point{x + 1, y + 1};
         }
-        
+
         // 上のセルが埋まっていないなら左向きに辺をはる
         if (not is_filled(x, y + 1)) {
             graph[y + 1][x + 1][2] = Point{x, y + 1};
         }
-        
+
         // 上のセルが埋まっていないなら上向きに辺をはる
         if (not is_filled(x - 1, y)) {
-            graph[y+1][x][3] = Point{x, y};
+            graph[y + 1][x][3] = Point{x, y};
         }
     }
 
-     // 埋まっているセルのうち、y=0でxが最小のセルの左上を始点とする
-     Point start;
-     for (auto x : step(grid_size.x)) {
-         if (is_filled(x, 0)) {
-             start = Point{x, 0};
-             break;
-         }
-     }
-     
-     Point now{start};
-     
-     // 4方向のうち、直前に通ってきた方向をもっておく
-     int32 prev_dir{3};
-     
-     // ポリオミノの外周のパスをつくる
-     do {
-         // 4方向を順番に見ていき辺がはられていたら先に進むのを、一周するまで繰り返す
-         for (auto d : Range(1,5)) {
-             const auto next_dir{(prev_dir + d) % 4};
-             if (graph[now][next_dir].has_value()) {
-                 perimeter.emplace_back(
-                     upper_left + now * cell_size,
-                     upper_left + *graph[now][next_dir] * cell_size);
-                 now = *graph[now][next_dir];
-                 prev_dir = next_dir;
-                 break;
-             }
-         }
-     } while (now != start);
+    // 埋まっているセルのうち、y=0でxが最小のセルの左上を始点とする
+    Point start;
+    for (auto x : step(grid_size.x)) {
+        if (is_filled(x, 0)) {
+            start = Point{x, 0};
+            break;
+        }
+    }
+
+    Point now{start};
+
+    // 4方向のうち、直前に通ってきた方向をもっておく
+    int32 prev_dir{3};
+
+    // ポリオミノの外周のパスをつくる
+    do {
+        // 4方向を順番に見ていき辺がはられていたら先に進むのを、一周するまで繰り返す
+        for (auto d : Range(1, 5)) {
+            const auto next_dir{(prev_dir + d) % 4};
+            if (graph[now][next_dir].has_value()) {
+                perimeter.emplace_back(
+                    upper_left + now * cell_size,
+                    upper_left + *graph[now][next_dir] * cell_size);
+                now = *graph[now][next_dir];
+                prev_dir = next_dir;
+                break;
+            }
+        }
+    } while (now != start);
 }
 
 // ボタンの描画
 void Button::draw() const {
     for (auto cell_idx : step(std::size(path))) {
         rects[path[cell_idx]]->draw(
-            ColorF{color, alpha_min + (1.0 - alpha_min) * alpha_transitions[cell_idx].value()});
+            ColorF{color, alpha_min + (1.0 - alpha_min) *
+                                          alpha_transitions[cell_idx].value()});
     }
 }
 
 // ゲージの描画
 void Button::draw_gauge() const {
-    const double gauge_len{
-        std::size(perimeter) * (mouseover_transition.value() + 1e-10)};
-    const size_t len_int {static_cast<size_t>(gauge_len)};
+    const double gauge_len{std::size(perimeter) *
+                           (mouseover_transition.value() + 1e-10)};
+    const size_t len_int{static_cast<size_t>(gauge_len)};
 
     // ゲージを黒く縁取り
     for (auto i : step(len_int)) {
@@ -112,7 +114,7 @@ void Button::draw_gauge() const {
 // can_pressは、ボタンがまだ押されていないならば押されることを許容するか
 bool Button::update(bool can_press) {
     const bool contains_cursor{contains(Cursor::Pos())};
-    
+
     // ボタンが押されたとき
     if (not pressed and can_press and MouseL.down() and contains_cursor) {
         pressed = true;
@@ -135,7 +137,7 @@ bool Button::update(bool can_press) {
         alpha_transitions[cell_idx].update(pressed_transition.value() >=
                                            (dist + 1) / path_len);
     }
-    
+
     return pressed;
 }
 
@@ -156,8 +158,8 @@ bool Button::completed() const {
 }
 
 // ゲージのリセット
-void Button::reset(){
-    for(auto& transition:alpha_transitions){
+void Button::reset() {
+    for (auto& transition : alpha_transitions) {
         transition = Transition{0.1s, 0.05s};
     }
 

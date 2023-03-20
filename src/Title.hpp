@@ -1,7 +1,7 @@
 #pragma once
 #include "Button.hpp"
-#include "SimpleButton.hpp"
 #include "Common.hpp"
+#include "SimpleButton.hpp"
 
 // タイトルシーン
 class Title : public App::Scene {
@@ -15,13 +15,13 @@ class Title : public App::Scene {
    private:
     // ブラウザを立ち上げる確認中の処理
     void confirm_update();
-    
+
     // ボタンの配列
     Array<Button> buttons;
-    
+
     // ボタンのセルの大きさ
     static constexpr int32 cell_size{80};
-    
+
     // ボタンのグリッドの大きさの配列
     const Array<Size> grid_sizes{
         {6, 2},
@@ -78,29 +78,31 @@ class Title : public App::Scene {
 
     // ボタンの色の配列
     const Array<Color> colors{MyColor::Green, MyColor::Red, MyColor::Blue,
-                                 MyColor::Yellow};
-    
+                              MyColor::Yellow};
+
     // ボタンの最小の透過率の配列
     const Array<double> alpha_mins{0.7, 0.7, 0.7, 0.5};
 
     // 画面下のメッセージウィンドウの長方形
     static constexpr Rect message_window{0, 700, 1400, 50};
-    
+
     // ボタンがまだ押されていない
     bool can_press_button{true};
-    
+
     // ブラウザを立ち上げる確認中か
     bool launch_browser_confirm{false};
-    
+
     // 確認のウィンドウ
     static constexpr RoundRect confirm_window{400, 300, 600, 200, 30};
-    
+
     // マスクの透過率
-    Transition mask_alpha_transition{0.5s,0.25s};
-    
+    Transition mask_alpha_transition{0.5s, 0.25s};
+
     // もどるボタン
-    SimpleButton backward{Rect{580, 420, 100, 40}, MyColor::Backward, MyColor::Orange, 5};
+    SimpleButton backward{Rect{580, 420, 100, 40}, MyColor::Backward,
+                          MyColor::Orange, 5};
 
     // ひらくボタン
-    SimpleButton open{Rect{720, 420, 100, 40}, MyColor::Forward, MyColor::Orange, 5};
+    SimpleButton open{Rect{720, 420, 100, 40}, MyColor::Forward,
+                      MyColor::Orange, 5};
 };

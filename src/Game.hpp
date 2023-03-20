@@ -19,37 +19,39 @@ class Game : public App::Scene {
    private:
     // 図形で攻撃する位置を選んでいるときの処理
     void shape_attack_update();
-    
+
     // 攻撃モード時の処理
     void attack_mode_update();
-    
+
     // 攻撃モードから抜ける処理
     void get_out_of_attack_mode();
-    
+
     // Enemyたちの消滅を進める
     void update_to_vanish_enemies();
-    
+
     // SPを消費して敵を一掃する
     void use_sp();
-    
+
     // 一筆書きのパスを更新し、一筆書きが成功したならEnemyを消滅させる準備をする
     void update_one_stroke_path();
-    
+
     // APを消費して攻撃モードに遷移する
     void use_ap();
-    
+
     // プレイヤーのステータスを管理
     Player player;
 
     // 下段のポリオミノの敵たちの配列
-    std::array<Enemy, 3> enemies{Enemy(Point{250, 500},getData().easy_mode), Enemy(Point{700, 500},getData().easy_mode), Enemy(Point{1150, 500},getData().easy_mode)};
+    std::array<Enemy, 3> enemies{Enemy(Point{250, 500}, getData().easy_mode),
+                                 Enemy(Point{700, 500}, getData().easy_mode),
+                                 Enemy(Point{1150, 500}, getData().easy_mode)};
 
     // 上段のポリオミノの敵
     AlphaEnemy alpha_enemy{getData().easy_mode};
 
     // 一筆書き中のEnemyのインデックス
     Optional<int32> drawing_path_idx{none};
-    
+
     // maskの透過率を滑らかに変化させる
     Transition mask_alpha_transition{0.5s, 0.5s};
 
@@ -65,7 +67,8 @@ class Game : public App::Scene {
     // Enemyが消滅し始めてからの時間を管理
     std::array<double, 3> vanishing_timers;
 
-    // All Clearの状態になってからすべてのEnemyが消滅するまで待つために導入した状態
+    // All
+    // Clearの状態になってからすべてのEnemyが消滅するまで待つために導入した状態
     enum class AllClearStatus {
         EnemyAliveExists,
         LastIsVanishing,
@@ -75,7 +78,7 @@ class Game : public App::Scene {
     AllClearStatus all_clear_status{AllClearStatus::EnemyAliveExists};
 
     AttackRoulette roulette;
-    
+
     // ルーレットが回り始めてから止まるまでの時間
     double roulette_duration;
 
@@ -88,9 +91,9 @@ class Game : public App::Scene {
     static constexpr Color background_color{0, 0, 50};
 
     // 3つのEnemyを囲う枠
-    static constexpr std::array<Rect, 3> enemy_frames{
-        Rect{50, 300, 400, 400}, Rect{500, 300, 400, 400},
-        Rect{950, 300, 400, 400}};
+    static constexpr std::array<Rect, 3> enemy_frames{Rect{50, 300, 400, 400},
+                                                      Rect{500, 300, 400, 400},
+                                                      Rect{950, 300, 400, 400}};
 
     // アタックモード時にEnemyにかかるマスク
     static constexpr Rect mask{0, 290, 1400, 440};

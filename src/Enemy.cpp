@@ -1,7 +1,9 @@
 #include "Enemy.hpp"
 
 Enemy::Enemy(Point center, bool easy)
-: Polyomino(Size{Parameter::enemy_max_grid_size,Parameter::enemy_max_grid_size}, cell_size, center){
+    : Polyomino(
+          Size{Parameter::enemy_max_grid_size, Parameter::enemy_max_grid_size},
+          cell_size, center) {
     easy_mode = easy;
     initialize();
 }
@@ -9,14 +11,15 @@ Enemy::Enemy(Point center, bool easy)
 // 初期化する
 void Enemy::initialize() {
     int32 grid_len;
-    if(easy_mode){
-        grid_len=Random(Parameter::enemy_min_grid_size, Parameter::enemy_max_grid_size_easy);
-    }
-    else{
-        grid_len=Random(Parameter::enemy_min_grid_size, Parameter::enemy_max_grid_size);
+    if (easy_mode) {
+        grid_len = Random(Parameter::enemy_min_grid_size,
+                          Parameter::enemy_max_grid_size_easy);
+    } else {
+        grid_len = Random(Parameter::enemy_min_grid_size,
+                          Parameter::enemy_max_grid_size);
     }
     Polyomino::initialize(Size{grid_len, grid_len});
-    
+
     compute_perimeter();
     gauge_speed = Parameter::enemy_gauge_initial_speed;
     clear_path();
@@ -28,27 +31,28 @@ void Enemy::compute_perimeter() {
     perimeter.clear();
 
     // 各格子点から出ていく辺を4方向について管理する
-    Grid<std::array<Optional<Point>, 4>> graph{grid_size + Size{1,1}, {none,none,none,none}};
+    Grid<std::array<Optional<Point>, 4>> graph{grid_size + Size{1, 1},
+                                               {none, none, none, none}};
 
     // ポリオミノの各セルを見ていき、グラフを構成する
     for (auto [x, y] : step(grid_size)) {
         if (not is_filled(x, y)) continue;
-        
+
         // 上のセルが埋まっていないなら右向きに辺をはる
         if (not is_filled(x, y - 1)) {
             graph[y][x][0] = Point{x + 1, y};
         }
-        
+
         // 右のセルが埋まっていないなら下向きに辺をはる
         if (not is_filled(x + 1, y)) {
-            graph[y][x+1][1] = Point{x + 1, y + 1};
+            graph[y][x + 1][1] = Point{x + 1, y + 1};
         }
-        
+
         // 下のセルが埋まっていないなら左向きに辺をはる
         if (not is_filled(x, y + 1)) {
             graph[y + 1][x + 1][2] = Point{x, y + 1};
         }
-        
+
         // 左のセルが埋まっていないなら上向きに辺をはる
         if (not is_filled(x - 1, y)) {
             graph[y + 1][x][3] = Point{x, y};
@@ -64,14 +68,14 @@ void Enemy::compute_perimeter() {
         }
     }
     Point now{start};
-    
+
     // 4方向のうち、直前に通ってきた方向をもっておく
     int32 prev_dir{3};
-    
+
     // ポリオミノの外周のパスをつくる
     do {
         // 4方向を順番に見ていき辺がはられていたら先に進むのを、一周するまで繰り返す
-        for (auto d : Range(1,5)) {
+        for (auto d : Range(1, 5)) {
             const auto next_dir{(prev_dir + d) % 4};
             if (graph[now][next_dir].has_value()) {
                 perimeter.emplace_back(
@@ -103,9 +107,9 @@ void Enemy::draw_path() const {
 
     // 終点に三角形を描く
     if (std::size(path) >= 2) {
-        const Vec2 from {rects[*next(std::rbegin(path))]->center()};
+        const Vec2 from{rects[*next(std::rbegin(path))]->center()};
         const Vec2 to{rects[path.back()]->center()};
-        
+
         // 最後の2点の座標を見て三角形の方向を決める
         // 誤差も考慮して判定する
         if (to.x < from.x - 0.5) {
@@ -126,7 +130,9 @@ void Enemy::update_path(Point cursor_pos) {
         if (rects[pos] and rects[pos]->contains(cursor_pos)) {
             if (not path.empty()) {
                 // パスの末尾のセルに隣接していないなら拒否
-                if (not(std::abs(pos.x - path.back().x) + std::abs(pos.y - path.back().y) == 1)) {
+                if (not(std::abs(pos.x - path.back().x) +
+                            std::abs(pos.y - path.back().y) ==
+                        1)) {
                     return;
                 }
 
@@ -141,25 +147,25 @@ void Enemy::update_path(Point cursor_pos) {
                     }
                 }
             }
-            
+
             /* ここを抜けたときにパスが伸びる */
-            
+
             path.emplace_back(pos);
-            
+
             // パスがポリオミノを覆ったならポリオミノの消滅が始まる
             if (std::size(path) == num_filled_cells) {
                 // パスの後ろから削除予定スタックに入れていく
-                for(auto it = path.rbegin(); it != path.rend(); ++it){
+                for (auto it = path.rbegin(); it != path.rend(); ++it) {
                     cells_to_erase.emplace_back(*it);
                 }
-                
+
                 add_ring_effect();
             }
-            
+
             return;
         }
     }
-    
+
     /* cursor_posがポリオミノ外にあるとき、ここに到達する */
 }
 
@@ -167,9 +173,7 @@ void Enemy::update_path(Point cursor_pos) {
 void Enemy::clear_path() { path.clear(); }
 
 // パスを反転させる
-void Enemy::reverse_path() {
-    std::reverse(std::begin(path), std::end(path));
-}
+void Enemy::reverse_path() { std::reverse(std::begin(path), std::end(path)); }
 
 // ゲージを更新し、満タンになったらtrueを返す
 bool Enemy::update_gauge() {
@@ -180,7 +184,7 @@ bool Enemy::update_gauge() {
         gauge_len = 0.0;
         return true;
     }
-    
+
     return false;
 }
 
@@ -212,7 +216,9 @@ void Enemy::draw_gauge() const {
 int32 Enemy::attack_value() const { return Parameter::enemy_attack_value; }
 
 // ゲージの周回速度を上昇させる
-void Enemy::speed_up_gauge(int32 times) { gauge_speed += Parameter::gauge_speed_up_rate * times; }
+void Enemy::speed_up_gauge(int32 times) {
+    gauge_speed += Parameter::gauge_speed_up_rate * times;
+}
 
 // ランダムで消滅する準備をする
 void Enemy::prepare_to_randomly_vanish() {
@@ -237,13 +243,13 @@ Score Enemy::get_basic_score() const {
 // 一筆書きのスコアを計算する
 Score Enemy::get_path_score() const {
     Score score{get_basic_score()};
-    
+
     Cell now_color{cells[path.front()]};
     int32 len{1};
-    
+
     // ボーナスを加算するためのラムダ式
-    auto add_bonus=[&score, &now_color, &len]()->void{
-        const auto bonus{len * len}; // 長さの2乗
+    auto add_bonus = [&score, &now_color, &len]() -> void {
+        const auto bonus{len * len};  // 長さの2乗
         if (now_color == Cell::Green) {
             score.green += bonus;
         } else if (now_color == Cell::Red) {
@@ -252,7 +258,7 @@ Score Enemy::get_path_score() const {
             score.blue += bonus;
         }
     };
-    
+
     // パスをセルの色でランレングス圧縮し、それぞれに対して長さによるボーナスを加算する
     for (size_t path_idx = 1; path_idx < std::size(path); ++path_idx) {
         if (cells[path[path_idx]] == now_color) {
@@ -265,9 +271,9 @@ Score Enemy::get_path_score() const {
     }
     // 最後の連続部分のボーナスも忘れずに加算する
     add_bonus();
-    
+
     // 端点の色を計上するためのラムダ式
-    auto add_endpoint=[&score](Cell cell)->void{
+    auto add_endpoint = [&score](Cell cell) -> void {
         if (cell == Cell::Green) {
             ++score.green_endpoint;
         } else if (cell == Cell::Red) {

@@ -3,7 +3,8 @@
 
 class SimpleButton {
    public:
-    SimpleButton(const Rect& rect_, Color inner_color_,Color gauge_color_, int32 thickness_);
+    SimpleButton(const Rect& rect_, Color inner_color_, Color gauge_color_,
+                 int32 thickness_);
 
     // ボタンの描画
     void draw() const;
@@ -11,19 +12,19 @@ class SimpleButton {
     // ボタンの状態を更新し、ボタンが押されたかを返す
     // can_pressは、ボタンがまだ押されていないならば押されることを許容するか
     bool update(bool can_press);
-    
+
     // ボタンの状態をリセットする
     void reset();
 
     // ボタンが押されたかを返す
     bool down() const;
-    
+
     // ボタンが押されていて、かつゲージが満タンの状態かを返す
     bool completed() const;
 
     // ボタンの中心座標を返す
     Point center() const;
-    
+
     // ボタン内部の色を変更する
     void set_inner_color(Color color);
 
@@ -45,13 +46,13 @@ class SimpleButton {
 
     // 外周の太さ
     const int32 thickness;
-    
+
     // ボタンの中身の色
     Color inner_color;
 
     // 外周のゲージの進み具合
     Transition gauge_transition{0.3s, 0.15s};
-    
+
     // ボタンが押されたか
     bool pressed{false};
 };

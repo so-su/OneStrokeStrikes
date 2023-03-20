@@ -27,14 +27,16 @@ void AttackShape::draw(Point center, Color color) const {
     for (auto y : step(3)) {
         for (auto x : step(3)) {
             if (shape[y][x]) {
-                Rect{Arg::center = center + Point{(x - 1) * cell_size, (y - 1) * cell_size},
-                    cell_size - 2, cell_size - 2}
+                Rect{Arg::center = center + Point{(x - 1) * cell_size,
+                                                  (y - 1) * cell_size},
+                     cell_size - 2, cell_size - 2}
                     .draw(color);
             }
         }
     }
-    
+
     // 図形を囲む枠の描画
     const auto frame_size{cell_size * 3 + 2};
-    Rect{Arg::center = center, frame_size, frame_size}.drawFrame(0, 2, Palette::White);
+    Rect{Arg::center = center, frame_size, frame_size}.drawFrame(
+        0, 2, Palette::White);
 }

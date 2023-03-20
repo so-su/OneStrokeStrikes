@@ -29,7 +29,7 @@ class Player {
 
     // APを0にする
     void reset_ap();
-    
+
     // SPを0にする
     void reset_sp();
 
@@ -45,13 +45,13 @@ class Player {
 
     // 現在のSP
     int32 sp{0};
-    
+
     // 最大のHP
     static constexpr int32 max_hp{1000};
-    
+
     // 最大のAP
     static constexpr int32 max_ap{1000};
-    
+
     // 最大のSP
     static constexpr int32 max_sp{1000};
 

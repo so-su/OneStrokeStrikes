@@ -14,7 +14,7 @@ class Ranking : public App::Scene {
    private:
     // ユーザーid入力中の更新処理
     void input_mode_update();
-    
+
     // ランキングを取得する
     bool get_ranking();
 
@@ -55,14 +55,16 @@ class Ranking : public App::Scene {
     const FilePath save_file_path{U"ranking.json"};
 
     // ランキング登録ボタン
-    SimpleButton ranking_register{Rect{1020, 670, 160, 50}, MyColor::Forward, MyColor::Orange, 5};
+    SimpleButton ranking_register{Rect{1020, 670, 160, 50}, MyColor::Forward,
+                                  MyColor::Orange, 5};
 
     // もどるボタン
-    SimpleButton backward{Rect{1200, 670, 100, 50}, MyColor::Backward, MyColor::Orange, 5};
-    
+    SimpleButton backward{Rect{1200, 670, 100, 50}, MyColor::Backward,
+                          MyColor::Orange, 5};
+
     // ボタンがまだ押されていない
     bool can_press_button{true};
-    
+
     // ランキングに登録できるかどうか
     bool display_register_button{false};
 
@@ -80,8 +82,10 @@ class Ranking : public App::Scene {
     mutable TextEditState text_edit{U""};
 
     // スコア送信ボタン
-    SimpleButton send{Rect{720, 460, 100, 40}, MyColor::Forward ,MyColor::Orange, 5};
+    SimpleButton send{Rect{720, 460, 100, 40}, MyColor::Forward,
+                      MyColor::Orange, 5};
 
     // 登録やめるボタン
-    SimpleButton input_backward{Rect{580, 460, 100, 40}, MyColor::Backward, MyColor::Orange, 5};
+    SimpleButton input_backward{Rect{580, 460, 100, 40}, MyColor::Backward,
+                                MyColor::Orange, 5};
 };

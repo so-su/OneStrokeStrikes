@@ -21,17 +21,17 @@ class Button {
 
     // 一筆書きが終了したかを返す
     bool completed() const;
-    
+
     // ゲージのリセット
     void reset();
 
    private:
     // セルが埋まっているかを返す
     bool is_filled(int32 x, int32 y) const;
-    
+
     // グリッドの大きさ
     const Size grid_size;
-    
+
     // ボタンを押したときに一筆書きされるパス
     const Array<Point> path;
 
@@ -43,16 +43,16 @@ class Button {
 
     // グリッドの各セルを表す正方形の配列
     Grid<Optional<Rect>> rects;
-    
+
     // ボタンの外周を表すLineの配列
     Array<Line> perimeter;
 
     // ボタンの外周のゲージの進み具合
     Transition mouseover_transition{0.3s, 0.15s};
-    
+
     // ボタンが押されたか
     bool pressed{false};
-    
+
     // 一筆書きの始点となるセルのインデックス
     size_t start_index;
 
@@ -61,7 +61,7 @@ class Button {
 
     // ボタンの透過率の遷移
     Array<Transition> alpha_transitions;
-    
+
     // ボタンの透過率の最小値
     const double alpha_min;
 };

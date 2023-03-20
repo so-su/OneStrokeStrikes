@@ -8,7 +8,7 @@ void AttackRoulette::initialize() {
     update_angles();
     triangle_angle = 0.0;
     std::fill(std::begin(attack_nums), std::end(attack_nums), 0);
-    
+
     // ルーレットの各部分の攻撃内容を決める
     for (auto attack_idx : step(3)) {
         if (RandomBool(Shape_rate)) {
@@ -23,7 +23,8 @@ void AttackRoulette::initialize() {
 void AttackRoulette::draw() const {
     draw_large_disk();
     draw_icons();
-    triangle.rotatedAt(large_circle.center, triangle_angle).draw(MyColor::Orange);
+    triangle.rotatedAt(large_circle.center, triangle_angle)
+        .draw(MyColor::Orange);
 }
 
 // 画面中央に大きいルーレット円盤を描画する
@@ -48,7 +49,7 @@ void AttackRoulette::update_value(int32 green, int32 red, int32 blue) {
 // 針を回転させる
 void AttackRoulette::go_around(double speed) {
     triangle_angle += speed * Scene::DeltaTime();
-    
+
     // 0〜2πの範囲に収める
     triangle_angle = std::fmod(triangle_angle, Math::TwoPi);
 }
@@ -98,14 +99,16 @@ void AttackRoulette::draw_icons() const {
         // アイコンの中心座標
         const Point center{
             (large_circle.center + Vec2{0.0, -large_circle.r / 2})
-                .rotateAt(large_circle.center, start_angles[attack_idx] + angles[attack_idx] / 2)
-            .asPoint()};
-        
-        if (attack_nums[attack_idx] == 0) { // 攻撃がShape型のとき
+                .rotateAt(large_circle.center,
+                          start_angles[attack_idx] + angles[attack_idx] / 2)
+                .asPoint()};
+
+        if (attack_nums[attack_idx] == 0) {  // 攻撃がShape型のとき
             attack_shapes[attack_idx].draw(center, Palette::White);
-        } else { // 攻撃がNum型のとき
+        } else {  // 攻撃がNum型のとき
             const auto frame_size{AttackShape::cell_size * 3 + 2};
-            Rect{Arg::center = center, frame_size, frame_size}.drawFrame(0, 2, Palette::White);
+            Rect{Arg::center = center, frame_size, frame_size}.drawFrame(
+                0, 2, Palette::White);
             FontAsset(U"Black")(U"{}"_fmt(attack_nums[attack_idx]))
                 .drawAt(50, center, Palette::White);
         }

@@ -18,10 +18,10 @@ class Polyomino {
 
     // ポリオミノを描画する
     void draw() const;
-    
+
     // エフェクトを描画する
     void draw_effect() const;
-    
+
     // ポリオミノの消滅を進め、消滅させるセルがなくなったらtrueを返す
     bool vanish();
 
@@ -33,10 +33,10 @@ class Polyomino {
 
     // セルが埋められているかを返す
     bool is_filled(int32 x, int32 y) const;
-    
+
     // セルが埋められているかを返す
     bool is_filled(Point pos) const;
-    
+
     // RingEffectを発生させる
     void add_ring_effect() const;
 
@@ -46,10 +46,10 @@ class Polyomino {
    protected:
     // ポリオミノを初期化する
     void initialize(Size grid_size, Cell designated = Cell::None);
-    
+
     // easy modeかどうか
     bool easy_mode;
-    
+
     // セルの大きさ
     const int32 cell_size;
 
@@ -67,7 +67,7 @@ class Polyomino {
 
     // セルを表すRect
     Grid<Optional<Rect>> rects;
-    
+
     // 削除予定の埋まっているセルを入れるスタック
     Array<Point> cells_to_erase;
 
@@ -77,10 +77,10 @@ class Polyomino {
    private:
     // 一筆書き可能なポリオミノを生成する
     void generate_polyomino(Cell designated);
-    
+
     // セルを生成する
     Cell generate_cell(Cell designated) const;
-    
+
     // ポリオミノをグリッドの左上に寄せてgrid_sizeを詰める
     void shrink_to_fit();
 
