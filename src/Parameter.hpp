@@ -64,7 +64,7 @@ constexpr int32 win_bonus_easy{100000};
 constexpr double time_bonus_rate{100.0};
 
 // 攻撃コンボによるスコアボーナスの倍率
-constexpr int32 attack_combo_bonus_rate{100000};
+constexpr int32 attack_combo_bonus_rate{20000};
 
 // 一筆書きの色の列をランレングス圧縮したときの平均の長さによるスコアボーナスの倍率
 constexpr double mean_run_length_bonus_rate{100000.0};
