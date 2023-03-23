@@ -1,6 +1,14 @@
 #include "Game.hpp"
 
-Game::Game(const InitData& init) : IScene{init} {}
+Game::Game(const InitData& init) : IScene{init} {
+    getData().score = 0;
+    getData().win = false;
+    getData().elapsed_time = 0.0;
+    getData().point_sum = 0;
+    getData().attack_combo = 0;
+    getData().sum_run_length = 0;
+    getData().num_run_length_parts = 0;
+}
 
 void Game::update() {
     // マスクの透過率を更新
@@ -31,6 +39,9 @@ void Game::update() {
         pause = true;
         return;
     }
+    
+    // これより上の処理でreturnしたら時間経過に含めない
+    getData().elapsed_time += Scene::DeltaTime();
 
     // Enemyたちの消滅を進める
     update_to_vanish_enemies();
@@ -106,25 +117,21 @@ void Game::update() {
 
     // プレイヤーの勝利
     if (not alpha_enemy.is_alive()) {
-        ++getData().win;
-
-        if (getData().easy_mode) {
-            changeScene(State::Result);
-        }
-        // 次のゲームへ遷移
-        else {
-            changeScene(State::Game);
-        }
+        getData().win = true;
+        changeScene(State::Result);
     }
 
     // プレイヤーの敗北
     if (not player.is_alive()) {
+        getData().win = false;
         changeScene(State::Result);
     }
 }
 
 void Game::draw() const {
     Scene::SetBackground(background_color);
+    ClearPrint();
+    Print<<getData().elapsed_time;
 
     // 奥行きを見せるための背景の線
     // Triangle{0, 400, 0, 395, 350, 200}.draw(Palette::Dimgray);
@@ -309,6 +316,7 @@ void Game::use_sp() {
         player.get_healed(score.green);
         player.get_ap(score.red);
         player.get_sp(score.blue);
+        getData().point_sum += score.green + score.red + score.blue;
     }
 }
 
@@ -324,11 +332,17 @@ void Game::update_one_stroke_path() {
         vanishing_timers[*drawing_path_idx] = 0.0;
         drawing_path_idx = none;
 
+        const auto& path_score{enemy.get_path_score()};
+        
+        getData().sum_run_length += std::get<1>(path_score);
+        getData().num_run_length_parts += std::get<2>(path_score);
+        
         // パスのスコアによって効果を得る
-        const auto& score{enemy.get_path_score()};
+        const auto& score{std::get<0>(path_score)};
         player.get_healed(score.green);
         player.get_ap(score.red);
         player.get_sp(score.blue);
+        getData().point_sum += score.green + score.red + score.blue;
 
         // パスの端点の色によってルーレットの割合を更新
         roulette.update_value(score.green_endpoint, score.red_endpoint,

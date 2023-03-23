@@ -11,7 +11,7 @@ AlphaEnemy::AlphaEnemy(bool easy)
 void AlphaEnemy::initialize() {
     Size grid_size;
     if (easy_mode) {
-        grid_size = Parameter::alpha_enemy_max_grid_size_easy;
+        grid_size = Size{2,2};
     } else {
         grid_size = Parameter::alpha_enemy_max_grid_size;
     }

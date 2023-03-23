@@ -55,8 +55,8 @@ class Enemy : public Polyomino {
     // 倒したときにもらえる基礎スコアを計算
     Score get_basic_score() const;
 
-    // 一筆書きのスコアを計算する
-    Score get_path_score() const;
+    // 一筆書きのスコアと、一筆書きの色の列をランレングス圧縮したときの長さの総和と、その個数を返す
+    std::tuple<Score, uint32, uint32> get_path_score() const;
 
    private:
     // 一筆書き中のパス

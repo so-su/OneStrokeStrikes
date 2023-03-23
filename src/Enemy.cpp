@@ -240,9 +240,14 @@ Score Enemy::get_basic_score() const {
     return score;
 }
 
-// 一筆書きのスコアを計算する
-Score Enemy::get_path_score() const {
+// 一筆書きのスコアと、一筆書きの色の列をランレングス圧縮したときの長さの総和と、その個数を返す
+std::tuple<Score, uint32, uint32> Enemy::get_path_score() const {
     Score score{get_basic_score()};
+    
+    // 一筆書きの色の列をランレングス圧縮したときの長さの総和
+    const uint32 sum_run_length{static_cast<uint32>(std::size(path))};
+    // 一筆書きの色の列をランレングス圧縮したときに分かれる部分の個数の総和
+    uint32 num_run_length_parts{0};
 
     Cell now_color{cells[path.front()]};
     int32 len{1};
@@ -265,12 +270,14 @@ Score Enemy::get_path_score() const {
             ++len;
         } else {
             add_bonus();
+            ++num_run_length_parts;
             now_color = cells[path[path_idx]];
             len = 1;
         }
     }
-    // 最後の連続部分のボーナスも忘れずに加算する
+    // 最後の連続部分についても忘れずに加算する
     add_bonus();
+    ++num_run_length_parts;
 
     // 端点の色を計上するためのラムダ式
     auto add_endpoint = [&score](Cell cell) -> void {
@@ -287,5 +294,5 @@ Score Enemy::get_path_score() const {
     add_endpoint(cells[path.front()]);
     add_endpoint(cells[path.back()]);
 
-    return score;
+    return {score, sum_run_length, num_run_length_parts};
 }

@@ -88,11 +88,9 @@ void Title::update() {
 
     if (buttons[0].completed()) {  // ちょっとあそぶ
         getData().easy_mode = true;
-        getData().win = 0;
         changeScene(State::Game, 4000);
     } else if (buttons[1].completed()) {  // あそぶ
         getData().easy_mode = false;
-        getData().win = 0;
         changeScene(State::Game, 4000);
     } else if (buttons[2].completed()) {  // ランキング
         changeScene(State::Ranking, 4000);

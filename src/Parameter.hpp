@@ -52,4 +52,21 @@ constexpr double roulette_rotation_min_duration{2.5};
 
 // ルーレットの最長回転時間
 constexpr double roulette_rotation_max_duration{4.0};
+
+/* スコアボーナスに関する値*/
+// 勝利したときのスコアボーナス（通常モード）
+constexpr int32 win_bonus{200000};
+
+// 勝利したときのスコアボーナス（easyモード）
+constexpr int32 win_bonus_easy{100000};
+
+// クリアまでのタイムによるスコアボーナスの倍率
+constexpr double time_bonus_rate{100.0};
+
+// 攻撃コンボによるスコアボーナスの倍率
+constexpr int32 attack_combo_bonus_rate{100000};
+
+// 一筆書きの色の列をランレングス圧縮したときの平均の長さによるスコアボーナスの倍率
+constexpr double mean_run_length_bonus_rate{100000.0};
+
 }  // namespace Parameter

@@ -13,21 +13,31 @@ enum class State {
 
 // 共有するデータ
 struct GameData {
-    uint32 win;
+    // ランキングに登録するゲームのスコア
+    int32 score;
+    
+    // 勝利したかどうか
+    bool win;
+    
+    // ゲームの経過時間（秒）
+    double elapsed_time;
 
-    uint32 enemy;
-
-    uint32 green;
-
-    uint32 red;
-
-    uint32 blue;
-
-    uint32 score;
+    // Enemyを倒して得たポイントの総和
+    int32 point_sum;
+    
+    // 図形による攻撃のコンボの回数
+    int32 attack_combo;
+    
+    // 一筆書きの色の列をランレングス圧縮したときの長さの総和
+    int32 sum_run_length;
+    
+    // 一筆書きの色の列をランレングス圧縮したときに分かれる部分の個数の総和
+    int32 num_run_length_parts;
 
     // 「ちょっとあそぶ」モード
     bool easy_mode;
 
+    // プレイヤーのユーザーid
     String player_id;
 
     // ResultからRankingに飛んだときにtrueにする
