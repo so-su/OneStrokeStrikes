@@ -84,8 +84,7 @@ void Game::update() {
             timer += Scene::DeltaTime();
         }
 
-        // All
-        // Clearの効果を待機している状態LastIsVanishingのときはリスポーンさせない
+        // All Clearの効果を待機している状態LastIsVanishingのときはリスポーンさせない
         if (timer > Parameter::respawn_time and
             all_clear_status != AllClearStatus::LastIsVanishing) {
             enemies[enemy_idx].initialize();
