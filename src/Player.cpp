@@ -57,3 +57,18 @@ void Player::draw() const {
     ap_bar.draw();
     sp_bar.draw();
 }
+
+// HPバーを描画する
+void Player::draw_hp_bar() const{
+    hp_bar.draw();
+}
+
+// APバーを描画する
+void Player::draw_ap_bar() const{
+    ap_bar.draw();
+}
+
+// SPバーを描画する
+void Player::draw_sp_bar() const{
+    sp_bar.draw();
+}

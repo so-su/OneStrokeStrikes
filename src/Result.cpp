@@ -12,7 +12,9 @@ Result::Result(const InitData& init) : IScene{init} {
     }
     
     // クリアまでのタイムによるスコアボーナス
-    getData().score += static_cast<int32>((1000.0 - getData().elapsed_time) * Parameter::time_bonus_rate);
+    if(getData().win){
+        getData().score += static_cast<int32>((1000.0 - getData().elapsed_time) * Parameter::time_bonus_rate);
+    }
     
     // ためたポイントの総和によるスコアボーナス
     getData().score += getData().point_sum;
@@ -64,10 +66,10 @@ void Result::draw() const {
     }
     
     if(getData().win){
-        FontAsset(U"Regular")(U"クリア！").draw(Arg::rightCenter = Point{right_center, top}, Palette::Black);
+        FontAsset(U"Black")(U"クリア！").draw(Arg::rightCenter = Point{right_center, top}, Palette::Black);
     }
     else{
-        FontAsset(U"Regular")(U"ゲームオーバー...").draw(Arg::rightCenter = Point{right_center, top}, Palette::Black);
+        FontAsset(U"Black")(U"ゲームオーバー...").draw(Arg::rightCenter = Point{right_center, top}, Palette::Black);
     }
     
     if(getData().win){

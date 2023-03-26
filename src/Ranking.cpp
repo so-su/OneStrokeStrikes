@@ -108,15 +108,9 @@ void Ranking::draw() const {
 
 // ユーザーid入力中の更新処理
 void Ranking::input_mode_update() {
-    // ボタンの更新
-    if (send.update(can_press_button and is_valid(text_edit.text))) {
-        can_press_button = false;
-    }
-    if (input_backward.update(can_press_button)) {
-        can_press_button = false;
-    }
-
     // ボタンが押されて、かつゲージが満タンのときの処理
+    // 後述の更新処理を先に書くと、send_score()が呼ばれたときに
+    // その処理が終わってdraw()関数が呼ばれるまで、ゲージの進み具合が更新されないことがある
     if (send.completed()) {
         if (is_valid(text_edit.text)) {
             send_score();
@@ -128,6 +122,14 @@ void Ranking::input_mode_update() {
         input_backward.reset();
         input_mode = false;
         can_press_button = true;
+    }
+    
+    // ボタンの更新
+    if (send.update(can_press_button and is_valid(text_edit.text))) {
+        can_press_button = false;
+    }
+    if (input_backward.update(can_press_button)) {
+        can_press_button = false;
     }
 
     // 有効なユーザーidのときは、スコア送信ボタンの色を変える

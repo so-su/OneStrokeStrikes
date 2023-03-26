@@ -37,6 +37,9 @@ class Game : public App::Scene {
 
     // APを消費して攻撃モードに遷移する
     void use_ap();
+    
+    // APバーとSPバーにぼかし処理を施す
+    void blur_bars() const;
 
     // プレイヤーのステータスを管理
     Player player;
@@ -67,8 +70,7 @@ class Game : public App::Scene {
     // Enemyが消滅し始めてからの時間を管理
     std::array<double, 3> vanishing_timers;
 
-    // All
-    // Clearの状態になってからすべてのEnemyが消滅するまで待つために導入した状態
+    // All Clearの状態になってからすべてのEnemyが消滅するまで待つために導入した状態
     enum class AllClearStatus {
         EnemyAliveExists,
         LastIsVanishing,
@@ -97,4 +99,15 @@ class Game : public App::Scene {
 
     // アタックモード時にEnemyにかかるマスク
     static constexpr Rect mask{0, 290, 1400, 440};
+    
+    // スクリーンのサイズ
+    static constexpr Size sceneSize{ 1400, 800 };
+    
+    // APバーのぼかし処理のため
+    RenderTexture gaussianA1_ap{ sceneSize };
+    RenderTexture gaussianA16_ap{ sceneSize / 16 }, gaussianB16_ap{ sceneSize / 16 };
+    
+    // SPバーのぼかし処理のため
+    RenderTexture gaussianA1_sp{ sceneSize };
+    RenderTexture gaussianA16_sp{ sceneSize / 16 }, gaussianB16_sp{ sceneSize / 16 };
 };

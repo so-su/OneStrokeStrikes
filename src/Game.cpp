@@ -51,15 +51,18 @@ void Game::update() {
     // Enemyたちの消滅を進める
     update_to_vanish_enemies();
 
-    // SPが満タンの状態で[F]キーが押されたら、SPを消費して敵を一掃する
-    if (KeyF.down() and player.sp_is_full()) {
-        use_sp();
-    }
-
     // 画面をクリックしたとき
     if (MouseL.down()) {
+        // APを消費してアタックモードに切り替わる
+        if (Rect{940, 720, 120, 80}.contains(Cursor::Pos()) and player.ap_is_full()) {
+            use_ap();
+        }
+        // SPを消費して敵を一掃する
+        else if (Rect{1090, 720, 120, 80}.contains(Cursor::Pos()) and player.sp_is_full()) {
+            use_sp();
+        }
         // 既に一筆書き中なら、一筆書き状態を解除する
-        if (drawing_path_idx.has_value()) {
+        else if (drawing_path_idx.has_value()) {
             enemies[*drawing_path_idx].clear_path();
             drawing_path_idx = none;
         }
@@ -115,11 +118,6 @@ void Game::update() {
         enemy.speed_up_gauge(num_full_gauges);
     }
 
-    // APを消費してアタックモードに切り替わる
-    if (KeyD.down() and player.ap_is_full()) {
-        use_ap();
-    }
-
     // プレイヤーの勝利
     if (not alpha_enemy.is_alive()) {
         getData().win = true;
@@ -137,14 +135,8 @@ void Game::draw() const {
     Scene::SetBackground(background_color);
     
     // 操作説明
-    FontAsset(U"Regular")(U"[space] 一筆書きの始点終点いれかえ").draw(15, 10, 10, Palette::White);
-    FontAsset(U"Regular")(U"[esc] タイトルへもどる").draw(15, 10, 30, Palette::White);
-
-    // プレイヤーのステータスを描画
-    player.draw();
-
-    // 小さいルーレットを画面右下に描画
-    roulette.draw_small_disk();
+    FontAsset(U"Regular")(U"[space] 一筆書きの始点終点いれかえ").draw(18, 10, 10, Palette::White);
+    FontAsset(U"Regular")(U"[esc] タイトルへもどる").draw(18, 10, 30, Palette::White);
 
     // Enemyたちの描画
     for (auto enemy_idx : step(3)) {
@@ -193,6 +185,14 @@ void Game::draw() const {
         // 中央に大きなルーレットを描画する
         roulette.draw();
     }
+    
+    // ルーレットの上下に表示するメッセージ
+    if(pause){
+        FontAsset(U"Black")(U"Next")
+            .drawAt(40, 700, 300, Palette::White);
+        FontAsset(U"Black")(U"Click to resume")
+            .drawAt(25, 700, 670, Palette::White);
+    }
 
     // 図形で攻撃する位置を選んでいるとき
     if (attack_shape != nullptr) {
@@ -205,6 +205,15 @@ void Game::draw() const {
             center, roulette.chosen_color().withAlpha(static_cast<uint32>(
                         255 * (0.3 + Periodic::Jump0_1(2s) * 0.7))));
     }
+    
+    // プレイヤーのステータスを描画
+    player.draw();
+    
+    // 小さいルーレットを画面右下に描画
+    roulette.draw_small_disk();
+    
+    // APバーとSPバーのぼかし処理
+    blur_bars();
 }
 
 // 図形で攻撃する位置を選んでいるときの処理
@@ -395,4 +404,58 @@ void Game::use_ap() {
     // ルーレットが回る時間をランダムで決める
     roulette_duration = Random(Parameter::roulette_rotation_min_duration,
                                Parameter::roulette_rotation_max_duration);
+}
+
+// APバーとSPバーにぼかし処理を施す
+void Game::blur_bars() const {
+    // APが満タンのときにぼかし処理
+    if(player.ap_is_full()){
+        {
+            // ガウスぼかし用テクスチャにもう一度バーを描く
+            {
+                const ScopedRenderTarget2D target{ gaussianA1_ap.clear(ColorF{ 0.0 }) };
+                const ScopedRenderStates2D blend{ BlendState::Additive };
+                
+                player.draw_ap_bar();
+            }
+
+            // オリジナルサイズのガウスぼかし (A1)
+            // A1 を 1/16 サイズにしてガウスぼかし (A16)
+            Shader::Downsample(gaussianA1_ap, gaussianA16_ap);
+            Shader::GaussianBlur(gaussianA16_ap, gaussianB16_ap, gaussianA16_ap);
+        }
+
+        {
+            const ScopedRenderStates2D blend{ BlendState::Additive };
+
+            // マウスオーバーしているならぼかし最大
+            gaussianA16_ap.resized(sceneSize).draw(ColorF{ (Rect{940, 720, 120, 80}.contains(Cursor::Pos())? 1.0: Periodic::Jump0_1(2s)) * 3 });
+        }
+    }
+    
+    // SPが満タンのときにぼかし処理
+    if(player.sp_is_full()){
+        {
+            // ガウスぼかし用テクスチャにもう一度バーを描く
+            {
+                const ScopedRenderTarget2D target{ gaussianA1_sp.clear(ColorF{ 0.0 }) };
+                const ScopedRenderStates2D blend{ BlendState::Additive };
+                
+                player.draw_sp_bar();
+            }
+
+            // オリジナルサイズのガウスぼかし (A1)
+            // A1 を 1/16 サイズにしてガウスぼかし (A16)
+            Shader::Downsample(gaussianA1_sp, gaussianA16_sp);
+            Shader::GaussianBlur(gaussianA16_sp, gaussianB16_sp, gaussianA16_sp);
+        }
+
+        {
+            const ScopedRenderStates2D blend{ BlendState::Additive };
+
+            // マウスオーバーしているならぼかし最大
+            gaussianA16_sp.resized(sceneSize).draw(ColorF{(Rect{1090, 720, 120, 80}.contains(Cursor::Pos())? 1.0: Periodic::Jump0_1(2s)) * 3});
+        }
+
+    }
 }

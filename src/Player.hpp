@@ -35,6 +35,15 @@ class Player {
 
     // HP,AP,SPのバーを描画する
     void draw() const;
+    
+    // HPバーを描画する
+    void draw_hp_bar() const;
+    
+    // APバーを描画する
+    void draw_ap_bar() const;
+    
+    // SPバーを描画する
+    void draw_sp_bar() const;
 
    private:
     // 現在のHP
