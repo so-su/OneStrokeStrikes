@@ -56,6 +56,7 @@ void Game::update() {
         // APを消費してアタックモードに切り替わる
         if (Rect{940, 720, 120, 80}.contains(Cursor::Pos()) and player.ap_is_full()) {
             use_ap();
+            return;
         }
         // SPを消費して敵を一掃する
         else if (Rect{1090, 720, 120, 80}.contains(Cursor::Pos()) and player.sp_is_full()) {

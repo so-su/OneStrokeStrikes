@@ -66,10 +66,10 @@ void Result::draw() const {
     }
     
     if(getData().win){
-        FontAsset(U"Black")(U"クリア！").draw(Arg::rightCenter = Point{right_center, top}, Palette::Black);
+        FontAsset(U"Black")(U"クリア！").draw(30, Arg::rightCenter = Point{right_center, top}, Palette::Black);
     }
     else{
-        FontAsset(U"Black")(U"ゲームオーバー...").draw(Arg::rightCenter = Point{right_center, top}, Palette::Black);
+        FontAsset(U"Black")(U"ゲームオーバー...").draw(30, Arg::rightCenter = Point{right_center, top}, Palette::Black);
     }
     
     if(getData().win){
@@ -86,7 +86,7 @@ void Result::draw() const {
         .draw(Arg::leftCenter = Point{left_center, top + 2 * line_space}, Palette::Black);
     FontAsset(U"Regular")(U"{}"_fmt(getData().point_sum)).draw(Arg::rightCenter = Point{right_center, top + 2 * line_space}, Palette::Black);
     
-    FontAsset(U"Regular")(U"攻撃コンボの回数")
+    FontAsset(U"Regular")(U"ぴったりコンボの回数")
         .draw(Arg::leftCenter = Point{left_center, top + 3 * line_space}, Palette::Black);
     FontAsset(U"Regular")(U"{}"_fmt(getData().attack_combo)).draw(Arg::rightCenter = Point{right_center, top + 3 * line_space}, Palette::Black);
     
