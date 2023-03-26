@@ -19,11 +19,11 @@ void Title::draw() const {
         button.draw_gauge();
     }
 
-    FontAsset(U"Black")(U"ちょっとあそぶ")
+    FontAsset(U"Black")(U"みならい")
         .drawAt(TextStyle::Outline(0.5, Palette::Black), 50, 940, 280,
                 ColorF{0.9});
-    FontAsset(U"Black")(U"あそぶ").drawAt(
-        TextStyle::Outline(0.5, Palette::Black), 390, 380, ColorF{0.9});
+    FontAsset(U"Black")(U"しょくにん").drawAt(
+        TextStyle::Outline(0.5, Palette::Black), 70, 420, 380, ColorF{0.9});
     FontAsset(U"Black")(U"ランキング")
         .drawAt(TextStyle::Outline(0.5, Palette::Black), 40, 760, 560,
                 ColorF{0.9});
@@ -37,7 +37,7 @@ void Title::draw() const {
         FontAsset(U"Regular")(U"はじめてのかたはこちらから")
             .drawAt(message_window.center(), Palette::White);
     } else if (buttons[1].contains(Cursor::Pos())) {
-        FontAsset(U"Regular")(U"連勝めざしてひたすら一筆書き！")
+        FontAsset(U"Regular")(U"ドキドキブンレツ一筆書きパズル！")
             .drawAt(message_window.center(), Palette::White);
     } else if (buttons[2].contains(Cursor::Pos())) {
         FontAsset(U"Regular")(U"ランキングをみる")

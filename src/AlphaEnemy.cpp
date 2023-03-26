@@ -11,7 +11,7 @@ AlphaEnemy::AlphaEnemy(bool easy)
 void AlphaEnemy::initialize() {
     Size grid_size;
     if (easy_mode) {
-        grid_size = Size{2,2};
+        grid_size = Parameter::alpha_enemy_max_grid_size_easy;
     } else {
         grid_size = Parameter::alpha_enemy_max_grid_size;
     }
@@ -133,10 +133,12 @@ void AlphaEnemy::get_damaged(size_t remove_num) {
     compute_perimeters();
 }
 
-// 埋まっているセルのうち、指定した図形と重なるものを削除する
-bool AlphaEnemy::get_damaged(AttackShape* attack_shape) {
+// 埋まっているセルのうち、指定した図形と重なるものを削除し、どれだけ削除できたかを返す
+ShapeAttackStatus AlphaEnemy::get_damaged(AttackShape* attack_shape) {
     // 1つ以上削除できたか
     bool success{false};
+    // attack shapeのブロックですべて削除できたか
+    bool all{true};
 
     // AttackShapeの埋まっている各セルの中心について、
     // それを含む、ポリオミノの埋まっているセルが存在するか判定する
@@ -145,6 +147,10 @@ bool AlphaEnemy::get_damaged(AttackShape* attack_shape) {
             if (not attack_shape->shape[shape_y][shape_x]) {
                 continue;
             }
+            
+            // 今見ているブロックで削除できたか
+            bool ok{false};
+            
             const Point center_pos{
                 Cursor::Pos() + Point{30 * (shape_x - 1), 30 * (shape_y - 1)}};
             for (auto pos : step(grid_size)) {
@@ -154,8 +160,11 @@ bool AlphaEnemy::get_damaged(AttackShape* attack_shape) {
                     rects[pos] = none;
                     --num_filled_cells;
                     success = true;
+                    ok = true;
+                    break;
                 }
             }
+            all = all && ok;
         }
     }
 
@@ -171,7 +180,15 @@ bool AlphaEnemy::get_damaged(AttackShape* attack_shape) {
         shuffled_filled_cells.shuffle();
     }
 
-    return success;
+    if(all){
+        return ShapeAttackStatus::All;
+    }
+    else if(success){
+        return ShapeAttackStatus::NotAll;
+    }
+    else{
+        return ShapeAttackStatus::None;
+    }
 }
 
 // ゲージを更新し、満タンになったゲージの個数を返す

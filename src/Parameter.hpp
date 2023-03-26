@@ -61,12 +61,12 @@ constexpr int32 win_bonus{200000};
 constexpr int32 win_bonus_easy{100000};
 
 // クリアまでのタイムによるスコアボーナスの倍率
-constexpr double time_bonus_rate{100.0};
+constexpr double time_bonus_rate{200.0};
 
 // 攻撃コンボによるスコアボーナスの倍率
-constexpr int32 attack_combo_bonus_rate{20000};
+constexpr int32 attack_combo_bonus_rate{10000};
 
-// 一筆書きの色の列をランレングス圧縮したときの平均の長さによるスコアボーナスの倍率
-constexpr double mean_run_length_bonus_rate{100000.0};
+// 一筆書きの色の列をランレングス圧縮したときの長さの最大値の平均によるスコアボーナスの倍率
+constexpr double mean_max_run_length_bonus_rate{20000.0};
 
 }  // namespace Parameter

@@ -6,11 +6,16 @@ Game::Game(const InitData& init) : IScene{init} {
     getData().elapsed_time = 0.0;
     getData().point_sum = 0;
     getData().attack_combo = 0;
-    getData().sum_run_length = 0;
-    getData().num_run_length_parts = 0;
+    getData().sum_max_run_length = 0;
+    getData().cnt_one_stroke = 0;
 }
 
 void Game::update() {
+    // [esc]キーでタイトルに戻る
+    if(KeyEscape.down()){
+        changeScene(State::Title);
+    }
+    
     // マスクの透過率を更新
     mask_alpha_transition.update(attack_mode or pause);
 
@@ -70,7 +75,7 @@ void Game::update() {
         }
     }
 
-    // [Space]キーが押されたら一筆書きのパスを反転させる
+    // [space]キーが押されたら一筆書きのパスを反転させる
     if (KeySpace.down() and drawing_path_idx.has_value()) {
         enemies[*drawing_path_idx].reverse_path();
     }
@@ -130,12 +135,10 @@ void Game::update() {
 
 void Game::draw() const {
     Scene::SetBackground(background_color);
-    ClearPrint();
-    Print<<getData().elapsed_time;
-
-    // 奥行きを見せるための背景の線
-    // Triangle{0, 400, 0, 395, 350, 200}.draw(Palette::Dimgray);
-    // Triangle{1400, 400, 1400, 395, 1050, 200}.draw(Palette::Dimgray);
+    
+    // 操作説明
+    FontAsset(U"Regular")(U"[space] 一筆書きの始点終点いれかえ").draw(15, 10, 10, Palette::White);
+    FontAsset(U"Regular")(U"[esc] タイトルへもどる").draw(15, 10, 30, Palette::White);
 
     // プレイヤーのステータスを描画
     player.draw();
@@ -207,14 +210,29 @@ void Game::draw() const {
 // 図形で攻撃する位置を選んでいるときの処理
 void Game::shape_attack_update() {
     if (not MouseL.down()) return;
+    
+    ShapeAttackStatus status{alpha_enemy.get_damaged(attack_shape)};
 
     // 図形で攻撃し、ひとつも消えなかったらやり直し
-    if (not alpha_enemy.get_damaged(attack_shape)) {
+    if (status == ShapeAttackStatus::None) {
         return;
     }
 
     attack_shape = nullptr;
     get_out_of_attack_mode();
+    
+    // attack shapeのブロックすべてで削除できたらもう一度
+    if(status == ShapeAttackStatus::All){
+        pause = false;
+        attack_mode = true;
+        attack_mode_timer.restart();
+
+        // ルーレットが回る時間をランダムで決める
+        roulette_duration = Random(Parameter::roulette_rotation_min_duration,
+                                   Parameter::roulette_rotation_max_duration);
+        
+        ++getData().attack_combo;
+    }
 }
 
 // 攻撃モード時の処理
@@ -332,13 +350,13 @@ void Game::update_one_stroke_path() {
         vanishing_timers[*drawing_path_idx] = 0.0;
         drawing_path_idx = none;
 
-        const auto& path_score{enemy.get_path_score()};
+        const auto& path_info{enemy.get_path_score()};
         
-        getData().sum_run_length += std::get<1>(path_score);
-        getData().num_run_length_parts += std::get<2>(path_score);
+        getData().sum_max_run_length += path_info.second;
+        ++getData().cnt_one_stroke;
         
         // パスのスコアによって効果を得る
-        const auto& score{std::get<0>(path_score)};
+        const auto& score{path_info.first};
         player.get_healed(score.green);
         player.get_ap(score.red);
         player.get_sp(score.blue);

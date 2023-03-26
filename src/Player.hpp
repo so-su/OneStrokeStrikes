@@ -53,7 +53,7 @@ class Player {
     static constexpr int32 max_ap{1000};
 
     // 最大のSP
-    static constexpr int32 max_sp{1000};
+    static constexpr int32 max_sp{1500};
 
     // HPのバー
     ProgressBar hp_bar{Rect{100, 750, 800, 20}, MyColor::Green};

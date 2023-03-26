@@ -20,9 +20,11 @@ Result::Result(const InitData& init) : IScene{init} {
     // 図形による攻撃のコンボによるスコア
     getData().score += getData().attack_combo * Parameter::attack_combo_bonus_rate;
     
-    // 一筆書きの色の列をランレングス圧縮したときの平均の長さによるスコアボーナス
-    mean_run_length = static_cast<double>(getData().sum_run_length) / getData().num_run_length_parts;
-    getData().score += static_cast<int32>((mean_run_length - 1.0) * Parameter::mean_run_length_bonus_rate);
+    // 一筆書きの色の列をランレングス圧縮したときの長さの最大値の平均によるスコアボーナス
+    if(getData().cnt_one_stroke > 0){
+        mean_max_run_length = static_cast<double>(getData().sum_max_run_length) / getData().cnt_one_stroke;
+    }
+    getData().score += static_cast<int32>((mean_max_run_length - 1.0) * Parameter::mean_max_run_length_bonus_rate);
 }
 
 void Result::update() {
@@ -86,9 +88,9 @@ void Result::draw() const {
         .draw(Arg::leftCenter = Point{left_center, top + 3 * line_space}, Palette::Black);
     FontAsset(U"Regular")(U"{}"_fmt(getData().attack_combo)).draw(Arg::rightCenter = Point{right_center, top + 3 * line_space}, Palette::Black);
     
-    FontAsset(U"Regular")(U"同じ色を連続させた平均長さ")
+    FontAsset(U"Regular")(U"一筆書きパワー")
         .draw(Arg::leftCenter = Point{left_center, top + 4 * line_space}, Palette::Black);
-    FontAsset(U"Regular")(U"{:.2f}"_fmt(mean_run_length)).draw(Arg::rightCenter = Point{right_center, top + 4 * line_space}, Palette::Black);
+    FontAsset(U"Regular")(U"{:.2f}"_fmt(mean_max_run_length)).draw(Arg::rightCenter = Point{right_center, top + 4 * line_space}, Palette::Black);
 
     see_ranking.draw();
     FontAsset(U"Regular")(U"ランキングをみる")

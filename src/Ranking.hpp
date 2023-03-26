@@ -33,7 +33,7 @@ class Ranking : public App::Scene {
     // ユーザーの情報をもつ構造体
     struct User {
         String user_id;
-        uint32 score;
+        int32 score;
     };
 
     // ランキングをもつ配列

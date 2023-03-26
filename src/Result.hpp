@@ -12,8 +12,8 @@ class Result : public App::Scene {
     void draw() const override;
 
    private:
-    // 一筆書きの色の列をランレングス圧縮したときの平均の長さ
-    double mean_run_length;
+    // 一筆書きの色の列をランレングス圧縮したときの長さの最大値の平均
+    double mean_max_run_length{0.0};
     
     // ランキングをみるボタン
     SimpleButton see_ranking{Rect{Arg::center = Point{550, 700}, 180, 50},

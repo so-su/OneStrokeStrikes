@@ -28,11 +28,11 @@ struct GameData {
     // 図形による攻撃のコンボの回数
     int32 attack_combo;
     
-    // 一筆書きの色の列をランレングス圧縮したときの長さの総和
-    int32 sum_run_length;
+    // 一筆書きの色の列をランレングス圧縮したときの長さの最大値の総和
+    int32 sum_max_run_length;
     
-    // 一筆書きの色の列をランレングス圧縮したときに分かれる部分の個数の総和
-    int32 num_run_length_parts;
+    // 一筆書きが成功した回数
+    int32 cnt_one_stroke;
 
     // 「ちょっとあそぶ」モード
     bool easy_mode;

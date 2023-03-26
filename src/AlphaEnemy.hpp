@@ -4,6 +4,12 @@
 #include "Polyomino.hpp"
 #include "ProgressBar.hpp"
 
+enum class ShapeAttackStatus{
+    All,
+    NotAll,
+    None,
+};
+
 class AlphaEnemy : public Polyomino {
    public:
     AlphaEnemy(bool easy);
@@ -17,8 +23,8 @@ class AlphaEnemy : public Polyomino {
     // 埋まっているセルを、指定した個数だけ削除する
     void get_damaged(size_t remove_num);
 
-    // 埋まっているセルのうち、指定した図形と重なるものを削除する
-    bool get_damaged(AttackShape* attack_shape);
+    // 埋まっているセルのうち、指定した図形と重なるものを削除し、どれだけ削除できたかを返す
+    ShapeAttackStatus get_damaged(AttackShape* attack_shape);
 
     // ゲージを更新し、満タンになったゲージの個数を返す
     int32 update_gauges();

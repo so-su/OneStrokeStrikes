@@ -152,7 +152,7 @@ void Ranking::load_ranking() {
     const JSON users = JSON::Load(U"ranking.json");
     for (const auto& user : users.arrayView()) {
         ranking.emplace_back(
-            User{user[U"user_id"].get<String>(), user[U"score"].get<uint32>()});
+            User{user[U"user_id"].get<String>(), user[U"score"].get<int32>()});
     }
 }
 
