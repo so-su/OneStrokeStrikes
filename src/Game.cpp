@@ -174,11 +174,6 @@ void Game::draw() const {
         }
     }
 
-    if (all_clear_status == AllClearStatus::LastHasVanished) {
-        FontAsset(U"Kaisotai")(U"All Clear!!")
-            .drawAt(100, 700, 500, Palette::White);
-    }
-
     // アタックモード中のマスクを描画
     mask.draw(ColorF{background_color, mask_alpha_transition.value() * 0.8});
 
@@ -189,9 +184,9 @@ void Game::draw() const {
     
     // ルーレットの上下に表示するメッセージ
     if(pause){
-        FontAsset(U"Black")(U"Next")
+        FontAsset(U"Black")(U"つぎ")
             .drawAt(40, 700, 300, Palette::White);
-        FontAsset(U"Black")(U"Click to resume")
+        FontAsset(U"Black")(U"クリックで再開")
             .drawAt(25, 700, 670, Palette::White);
     }
 
@@ -215,6 +210,8 @@ void Game::draw() const {
     
     // APバーとSPバーのぼかし処理
     blur_bars();
+    
+    effect.update();
 }
 
 // 図形で攻撃する位置を選んでいるときの処理
@@ -231,7 +228,7 @@ void Game::shape_attack_update() {
     attack_shape = nullptr;
     get_out_of_attack_mode();
     
-    // attack shapeのブロックすべてで削除できたらもう一度
+    // attack shapeのブロックすべてで削除できたらもう一度（ぴったりコンボ）
     if(status == ShapeAttackStatus::All){
         pause = false;
         attack_mode = true;
@@ -242,6 +239,8 @@ void Game::shape_attack_update() {
                                    Parameter::roulette_rotation_max_duration);
         
         ++getData().attack_combo;
+        
+        effect.add<StringEffect>(U"ぴったりコンボ！", 80, Point{700, 320}, 2.0, 0.5);
     }
 }
 
@@ -313,6 +312,8 @@ void Game::update_to_vanish_enemies() {
                 // リスポーンまでの時間は短め
                 respawn_timers[0] = respawn_timers[1] = respawn_timers[2] =
                     Parameter::respawn_time - Parameter::short_respawn_time;
+                
+                effect.add<StringEffect>(U"オールクリア!", 100, Point{700, 500}, 2.0, 0.5);
             }
         }
     }

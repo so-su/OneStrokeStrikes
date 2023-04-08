@@ -6,6 +6,7 @@
 #include "Enemy.hpp"
 #include "Player.hpp"
 #include "ProgressBar.hpp"
+#include "StringEffect.hpp"
 
 // ゲームシーン
 class Game : public App::Scene {
@@ -110,4 +111,6 @@ class Game : public App::Scene {
     // SPバーのぼかし処理のため
     RenderTexture gaussianA1_sp{ sceneSize };
     RenderTexture gaussianA16_sp{ sceneSize / 16 }, gaussianB16_sp{ sceneSize / 16 };
+    
+    Effect effect;
 };
