@@ -1,20 +1,18 @@
 // 調節可能なパラメータをParameter名前空間にまとめておく
 namespace Parameter {
 /* ゲームの難易度に関わるもの */
-// AlphaEnemyの最大グリッドサイズ（通常モード）
-constexpr Size alpha_enemy_max_grid_size{20, 8};
-
-// AlphaEnemyの最大グリッドサイズ（easyモード）
+// AlphaEnemyの最大グリッドサイズ
 constexpr Size alpha_enemy_max_grid_size_easy{15, 6};
+constexpr Size alpha_enemy_max_grid_size_normal{18, 7};
+constexpr Size alpha_enemy_max_grid_size_hard{20, 8};
 
 // Enemyの最小グリッドサイズ
 constexpr int32 enemy_min_grid_size{3};
 
-// Enemyの最大グリッドサイズ（通常モード）
-constexpr int32 enemy_max_grid_size{8};
-
-// Enemyの最大グリッドサイズ（easyモード）
+// Enemyの最大グリッドサイズ
 constexpr int32 enemy_max_grid_size_easy{6};
+constexpr int32 enemy_max_grid_size_normal{7};
+constexpr int32 enemy_max_grid_size_hard{8};
 
 // Enemyを倒したときの基礎ポイント/セル
 constexpr int32 basic_point_per_cell{20};
@@ -35,7 +33,9 @@ constexpr double respawn_time{6.0};
 constexpr double enemy_gauge_initial_speed{1.0};
 
 // Enemyのゲージの加速度
-constexpr double gauge_speed_up_rate{0.3};
+constexpr double gauge_speed_up_rate_easy{0.3};
+constexpr double gauge_speed_up_rate_normal{0.3};
+constexpr double gauge_speed_up_rate_hard{0.5};
 
 /* 演出に関わるもの */
 // Enemyを一筆書きしてから消滅し始めるまでの時間
@@ -54,11 +54,10 @@ constexpr double roulette_rotation_min_duration{2.5};
 constexpr double roulette_rotation_max_duration{4.0};
 
 /* スコアボーナスに関する値*/
-// 勝利したときのスコアボーナス（通常モード）
-constexpr int32 win_bonus{200000};
-
-// 勝利したときのスコアボーナス（easyモード）
+// 勝利したときのスコアボーナス
 constexpr int32 win_bonus_easy{100000};
+constexpr int32 win_bonus_normal{150000};
+constexpr int32 win_bonus_hard{200000};
 
 // クリアまでのタイムによるスコアボーナスの倍率
 constexpr double time_bonus_rate{200.0};

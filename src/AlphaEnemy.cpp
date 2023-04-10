@@ -1,21 +1,25 @@
 #include "AlphaEnemy.hpp"
 
-AlphaEnemy::AlphaEnemy(bool easy)
-    : Polyomino(Parameter::alpha_enemy_max_grid_size, cell_size,
-                Point{700, 150}) {
-    easy_mode = easy;
+AlphaEnemy::AlphaEnemy(Difficulty diff)
+    // hardのサイズでメモリを確保しておく
+    : Polyomino(Parameter::alpha_enemy_max_grid_size_hard, cell_size,
+                Point{700, 150}){
+    difficulty=diff;
     initialize();
 }
 
 // 初期化する
 void AlphaEnemy::initialize() {
     Size grid_size;
-    if (easy_mode) {
+    if (difficulty == Difficulty::Easy) {
         grid_size = Parameter::alpha_enemy_max_grid_size_easy;
-    } else {
-        grid_size = Parameter::alpha_enemy_max_grid_size;
+    } else if(difficulty == Difficulty::Normal){
+        grid_size = Parameter::alpha_enemy_max_grid_size_normal;
+    } else{
+        grid_size = Parameter::alpha_enemy_max_grid_size_hard;
     }
     Polyomino::initialize(grid_size, Cell::Yellow);
+    
     compute_perimeters();
 }
 

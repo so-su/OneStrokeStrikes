@@ -14,7 +14,7 @@ struct Score {
 
 class Enemy : public Polyomino {
    public:
-    Enemy(Point center, bool easy);
+    Enemy(Point center, Difficulty diff);
 
     // 初期化する
     void initialize();

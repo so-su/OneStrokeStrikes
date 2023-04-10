@@ -20,14 +20,13 @@ class Title : public App::Scene {
     Array<Button> buttons;
 
     // ボタンのセルの大きさ
-    static constexpr int32 cell_size{80};
+    const Array<int32> cell_sizes{90, 60, 60};
 
     // ボタンのグリッドの大きさの配列
     const Array<Size> grid_sizes{
-        {6, 2},
         {7, 5},
-        {4, 3},
-        {3, 2},
+        {6, 3},
+        {6, 4}
     };
 
     // ボタンの一筆書きのパスの配列
@@ -36,55 +35,91 @@ class Title : public App::Scene {
             {0, 0},
             {1, 0},
             {2, 0},
+            {2, 1},
+            {3, 1},
             {3, 0},
             {4, 0},
-            {5, 0},
-            {5, 1},
             {4, 1},
-            {3, 1},
-            {2, 1},
-            {1, 1},
-            {0, 1},
-        },
-        {
-            {2, 2}, {3, 2}, {3, 3}, {4, 3}, {4, 2}, {5, 2}, {5, 1},
-            {4, 1}, {3, 1}, {2, 1}, {2, 0}, {1, 0}, {0, 0}, {0, 1},
-            {1, 1}, {1, 2}, {1, 3}, {1, 4}, {2, 4}, {2, 3},
-        },
-        {
-            {1, 0},
-            {2, 0},
-            {2, 1},
-            {3, 1},
+            {5, 1},
+            {6, 1},
+            {6, 2},
+            {5, 2},
+            {5, 3},
+            {4, 3},
+            {4, 2},
             {3, 2},
+            {3, 3},
+            {3, 4},
+            {2, 4},
+            {1, 4},
+            {1, 3},
+            {2, 3},
             {2, 2},
             {1, 2},
-            {0, 2},
-            {0, 1},
             {1, 1},
+            {0, 1},
+
         },
         {
             {0, 0},
             {0, 1},
-            {1, 1},
-            {2, 1},
+            {0, 2},
+            {1, 2},
+            {2, 2},
+            {3, 2},
+            {3, 1},
+            {4, 1},
+            {4, 2},
+            {5, 2},
+            {5, 1},
+            {5, 0},
+            {4, 0},
+            {3, 0},
             {2, 0},
+            {2, 1},
+            {1, 1},
             {1, 0},
-        }};
+        },
+        {
+            {2, 0},
+            {3, 0},
+            {3, 1},
+            {3, 2},
+            {4, 2},
+            {5, 2},
+            {5, 3},
+            {4, 3},
+            {3, 3},
+            {2, 3},
+            {1, 3},
+            {0, 3},
+            {0, 2},
+            {0, 1},
+            {1, 1},
+            {1, 2},
+            {2, 2},
+            {2, 1},
+        }
+    };
 
     // ボタンの左上の座標の配列
     const Array<Point> upper_lefts{
-        {700, 200}, {150, 200}, {600, 400}, {970, 400}};
+        {190, 200},{840, 230}, {780, 430}};
 
     // ボタンの色の配列
-    const Array<Color> colors{MyColor::Green, MyColor::Red, MyColor::Blue,
-                              MyColor::Yellow};
+    const Array<Color> colors{MyColor::Red, MyColor::Green, MyColor::Blue};
 
     // ボタンの最小の透過率の配列
-    const Array<double> alpha_mins{0.7, 0.7, 0.7, 0.5};
+    const Array<double> alpha_mins{0.7, 0.7, 0.7};
+    
+    // 難易度変更ボタンの三角形
+    Triangle left_triangle_small{370, 450, 40, -90_deg};
+    Triangle left_triangle_large{370, 450, 50, -90_deg};
+    Triangle right_triangle_small{630, 450, 40, 90_deg};
+    Triangle right_triangle_large{630, 450, 50, 90_deg};
 
     // 画面下のメッセージウィンドウの長方形
-    static constexpr Rect message_window{0, 700, 1400, 50};
+    static constexpr Rect message_window{0, 700, 1400,50};
 
     // ボタンがまだ押されていない
     bool can_press_button{true};

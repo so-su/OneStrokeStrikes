@@ -3,11 +3,14 @@
 Result::Result(const InitData& init) : IScene{init} {
     // 勝利によるスコアボーナス
     if(getData().win){
-        if(getData().easy_mode){
+        if(getData().difficulty == Difficulty::Easy){
             getData().score += Parameter::win_bonus_easy;
         }
+        else if(getData().difficulty == Difficulty::Normal){
+            getData().score += Parameter::win_bonus_normal;
+        }
         else{
-            getData().score += Parameter::win_bonus;
+            getData().score += Parameter::win_bonus_hard;
         }
     }
     
@@ -58,11 +61,18 @@ void Result::draw() const {
     FontAsset(U"Black")(U"トータルスコア  {}"_fmt(getData().score))
             .drawAt(50, 700, 230, Palette::Black);
 
-    if(getData().easy_mode){
-        FontAsset(U"Regular")(U"みならいモード").draw(Arg::leftCenter = Point{left_center, top}, Palette::Black);
-    }
-    else{
-        FontAsset(U"Regular")(U"しょくにんモード").draw(Arg::leftCenter = Point{left_center, top}, Palette::Black);
+    {
+        String difficulty_text;
+        if(getData().difficulty == Difficulty::Easy){
+            difficulty_text=U"みならいモード";
+        }
+        else if(getData().difficulty == Difficulty::Normal){
+            difficulty_text=U"じゅくれんモード";
+        }
+        else{
+            difficulty_text=U"しょくにんモード";
+        }
+        FontAsset(U"Regular")(difficulty_text).draw(Arg::leftCenter = Point{left_center, top}, Palette::Black);
     }
     
     if(getData().win){

@@ -143,7 +143,7 @@ bool Button::update(bool can_press) {
 
 // 入力された座標がボタンと重なっているかを返す
 bool Button::contains(Point pos) const {
-    for (auto rect : rects) {
+    for (const auto& rect : rects) {
         if (rect.has_value() and rect->contains(pos)) {
             return true;
         }

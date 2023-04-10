@@ -46,12 +46,12 @@ class Game : public App::Scene {
     Player player;
 
     // 下段のポリオミノの敵たちの配列
-    std::array<Enemy, 3> enemies{Enemy(Point{250, 500}, getData().easy_mode),
-                                 Enemy(Point{700, 500}, getData().easy_mode),
-                                 Enemy(Point{1150, 500}, getData().easy_mode)};
+    std::array<Enemy, 3> enemies{Enemy(Point{250, 500}, getData().difficulty),
+                                 Enemy(Point{700, 500}, getData().difficulty),
+                                 Enemy(Point{1150, 500}, getData().difficulty)};
 
     // 上段のポリオミノの敵
-    AlphaEnemy alpha_enemy{getData().easy_mode};
+    AlphaEnemy alpha_enemy{getData().difficulty};
 
     // 一筆書き中のEnemyのインデックス
     Optional<int32> drawing_path_idx{none};

@@ -59,7 +59,7 @@ void Game::update() {
             return;
         }
         // SPを消費して敵を一掃する
-        else if (Rect{1090, 720, 120, 80}.contains(Cursor::Pos()) and player.sp_is_full()) {
+        else if (Rect{1090, 720, 120, 80}.contains(Cursor::Pos()) and player.sp_is_full() and all_clear_status == AllClearStatus::EnemyAliveExists) {
             use_sp();
         }
         // 既に一筆書き中なら、一筆書き状態を解除する
@@ -133,11 +133,13 @@ void Game::update() {
 }
 
 void Game::draw() const {
+    /* 描画の順番には気をつける */
+    
     Scene::SetBackground(background_color);
     
     // 操作説明
-    FontAsset(U"Regular")(U"[space] 一筆書きの始点終点いれかえ").draw(18, 10, 10, Palette::White);
-    FontAsset(U"Regular")(U"[esc] タイトルへもどる").draw(18, 10, 30, Palette::White);
+    FontAsset(U"Black")(U"[space] 一筆書きの始点終点いれかえ").draw(18, 10, 10, Palette::White);
+    FontAsset(U"Black")(U"[esc] タイトルへもどる").draw(18, 10, 30, Palette::White);
 
     // Enemyたちの描画
     for (auto enemy_idx : step(3)) {
@@ -165,6 +167,15 @@ void Game::draw() const {
     // AlphaEnemyの描画
     alpha_enemy.draw();
     alpha_enemy.draw_gauges();
+    
+    // プレイヤーのステータスを描画
+    player.draw();
+    
+    // APバーとSPバーのぼかし処理
+    blur_bars();
+    
+    // 小さいルーレットを画面右下に描画
+    roulette.draw_small_disk();
 
     {
         // エフェクトは加算ブレンドで描画する
@@ -173,10 +184,13 @@ void Game::draw() const {
             enemy.draw_effect();
         }
     }
-
+    
     // アタックモード中のマスクを描画
     mask.draw(ColorF{background_color, mask_alpha_transition.value() * 0.8});
-
+    
+    // 文字のエフェクトの更新
+    effect.update();
+   
     if (attack_mode or pause) {
         // 中央に大きなルーレットを描画する
         roulette.draw();
@@ -201,17 +215,6 @@ void Game::draw() const {
             center, roulette.chosen_color().withAlpha(static_cast<uint32>(
                         255 * (0.3 + Periodic::Jump0_1(2s) * 0.7))));
     }
-    
-    // プレイヤーのステータスを描画
-    player.draw();
-    
-    // 小さいルーレットを画面右下に描画
-    roulette.draw_small_disk();
-    
-    // APバーとSPバーのぼかし処理
-    blur_bars();
-    
-    effect.update();
 }
 
 // 図形で攻撃する位置を選んでいるときの処理

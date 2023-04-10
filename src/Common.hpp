@@ -11,6 +11,12 @@ enum class State {
     Ranking,
 };
 
+enum class Difficulty {
+    Easy,
+    Normal,
+    Hard,
+};
+
 // 共有するデータ
 struct GameData {
     // ランキングに登録するゲームのスコア
@@ -35,7 +41,7 @@ struct GameData {
     int32 cnt_one_stroke;
 
     // 「ちょっとあそぶ」モード
-    bool easy_mode;
+    Difficulty difficulty{Difficulty::Easy};
 
     // プレイヤーのユーザーid
     String player_id;

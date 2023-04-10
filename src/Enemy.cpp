@@ -1,22 +1,26 @@
 #include "Enemy.hpp"
 
-Enemy::Enemy(Point center, bool easy)
+Enemy::Enemy(Point center, Difficulty diff)
+    // hardのサイズでメモリを確保しておく
     : Polyomino(
-          Size{Parameter::enemy_max_grid_size, Parameter::enemy_max_grid_size},
+          Size{Parameter::enemy_max_grid_size_hard, Parameter::enemy_max_grid_size_hard},
           cell_size, center) {
-    easy_mode = easy;
+    difficulty = diff;
     initialize();
 }
 
 // 初期化する
 void Enemy::initialize() {
     int32 grid_len;
-    if (easy_mode) {
+    if (difficulty == Difficulty::Easy) {
         grid_len = Random(Parameter::enemy_min_grid_size,
                           Parameter::enemy_max_grid_size_easy);
-    } else {
+    } else if(difficulty == Difficulty::Normal){
         grid_len = Random(Parameter::enemy_min_grid_size,
-                          Parameter::enemy_max_grid_size);
+                          Parameter::enemy_max_grid_size_normal);
+    } else{
+        grid_len = Random(Parameter::enemy_min_grid_size,
+                          Parameter::enemy_max_grid_size_hard);
     }
     Polyomino::initialize(Size{grid_len, grid_len});
 
@@ -217,7 +221,15 @@ int32 Enemy::attack_value() const { return Parameter::enemy_attack_value; }
 
 // ゲージの周回速度を上昇させる
 void Enemy::speed_up_gauge(int32 times) {
-    gauge_speed += Parameter::gauge_speed_up_rate * times;
+    if(difficulty==Difficulty::Easy){
+        gauge_speed += Parameter::gauge_speed_up_rate_easy * times;
+    }
+    if(difficulty==Difficulty::Normal){
+        gauge_speed += Parameter::gauge_speed_up_rate_normal * times;
+    }
+    else{
+        gauge_speed += Parameter::gauge_speed_up_rate_hard * times;
+    }
 }
 
 // ランダムで消滅する準備をする

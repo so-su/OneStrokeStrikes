@@ -12,7 +12,7 @@ enum class ShapeAttackStatus{
 
 class AlphaEnemy : public Polyomino {
    public:
-    AlphaEnemy(bool easy);
+    AlphaEnemy(Difficulty diff);
 
     // 初期化する
     void initialize();

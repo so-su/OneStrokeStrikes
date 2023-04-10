@@ -47,8 +47,8 @@ class Polyomino {
     // ポリオミノを初期化する
     void initialize(Size grid_size, Cell designated = Cell::None);
 
-    // easy modeかどうか
-    bool easy_mode;
+    // 難易度
+    Difficulty difficulty;
 
     // セルの大きさ
     const int32 cell_size;
