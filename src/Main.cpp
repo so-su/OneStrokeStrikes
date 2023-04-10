@@ -23,9 +23,6 @@ void Main() {
     manager.add<Result>(State::Result);
     manager.add<Ranking>(State::Ranking);
 
-    // ゲームシーンから開始したい場合はこのコメントを外す
-    // manager.init(State::Ranking);
-
     while (System::Update()) {
         if (not manager.update()) {
             break;

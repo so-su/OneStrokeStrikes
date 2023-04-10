@@ -53,13 +53,13 @@ void Result::update() {
 }
 
 void Result::draw() const {
-    Scene::SetBackground(MyColor::White);
+    Scene::SetBackground(MyColor::Background);
 
-    FontAsset(U"Kaisotai")(U"リザルト").drawAt(80, 700, 100, Palette::Black);
+    FontAsset(U"Kaisotai")(U"リザルト").drawAt(80, 700, 100, MyColor::White);
     frame.drawFrame(1, 1, Palette::Dimgray);
     
     FontAsset(U"Black")(U"トータルスコア  {}"_fmt(getData().score))
-            .drawAt(50, 700, 230, Palette::Black);
+            .drawAt(50, 700, 230, MyColor::White);
 
     {
         String difficulty_text;
@@ -72,37 +72,37 @@ void Result::draw() const {
         else{
             difficulty_text=U"しょくにんモード";
         }
-        FontAsset(U"Regular")(difficulty_text).draw(Arg::leftCenter = Point{left_center, top}, Palette::Black);
+        FontAsset(U"Regular")(difficulty_text).draw(Arg::leftCenter = Point{left_center, top}, MyColor::White);
     }
     
     if(getData().win){
-        FontAsset(U"Black")(U"クリア！").draw(30, Arg::rightCenter = Point{right_center, top}, Palette::Black);
+        FontAsset(U"Black")(U"クリア！").draw(30, Arg::rightCenter = Point{right_center, top}, MyColor::White);
     }
     else{
-        FontAsset(U"Black")(U"ゲームオーバー...").draw(30, Arg::rightCenter = Point{right_center, top}, Palette::Black);
+        FontAsset(U"Black")(U"ゲームオーバー...").draw(30, Arg::rightCenter = Point{right_center, top}, MyColor::White);
     }
     
     if(getData().win){
-        FontAsset(U"Regular")(U"クリアまでの秒数").draw(Arg::leftCenter = Point{left_center, top + line_space}, Palette::Black);
+        FontAsset(U"Regular")(U"クリアまでの秒数").draw(Arg::leftCenter = Point{left_center, top + line_space}, MyColor::White);
         FontAsset(U"Regular")(U"{}"_fmt(static_cast<int32>(getData().elapsed_time)))
-                    .draw(Arg::rightCenter = Point{right_center, top + line_space}, Palette::Black);
+                    .draw(Arg::rightCenter = Point{right_center, top + line_space}, MyColor::White);
     }
     else{
-        FontAsset(U"Regular")(U"クリアまでの秒数").draw(Arg::leftCenter = Point{left_center, top + line_space}, Palette::Black);
-        FontAsset(U"Regular")(U"ー").draw(Arg::rightCenter = Point{right_center, top + line_space}, Palette::Black);
+        FontAsset(U"Regular")(U"クリアまでの秒数").draw(Arg::leftCenter = Point{left_center, top + line_space}, MyColor::White);
+        FontAsset(U"Regular")(U"ー").draw(Arg::rightCenter = Point{right_center, top + line_space}, MyColor::White);
     }
     
     FontAsset(U"Regular")(U"ためたポイント")
-        .draw(Arg::leftCenter = Point{left_center, top + 2 * line_space}, Palette::Black);
-    FontAsset(U"Regular")(U"{}"_fmt(getData().point_sum)).draw(Arg::rightCenter = Point{right_center, top + 2 * line_space}, Palette::Black);
+        .draw(Arg::leftCenter = Point{left_center, top + 2 * line_space}, MyColor::White);
+    FontAsset(U"Regular")(U"{}"_fmt(getData().point_sum)).draw(Arg::rightCenter = Point{right_center, top + 2 * line_space}, MyColor::White);
     
     FontAsset(U"Regular")(U"ぴったりコンボの回数")
-        .draw(Arg::leftCenter = Point{left_center, top + 3 * line_space}, Palette::Black);
-    FontAsset(U"Regular")(U"{}"_fmt(getData().attack_combo)).draw(Arg::rightCenter = Point{right_center, top + 3 * line_space}, Palette::Black);
+        .draw(Arg::leftCenter = Point{left_center, top + 3 * line_space}, MyColor::White);
+    FontAsset(U"Regular")(U"{}"_fmt(getData().attack_combo)).draw(Arg::rightCenter = Point{right_center, top + 3 * line_space}, MyColor::White);
     
     FontAsset(U"Regular")(U"一筆書きパワー")
-        .draw(Arg::leftCenter = Point{left_center, top + 4 * line_space}, Palette::Black);
-    FontAsset(U"Regular")(U"{:.2f}"_fmt(mean_max_run_length)).draw(Arg::rightCenter = Point{right_center, top + 4 * line_space}, Palette::Black);
+        .draw(Arg::leftCenter = Point{left_center, top + 4 * line_space}, MyColor::White);
+    FontAsset(U"Regular")(U"{:.2f}"_fmt(mean_max_run_length)).draw(Arg::rightCenter = Point{right_center, top + 4 * line_space}, MyColor::White);
 
     see_ranking.draw();
     FontAsset(U"Regular")(U"ランキングをみる")
