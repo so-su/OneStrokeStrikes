@@ -135,7 +135,7 @@ void Game::update() {
 void Game::draw() const {
     /* 描画の順番には気をつける */
     
-    Scene::SetBackground(background_color);
+    Scene::SetBackground(MyColor::Background);
     
     // 操作説明
     FontAsset(U"Black")(U"[space] 一筆書きの始点終点いれかえ").draw(18, 10, 10, Palette::White);
@@ -186,7 +186,7 @@ void Game::draw() const {
     }
     
     // アタックモード中のマスクを描画
-    mask.draw(ColorF{background_color, mask_alpha_transition.value() * 0.8});
+    mask.draw(ColorF{MyColor::Background, mask_alpha_transition.value() * 0.8});
     
     // 文字のエフェクトの更新
     effect.update();

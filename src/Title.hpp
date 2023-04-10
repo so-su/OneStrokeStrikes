@@ -110,13 +110,13 @@ class Title : public App::Scene {
     const Array<Color> colors{MyColor::Red, MyColor::Green, MyColor::Blue};
 
     // ボタンの最小の透過率の配列
-    const Array<double> alpha_mins{0.7, 0.7, 0.7};
+    const Array<double> alpha_mins{0.8, 0.8, 0.8};
     
     // 難易度変更ボタンの三角形
-    Triangle left_triangle_small{370, 450, 40, -90_deg};
-    Triangle left_triangle_large{370, 450, 50, -90_deg};
-    Triangle right_triangle_small{630, 450, 40, 90_deg};
-    Triangle right_triangle_large{630, 450, 50, 90_deg};
+    Triangle left_triangle_small{370, 480, 30, -90_deg};
+    Triangle left_triangle_large{370, 480, 50, -90_deg};
+    Triangle right_triangle_small{630, 480, 30, 90_deg};
+    Triangle right_triangle_large{630, 480, 50, 90_deg};
 
     // 画面下のメッセージウィンドウの長方形
     static constexpr Rect message_window{0, 700, 1400,50};

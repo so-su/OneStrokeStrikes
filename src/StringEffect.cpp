@@ -13,7 +13,7 @@ bool StringEffect::update(double time) {
         alpha = std::lerp(0.0, 1.0, (duration - time) / fade_duration);
     }
     
-    FontAsset(U"Kaisotai")(str).drawAt(font_size, pos, ColorF{Palette::White, alpha});
+    FontAsset(U"Kaisotai")(str).drawAt(font_size, pos, ColorF{MyColor::White, alpha});
     
     return time < duration;
 }

@@ -61,9 +61,12 @@ void Title::update() {
 }
 
 void Title::draw() const {
-    Scene::SetBackground(MyColor::White);
-
-    FontAsset(U"Kaisotai")(U"すとすと").drawAt(700, 100, Palette::Black);
+    Scene::SetBackground(MyColor::Background);
+    
+    FontAsset(U"Kaisotai")(U"す").drawAt(TextStyle::Outline(0.5, MyColor::White),550, 90, MyColor::Red);
+    FontAsset(U"Kaisotai")(U"と").drawAt(TextStyle::Outline(0.5, MyColor::White),650, 110, MyColor::Yellow);
+    FontAsset(U"Kaisotai")(U"す").drawAt(TextStyle::Outline(0.5, MyColor::White),750, 90, MyColor::Green);
+    FontAsset(U"Kaisotai")(U"と").drawAt(TextStyle::Outline(0.5, MyColor::White),850, 110, MyColor::Blue);
 
     // ボタンの描画
     for (const auto& button : buttons) {
@@ -71,55 +74,75 @@ void Title::draw() const {
         button.draw_gauge();
     }
 
-    FontAsset(U"Black")(U"あそぶ")
-        .drawAt(TextStyle::Outline(0.5, Palette::Black), 80, 500, 350,
-                ColorF{0.9});
     {
-        String difficulty_text;
+        // マウスオーバーしていないときは白色を透過させる
+        Color white = ColorF(MyColor::White, (buttons[0].contains(Cursor::Pos()) ? 1.0 : 0.8));
+        FontAsset(U"Black")(U"あそぶ").drawAt(80, 506, 386, ColorF{Palette::Black,0.4});
+        FontAsset(U"Black")(U"あそぶ").drawAt(80, 500, 380, MyColor::Red);
+        FontAsset(U"Black")(U"あそぶ").drawAt(TextStyle::Outline(0.3, Palette::Black),80, 500, 380, white);
+        {
+            String difficulty_text;
+            if(getData().difficulty==Difficulty::Easy){
+                difficulty_text=U"みならい";
+            }else if(getData().difficulty==Difficulty::Normal){
+                difficulty_text=U"じゅくれん";
+            }
+            else if(getData().difficulty==Difficulty::Hard){
+                difficulty_text=U"しょくにん";
+            }
+            FontAsset(U"Black")(difficulty_text)
+                .drawAt(TextStyle::Outline(0.3, Palette::Black),40, 500, 480, white);
+        }
+        
+        
+        // 難易度変更の三角ボタン
+        // 難易度変更できないときは透過させる
         if(getData().difficulty==Difficulty::Easy){
-            difficulty_text=U"みならい";
-        }else if(getData().difficulty==Difficulty::Normal){
-            difficulty_text=U"じゅくれん";
+            left_triangle_small.draw(ColorF{MyColor::White, 0.4});
         }
-        else if(getData().difficulty==Difficulty::Hard){
-            difficulty_text=U"しょくにん";
+        else{
+            if(left_triangle_large.mouseOver()){
+                left_triangle_large.draw(white);
+            }
+            else{
+                left_triangle_small.draw(white);
+            }
         }
-        FontAsset(U"Black")(difficulty_text)
-            .drawAt(TextStyle::Outline(0.5, Palette::Black), 40, 500, 450,
-                    ColorF{0.9});
+        if(getData().difficulty==Difficulty::Hard){
+            right_triangle_small.draw(ColorF{MyColor::White, 0.4});
+        }
+        else{
+            if(right_triangle_large.mouseOver()){
+                right_triangle_large.draw(white);
+            }
+            else{
+                right_triangle_small.draw(white);
+            }
+        }
     }
     
-    // 難易度変更の三角ボタン
-    if(left_triangle_large.mouseOver()){
-        left_triangle_large.draw();
-    }
-    else{
-        left_triangle_small.draw();
-    }
-    if(right_triangle_large.mouseOver()){
-        right_triangle_large.draw();
-    }
-    else{
-        right_triangle_small.draw();
-    }
+    FontAsset(U"Black")(U"あそびかた").drawAt(50, 1024, 324, ColorF{Palette::Black, 0.4});
+    FontAsset(U"Black")(U"あそびかた").drawAt(50, 1020, 320, MyColor::Green);
+    FontAsset(U"Black")(U"あそびかた").drawAt(TextStyle::Outline(0.3, Palette::Black),50, 1020, 320, ColorF(MyColor::White, (buttons[1].contains(Cursor::Pos()) ? 1.0 : 0.8)));
     
-    FontAsset(U"Black")(U"あそびかた").drawAt(
-        TextStyle::Outline(0.5, Palette::Black), 50, 1020, 320, ColorF{0.9});
     FontAsset(U"Black")(U"ランキング")
-        .drawAt(TextStyle::Outline(0.5, Palette::Black), 50, 960, 600,
-                ColorF{0.9});
+        .drawAt(50, 964, 604, ColorF{Palette::Black, 0.4});
+    FontAsset(U"Black")(U"ランキング")
+        .drawAt(50, 960, 600, MyColor::Blue);
+    FontAsset(U"Black")(U"ランキング")
+        .drawAt(TextStyle::Outline(0.3, Palette::Black),50, 960, 600, ColorF(MyColor::White, (buttons[2].contains(Cursor::Pos()) ? 1.0 : 0.8)));
     
     // メッセージウィンドウの描画
-    message_window.draw(ColorF{0.0, 0.4});
+    message_window.draw(ColorF{1.0, 0.2});
     if (buttons[0].contains(Cursor::Pos())) {
         FontAsset(U"Regular")(U"ドキドキブンレツ一筆書きパズル！")
-            .drawAt(message_window.center(), Palette::White);
+            .drawAt(message_window.center(), MyColor::White);
     } else if (buttons[1].contains(Cursor::Pos())) {
         FontAsset(U"Regular")(U"ルールをよむ")
-            .drawAt(message_window.center(), Palette::White);
+            .drawAt(message_window.center(), MyColor::White);
     } else if (buttons[2].contains(Cursor::Pos())) {
         FontAsset(U"Regular")(U"ランキングをみる")
-            .drawAt(message_window.center(), Palette::White);
+            .drawAt(message_window.center(), MyColor::White);
     }
 
     // マスクの描画

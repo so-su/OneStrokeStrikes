@@ -90,9 +90,6 @@ class Game : public App::Scene {
 
     AttackShape* attack_shape{nullptr};
 
-    // ゲーム中の背景の色
-    static constexpr Color background_color{0, 0, 50};
-
     // 3つのEnemyを囲う枠
     static constexpr std::array<Rect, 3> enemy_frames{Rect{50, 300, 400, 400},
                                                       Rect{500, 300, 400, 400},

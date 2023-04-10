@@ -60,6 +60,7 @@ constexpr Color Blue = Color{0, 65, 255};
 constexpr Color Yellow = Color{250, 245, 0};
 constexpr Color Orange = Color{255, 153, 0};
 constexpr Color White = ColorF{0.9};
+constexpr Color Background = Color{0, 0, 50};
 constexpr Color Forward = Palette::Skyblue;
 constexpr Color Backward = ColorF{0.85};
 }  // namespace MyColor
