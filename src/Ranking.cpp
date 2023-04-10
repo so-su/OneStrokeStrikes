@@ -57,9 +57,9 @@ void Ranking::update() {
 }
 
 void Ranking::draw() const {
-    Scene::SetBackground(MyColor::White);
+    Scene::SetBackground(MyColor::Background);
 
-    FontAsset(U"Kaisotai")(U"ランキング").drawAt(80, 700, 100, Palette::Black);
+    FontAsset(U"Kaisotai")(U"ランキング").drawAt(80, 700, 100, MyColor::White);
 
     draw_ranking();
 
@@ -79,7 +79,7 @@ void Ranking::draw() const {
     if (input_mode) {
         // マスクを描画
         Scene::Rect().draw(
-            ColorF{Palette::Black, mask_alpha_transition.value() * 0.6});
+            ColorF{MyColor::Background, mask_alpha_transition.value() * 0.6});
 
         window.draw(MyColor::White);
 
@@ -174,17 +174,17 @@ void Ranking::draw_ranking() const {
         rects[rank].drawFrame(1, 1, Palette::Dimgray);
         FontAsset(U"Kaisotai")(rank + 1).draw(
             40, Arg::rightCenter = Vec2{450, 170 + 50 * rank + 25},
-            Palette::Black);
+            MyColor::White);
     }
 
     for (auto rank : step(std::size(ranking))) {
         const auto& user{ranking[rank]};
         FontAsset(U"Regular")(user.user_id)
             .draw(Arg::leftCenter = Vec2{500, 170 + 50 * rank + 25},
-                  Palette::Black);
+                  MyColor::White);
         FontAsset(U"Regular")(user.score)
             .draw(Arg::rightCenter = Vec2{980, 170 + 50 * rank + 25},
-                  Palette::Black);
+                  MyColor::White);
     }
 
     // プレイヤーの位置の左で三角形を左右に動かす
@@ -192,7 +192,7 @@ void Ranking::draw_ranking() const {
         Triangle{370, static_cast<double>(195 + 50 * player_place.value()), 30,
                  90_deg}
             .moveBy(7 * Math::Sin(5 * Scene::Time()), 0)
-            .draw(Palette::Black);
+            .draw(MyColor::White);
     }
 
     // プレイヤーのスコアを表示
@@ -200,10 +200,10 @@ void Ranking::draw_ranking() const {
         rects[10].drawFrame(1, 1, Palette::Dimgray);
         FontAsset(U"Regular")(U"あなたのスコア")
             .draw(Arg::leftCenter = Vec2{500, 170 + 50 * 10 + 25},
-                  Palette::Black);
+                  MyColor::White);
         FontAsset(U"Regular")(getData().score)
             .draw(Arg::rightCenter = Vec2{980, 170 + 50 * 10 + 25},
-                  Palette::Black);
+                  MyColor::White);
     }
 }
 
