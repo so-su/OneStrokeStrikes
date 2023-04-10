@@ -29,7 +29,7 @@ Result::Result(const InitData& init) : IScene{init} {
     if(getData().cnt_one_stroke > 0){
         mean_max_run_length = static_cast<double>(getData().sum_max_run_length) / getData().cnt_one_stroke;
     }
-    getData().score += static_cast<int32>((mean_max_run_length - 1.0) * Parameter::mean_max_run_length_bonus_rate);
+    getData().score += static_cast<int32>(mean_max_run_length * Parameter::mean_max_run_length_bonus_rate);
 }
 
 void Result::update() {
