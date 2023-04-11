@@ -40,6 +40,9 @@ void Game::update() {
     
     // マスクの透過率を更新
     mask_alpha_transition.update(attack_mode or pause);
+    
+    // プレイヤーの遅延つきステータスを更新
+    player.update_delay_status();
 
     // ポーズ中
     if (pause) {

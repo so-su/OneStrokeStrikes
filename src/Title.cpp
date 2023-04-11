@@ -92,7 +92,7 @@ void Title::draw() const {
     // メッセージウィンドウの描画
     message_window.draw(ColorF{1.0, 0.2});
     if (buttons[0].contains(Cursor::Pos())) {
-        FontAsset(U"Regular")(U"ドキドキブンレツ一筆書きパズル！")
+        FontAsset(U"Regular")(U"ハラハラ ブンレツ 一筆書きパズル！")
             .drawAt(message_window.center(), MyColor::White);
     } else if (buttons[1].contains(Cursor::Pos())) {
         FontAsset(U"Regular")(U"ルールをよむ")
@@ -176,7 +176,7 @@ void Title::draw_play_button()const{
     }
     else{
         // ボタンが押されてすぐは枠を描かない
-        if(Scene::Time() - left_triangle_last_clicked_time < 0.1){
+        if(Scene::Time() - left_triangle_last_clicked_time < 0.11){
             left_triangle_large.draw(white);
         }
         else if(left_triangle_large.mouseOver()){
@@ -191,7 +191,7 @@ void Title::draw_play_button()const{
     }
     else{
         // ボタンが押されてすぐは枠を描かない
-        if(Scene::Time() - right_triangle_last_clicked_time < 0.1){
+        if(Scene::Time() - right_triangle_last_clicked_time < 0.11){
             right_triangle_large.draw(white);
         }
         else if(right_triangle_large.mouseOver()){

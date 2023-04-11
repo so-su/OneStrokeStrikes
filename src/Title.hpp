@@ -117,9 +117,9 @@ class Title : public App::Scene {
     
     // 難易度変更ボタンの三角形
     Triangle left_triangle_small{370, 480, 30, -90_deg};
-    Triangle left_triangle_large{370, 480, 50, -90_deg};
+    Triangle left_triangle_large{370, 480, 60, -90_deg};
     Triangle right_triangle_small{630, 480, 30, 90_deg};
-    Triangle right_triangle_large{630, 480, 50, 90_deg};
+    Triangle right_triangle_large{630, 480, 60, 90_deg};
     
     // 難易度変更ボタンをクリックした時間
     double left_triangle_last_clicked_time{-1.0};
