@@ -15,6 +15,9 @@ class Title : public App::Scene {
    private:
     // ブラウザを立ち上げる確認中の処理
     void confirm_update();
+    
+    // あそぶボタンの描画
+    void draw_play_button()const;
 
     // ボタンの配列
     Array<Button> buttons;
@@ -117,6 +120,10 @@ class Title : public App::Scene {
     Triangle left_triangle_large{370, 480, 50, -90_deg};
     Triangle right_triangle_small{630, 480, 30, 90_deg};
     Triangle right_triangle_large{630, 480, 50, 90_deg};
+    
+    // 難易度変更ボタンをクリックした時間
+    double left_triangle_last_clicked_time{-1.0};
+    double right_triangle_last_clicked_time{-1.0};
 
     // 画面下のメッセージウィンドウの長方形
     static constexpr Rect message_window{0, 700, 1400,50};
