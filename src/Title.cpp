@@ -176,7 +176,7 @@ void Title::draw_play_button()const{
     }
     else{
         // ボタンが押されてすぐは枠を描かない
-        if(Scene::Time() - left_triangle_last_clicked_time < 0.11){
+        if(Scene::Time() - left_triangle_last_clicked_time < 0.1){
             left_triangle_large.draw(white);
         }
         else if(left_triangle_large.mouseOver()){
@@ -191,7 +191,7 @@ void Title::draw_play_button()const{
     }
     else{
         // ボタンが押されてすぐは枠を描かない
-        if(Scene::Time() - right_triangle_last_clicked_time < 0.11){
+        if(Scene::Time() - right_triangle_last_clicked_time < 0.1){
             right_triangle_large.draw(white);
         }
         else if(right_triangle_large.mouseOver()){

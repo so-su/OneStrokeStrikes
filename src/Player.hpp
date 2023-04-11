@@ -70,7 +70,7 @@ class Player {
     double delay_velocity_sp{0.0};
     
     // 遅延つきステータスの平滑化時間（秒）
-    static constexpr double smooth_time{0.05};
+    static constexpr double smooth_time{0.1};
 
     // HP、AP、SPのバー
     ProgressBar hp_bar{Rect{100, 750, 800, 20}, MyColor::Green};

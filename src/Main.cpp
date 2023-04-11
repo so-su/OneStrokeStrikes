@@ -6,6 +6,7 @@
 
 void Main() {
     Window::Resize(1400, 800);
+    Window::SetTitle(U"すとすと");
 
     // ESCキーで終了しないように設定
     System::SetTerminationTriggers(UserAction::CloseButtonClicked);

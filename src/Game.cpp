@@ -14,19 +14,19 @@ void Game::update() {
     // 3 2 1 スタート！ のカウントダウン
     if(time_since_first_update <= 3.6){
         time_since_first_update +=Scene::DeltaTime();
-        if(time_since_first_update >= 3.0 and countdown == 0){
+        if(time_since_first_update >= 2.8 and countdown == 0){
             effect.add<StringEffect>(U"スタート！",120, Point{700, 500}, 0.8, 0.1, 0.3);
             --countdown;
         }
-        else if(time_since_first_update >= 2.2 and countdown == 1){
+        else if(time_since_first_update >= 2.0 and countdown == 1){
             effect.add<StringEffect>(U"1",120, Point{700, 500}, 0.6, 0.1, 0.3);
             --countdown;
         }
-        else if(time_since_first_update >= 1.4 and countdown == 2){
+        else if(time_since_first_update >= 1.2 and countdown == 2){
             effect.add<StringEffect>(U"2",120, Point{700, 500}, 0.6, 0.1, 0.3);
             --countdown;
         }
-        else if(time_since_first_update >= 0.6 and countdown == 3){
+        else if(time_since_first_update >= 0.4 and countdown == 3){
             effect.add<StringEffect>(U"3",120, Point{700, 500}, 0.6, 0.1, 0.3);
             --countdown;
         }
