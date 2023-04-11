@@ -12,22 +12,22 @@ Game::Game(const InitData& init) : IScene{init} {
 
 void Game::update() {
     // 3 2 1 スタート！ のカウントダウン
-    if(countdown>=0){
+    if(time_since_first_update <= 3.6){
         time_since_first_update +=Scene::DeltaTime();
-        if(time_since_first_update>=3.0 and countdown == 0){
+        if(time_since_first_update >= 3.0 and countdown == 0){
             effect.add<StringEffect>(U"スタート！",120, Point{700, 500}, 0.8, 0.1, 0.3);
             --countdown;
         }
-        else if(time_since_first_update>=2.2 and countdown == 1){
-            effect.add<StringEffect>(U"1",100, Point{700, 500}, 0.6, 0.1, 0.3);
+        else if(time_since_first_update >= 2.2 and countdown == 1){
+            effect.add<StringEffect>(U"1",120, Point{700, 500}, 0.6, 0.1, 0.3);
             --countdown;
         }
-        else if(time_since_first_update>=1.4 and countdown == 2){
-            effect.add<StringEffect>(U"2",100, Point{700, 500}, 0.6, 0.1, 0.3);
+        else if(time_since_first_update >= 1.4 and countdown == 2){
+            effect.add<StringEffect>(U"2",120, Point{700, 500}, 0.6, 0.1, 0.3);
             --countdown;
         }
-        else if(time_since_first_update>=0.6 and countdown == 3){
-            effect.add<StringEffect>(U"3",100, Point{700, 500}, 0.6, 0.1, 0.3);
+        else if(time_since_first_update >= 0.6 and countdown == 3){
+            effect.add<StringEffect>(U"3",120, Point{700, 500}, 0.6, 0.1, 0.3);
             --countdown;
         }
         return;
@@ -69,6 +69,10 @@ void Game::update() {
     
     // これより上の処理でreturnしたら時間経過に含めない
     getData().elapsed_time += Scene::DeltaTime();
+    
+    for(auto& time_since_spawn : times_since_spawn){
+        time_since_spawn += Scene::DeltaTime();
+    }
 
     // Enemyたちの消滅を進める
     update_to_vanish_enemies();
@@ -131,6 +135,7 @@ void Game::update() {
             all_clear_status != AllClearStatus::LastIsVanishing) {
             enemies[enemy_idx].initialize();
             timer = 0.0;
+            times_since_spawn[enemy_idx] = 0.0;
             all_clear_status = AllClearStatus::EnemyAliveExists;
         }
     }
@@ -165,6 +170,10 @@ void Game::draw() const {
 
     // Enemyたちの描画
     for (auto enemy_idx : step(3)) {
+        if(times_since_spawn[enemy_idx] < 1e-10){
+            continue;
+        }
+        
         const auto& enemy{enemies[enemy_idx]};
         if (not enemy.is_alive()) continue;
 
@@ -185,6 +194,13 @@ void Game::draw() const {
             enemy.draw_path();
         }
     }
+    
+    // Enemyがスポーンしたときに透過するマスクを被せることで、滑らかに表示されるようにする
+    for(auto enemy_idx:step(3)){
+        if(double alpha = Max(0.0, 1.0 - times_since_spawn[enemy_idx] * 5) ; alpha > 1e-10){
+            enemy_frames[enemy_idx].draw(ColorF{MyColor::Background, alpha});
+        }
+    }
 
     // AlphaEnemyの描画
     alpha_enemy.draw();
@@ -192,9 +208,6 @@ void Game::draw() const {
     
     // プレイヤーのステータスを描画
     player.draw();
-    
-    // APバーとSPバーのぼかし処理
-    blur_bars();
     
     // 小さいルーレットを画面右下に描画
     roulette.draw_small_disk();
@@ -209,6 +222,10 @@ void Game::draw() const {
     
     // アタックモード中のマスクを描画
     mask.draw(ColorF{MyColor::Background, mask_alpha_transition.value() * 0.8});
+    
+    // APバーとSPバーのぼかし処理
+    // アタックモードのマスクの描画後に描画しないと、干渉して見切れてしまう
+    blur_bars();
     
     // 文字のエフェクトの更新
     effect.update();

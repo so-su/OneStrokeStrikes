@@ -67,6 +67,9 @@ class Game : public App::Scene {
 
     // respawn_timeになるまでの時間を管理
     std::array<double, 3> respawn_timers{0.0, 0.0, 0.0};
+    
+    // スポーンしてからの時間を管理
+    std::array<double, 3> times_since_spawn{0.0, 0.0, 0.0};
 
     // Enemyが消滅し始めてからの時間を管理
     std::array<double, 3> vanishing_timers;
