@@ -109,5 +109,12 @@ class Game : public App::Scene {
     RenderTexture gaussianA1_sp{ sceneSize };
     RenderTexture gaussianA16_sp{ sceneSize / 16 }, gaussianB16_sp{ sceneSize / 16 };
     
+    // StringEffectの描画を管理する
     Effect effect;
+    
+    // 初めのupdateが呼ばれてからの経過時間
+    double time_since_first_update{0.0};
+    
+    // スタートまでのカウントダウン
+    int32 countdown{3};
 };

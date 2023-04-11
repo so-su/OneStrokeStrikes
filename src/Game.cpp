@@ -11,6 +11,28 @@ Game::Game(const InitData& init) : IScene{init} {
 }
 
 void Game::update() {
+    // 3 2 1 スタート！ のカウントダウン
+    if(countdown>=0){
+        time_since_first_update +=Scene::DeltaTime();
+        if(time_since_first_update>=3.0 and countdown == 0){
+            effect.add<StringEffect>(U"スタート！",120, Point{700, 500}, 0.8, 0.1, 0.3);
+            --countdown;
+        }
+        else if(time_since_first_update>=2.2 and countdown == 1){
+            effect.add<StringEffect>(U"1",100, Point{700, 500}, 0.6, 0.1, 0.3);
+            --countdown;
+        }
+        else if(time_since_first_update>=1.4 and countdown == 2){
+            effect.add<StringEffect>(U"2",100, Point{700, 500}, 0.6, 0.1, 0.3);
+            --countdown;
+        }
+        else if(time_since_first_update>=0.6 and countdown == 3){
+            effect.add<StringEffect>(U"3",100, Point{700, 500}, 0.6, 0.1, 0.3);
+            --countdown;
+        }
+        return;
+    }
+    
     // [esc]キーでタイトルに戻る
     if(KeyEscape.down()){
         changeScene(State::Title);
@@ -138,8 +160,8 @@ void Game::draw() const {
     Scene::SetBackground(MyColor::Background);
     
     // 操作説明
-    FontAsset(U"Black")(U"[space] 一筆書きの始点終点いれかえ").draw(18, 10, 10, Palette::White);
-    FontAsset(U"Black")(U"[esc] タイトルへもどる").draw(18, 10, 30, Palette::White);
+    FontAsset(U"Black")(U"[space] 一筆書きの始点終点いれかえ").draw(18, 10, 10, MyColor::White);
+    FontAsset(U"Black")(U"[esc] タイトルへもどる").draw(18, 10, 30, MyColor::White);
 
     // Enemyたちの描画
     for (auto enemy_idx : step(3)) {
@@ -199,9 +221,9 @@ void Game::draw() const {
     // ルーレットの上下に表示するメッセージ
     if(pause){
         FontAsset(U"Black")(U"つぎ")
-            .drawAt(40, 700, 300, Palette::White);
+            .drawAt(40, 700, 300, MyColor::White);
         FontAsset(U"Black")(U"クリックで再開")
-            .drawAt(25, 700, 670, Palette::White);
+            .drawAt(25, 700, 680, ColorF{MyColor::White,0.3 + 0.7*Periodic::Jump0_1(1s)});
     }
 
     // 図形で攻撃する位置を選んでいるとき
@@ -243,7 +265,7 @@ void Game::shape_attack_update() {
         
         ++getData().attack_combo;
         
-        effect.add<StringEffect>(U"ぴったりコンボ！", 80, Point{700, 320}, 2.0, 0.5);
+        effect.add<StringEffect>(U"ぴったりコンボ！", 80, Point{700, 320}, 2.0, 0.5,0.5);
     }
 }
 
@@ -316,7 +338,7 @@ void Game::update_to_vanish_enemies() {
                 respawn_timers[0] = respawn_timers[1] = respawn_timers[2] =
                     Parameter::respawn_time - Parameter::short_respawn_time;
                 
-                effect.add<StringEffect>(U"オールクリア!", 100, Point{700, 500}, 2.0, 0.5);
+                effect.add<StringEffect>(U"オールクリア!", 100, Point{700, 500}, 2.0, 0.5,0.5);
             }
         }
     }

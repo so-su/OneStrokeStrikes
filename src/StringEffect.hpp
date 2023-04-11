@@ -3,7 +3,7 @@
 
 struct StringEffect : IEffect {
    public:
-    StringEffect(String str, uint32 font_size, Point pos, double duration, double fade_duration);
+    StringEffect(const String& str, uint32 font_size, Point pos, double duration, double fadein_duration, double fadeout_duration);
 
     bool update(double time) override;
 
@@ -20,6 +20,9 @@ struct StringEffect : IEffect {
     // エフェクトの表示時間
     const double duration;
     
-    // エフェクトの透過率が変化する時間の長さ
-    const double fade_duration;
+    // フェードイン時にエフェクトの透過率が変化する時間の長さ
+    const double fadein_duration;
+    
+    // フェードアウト時にエフェクトの透過率が変化する時間の長さ
+    const double fadeout_duration;
 };
