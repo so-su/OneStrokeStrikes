@@ -52,14 +52,10 @@ ___
 ### プレイ動画（序盤）
 ※ プレイ動画には最新のものと異なる部分があるかもしれません。
 
-攻撃はあまり飛んできません。らくらくです。
+動画のように、オオミノをたくさん分裂させてしまうと、コミノの攻撃頻度がとんでもないことになります。
 
-[![alt設定](http://img.youtube.com/vi/33_ESOgU-yA/0.jpg)](https://www.youtube.com/watch?v=33_ESOgU-yA)
+[![alt設定](http://img.youtube.com/vi/_RKoGQ85wCo/0.jpg)](https://www.youtube.com/watch?v=_RKoGQ85wCo)
 
-### プレイ動画（中盤〜終盤）
-オオミノがいくつにも分裂して、外周も短くなりました。コミノのゲージがどんどん加速されます。たいへんです。
-
-[![alt設定](http://img.youtube.com/vi/2PbQYQx4dzE/0.jpg)](https://www.youtube.com/watch?v=2PbQYQx4dzE)
 
 <a id="anchor3"></a>
 
