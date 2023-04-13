@@ -15,9 +15,9 @@ Result::Result(const InitData& init) : IScene{init} {
     }
     
     // クリアまでのタイムによるスコアボーナス
-    if(getData().win){
-        getData().score += static_cast<int32>((1000.0 - getData().elapsed_time) * Parameter::time_bonus_rate);
-    }
+    // 勝利していなくても足さなければならない
+    // 無限にスコアを稼ぐのを封じるため
+    getData().score += static_cast<int32>((1000.0 - getData().elapsed_time) * Parameter::time_bonus_rate);
     
     // ためたポイントの総和によるスコアボーナス
     getData().score += getData().point_sum;
