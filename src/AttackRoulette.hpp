@@ -44,6 +44,9 @@ class AttackRoulette {
 
     // ルーレットで選ばれた色を返す
     Color chosen_color() const;
+    
+    // ルーレットで選ばれたインデックス（0,1,2）を返す
+    int32 chosen_index() const;
 
    private:
     // 円を指定して円盤を描画
@@ -54,9 +57,6 @@ class AttackRoulette {
 
     // ルーレットの各領域における扇形の角度を更新
     void update_angles();
-
-    // ルーレットで選ばれたインデックス（0,1,2）を返す
-    int32 chosen_index() const;
 
     // AttackShapeの配列
     std::array<AttackShape, 3> attack_shapes;

@@ -226,6 +226,12 @@ void Game::draw() const {
     // アタックモード中のマスクを描画
     mask.draw(ColorF{MyColor::Background, mask_alpha_transition.value() * 0.8});
     
+    {
+        // エフェクトは加算ブレンドで描画する
+        const ScopedRenderStates2D blend{BlendState::Additive};
+        alpha_enemy.draw_effect();
+    }
+    
     // APバーとSPバーのぼかし処理
     // アタックモードのマスクの描画後に描画しないと、干渉して見切れてしまう
     blur_bars();
@@ -263,7 +269,7 @@ void Game::draw() const {
 void Game::shape_attack_update() {
     if (not MouseL.down()) return;
     
-    ShapeAttackStatus status{alpha_enemy.get_damaged(attack_shape)};
+    ShapeAttackStatus status{alpha_enemy.get_damaged(attack_shape,roulette.chosen_index())};
 
     // 図形で攻撃し、ひとつも消えなかったらやり直し
     if (status == ShapeAttackStatus::None) {
@@ -310,7 +316,7 @@ void Game::attack_mode_update() {
         if (attack_type == AttackType::Shape) {
             attack_shape = roulette.get_attack_shape();
         } else if (attack_type == AttackType::Num) {
-            alpha_enemy.get_damaged(roulette.get_attack_num());
+            alpha_enemy.get_damaged(roulette.get_attack_num(),roulette.chosen_index());
             get_out_of_attack_mode();
         }
     }

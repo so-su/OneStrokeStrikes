@@ -124,9 +124,10 @@ void AlphaEnemy::compute_perimeters() {
 }
 
 // 埋まっているセルを、指定した個数だけ削除する
-void AlphaEnemy::get_damaged(size_t remove_num) {
+void AlphaEnemy::get_damaged(size_t remove_num, int32 roulette_idx) {
     while (remove_num > 0 and num_filled_cells > 0) {
         const auto pos{shuffled_filled_cells.back()};
+        effect.add<ExplosionEffect>(rects[pos].value().center(),(roulette_idx==0?120.0:(roulette_idx==1?0.0:225.0)));
         shuffled_filled_cells.pop_back();
         cells[pos] = Cell::None;
         rects[pos] = none;
@@ -138,7 +139,7 @@ void AlphaEnemy::get_damaged(size_t remove_num) {
 }
 
 // 埋まっているセルのうち、指定した図形と重なるものを削除し、どれだけ削除できたかを返す
-ShapeAttackStatus AlphaEnemy::get_damaged(AttackShape* attack_shape) {
+ShapeAttackStatus AlphaEnemy::get_damaged(AttackShape* attack_shape, int32 roulette_idx) {
     // 1つ以上削除できたか
     bool success{false};
     // attack shapeのブロックですべて削除できたか
@@ -160,6 +161,7 @@ ShapeAttackStatus AlphaEnemy::get_damaged(AttackShape* attack_shape) {
             for (auto pos : step(grid_size)) {
                 if (rects[pos].has_value() and
                     rects[pos]->contains(center_pos)) {
+                    effect.add<ExplosionEffect>(rects[pos].value().center(),(roulette_idx==0?120.0:(roulette_idx==1?0.0:225.0)));
                     cells[pos] = Cell::None;
                     rects[pos] = none;
                     --num_filled_cells;

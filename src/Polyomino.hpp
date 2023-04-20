@@ -73,6 +73,9 @@ class Polyomino {
 
     // 埋まっているセルをシャッフルしてもっておく配列
     Array<Point> shuffled_filled_cells;
+    
+    // エフェクトの管理
+    Effect effect;
 
    private:
     // 一筆書き可能なポリオミノを生成する
@@ -83,7 +86,4 @@ class Polyomino {
 
     // ポリオミノをグリッドの左上に寄せてgrid_sizeを詰める
     void shrink_to_fit();
-
-    // エフェクトの管理
-    Effect effect;
 };

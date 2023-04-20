@@ -1,9 +1,8 @@
 #include "SquareEffect.hpp"
 
 SquareEffect::SquareEffect(Vec2 pos, double base_hue) : pos{pos} {
-    for (auto square_idx : step(num_square)) {
-        squares[square_idx] =
-            Square{RandomVec2(Circle{30}), Random(-0.3, 0.1), Random(5.0, 40.0),
+    for (auto& square : squares) {
+        square = Square{RandomVec2(Circle{30}), Random(-0.3, 0.1), Random(5.0, 40.0),
                    HSV{base_hue + Random(-30.0, 30.0)}};
     }
 }

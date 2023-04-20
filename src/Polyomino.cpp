@@ -41,15 +41,16 @@ bool Polyomino::vanish() {
 
     // SquareEffectを発生させる
     Optional<double> base_hue;
-    if (cells[pos] == Cell::Red) {
+    if (cells[pos] == Cell::Green) {
+        base_hue = 120.0;
+    }
+    else if (cells[pos] == Cell::Red) {
         base_hue = 0.0;
     } else if (cells[pos] == Cell::Blue) {
         base_hue = 225.0;
-    } else if (cells[pos] == Cell::Green) {
-        base_hue = 120.0;
     }
     if (base_hue.has_value()) {
-        effect.add<SquareEffect>(rects[pos]->center(), *base_hue);
+        effect.add<SquareEffect>(rects[pos].value().center(), base_hue.value());
     }
 
     // 埋められたセルをひとつ消滅させる

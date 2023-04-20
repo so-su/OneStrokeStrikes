@@ -3,6 +3,7 @@
 #include "Common.hpp"
 #include "Polyomino.hpp"
 #include "ProgressBar.hpp"
+#include "ExplosionEffect.hpp"
 
 enum class ShapeAttackStatus{
     All,
@@ -21,10 +22,10 @@ class AlphaEnemy : public Polyomino {
     void compute_perimeters();
 
     // 埋まっているセルを、指定した個数だけ削除する
-    void get_damaged(size_t remove_num);
+    void get_damaged(size_t remove_num, int32 roulette_idx);
 
     // 埋まっているセルのうち、指定した図形と重なるものを削除し、どれだけ削除できたかを返す
-    ShapeAttackStatus get_damaged(AttackShape* attack_shape);
+    ShapeAttackStatus get_damaged(AttackShape* attack_shape, int32 roulette_idx);
 
     // ゲージを更新し、満タンになったゲージの個数を返す
     int32 update_gauges();
