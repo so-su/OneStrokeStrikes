@@ -12,8 +12,13 @@ Game::Game(const InitData& init) : IScene{init} {
 
 void Game::update() {
     /* デバック用の機能 */
-    if(KeyG.down()){
+    if(KeyD.down() and KeyF.down()){
         player.get_ap(1000);
+    }
+    
+    // [esc]キーでタイトルに戻る
+    if(KeyEscape.down()){
+        changeScene(State::Title);
     }
     
     // 3 2 1 スタート！ のカウントダウン
@@ -36,11 +41,6 @@ void Game::update() {
             --countdown;
         }
         return;
-    }
-    
-    // [esc]キーでタイトルに戻る
-    if(KeyEscape.down()){
-        changeScene(State::Title);
     }
     
     // マスクの透過率を更新
