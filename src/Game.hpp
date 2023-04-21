@@ -120,4 +120,10 @@ class Game : public App::Scene {
     
     // スタートまでのカウントダウン
     int32 countdown{3};
+    
+    // ダメージを受けたときの画面の振動の大きさの遷移を管理
+    Transition screen_shake_transition{0.0s, 0.3s};
+    
+    // 座標変換行列
+    Mat3x2 transform_matrix{Mat3x2::Identity()};
 };

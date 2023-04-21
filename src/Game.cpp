@@ -124,10 +124,27 @@ void Game::update() {
     }
 
     // Enemyのゲージを進めて、一周したゲージの数だけダメージを受ける
-    for (auto& enemy : enemies) {
-        if (not enemy.is_alive()) continue;
-        if (enemy.update_gauge()) {
-            player.get_damaged(enemy.attack_value());
+    {
+        // プレイヤーが少なくとも一回はダメージを受けたかどうか
+        bool damaged{false};
+        
+        for (auto& enemy : enemies) {
+            if (not enemy.is_alive()) continue;
+            if (enemy.update_gauge()) {
+                player.get_damaged(enemy.attack_value());
+                damaged = true;
+            }
+        }
+        
+        // ダメージを受けたかどうかで画面の振動を更新
+        screen_shake_transition.update(damaged);
+
+        // 座標変換行列を設定
+        if (const double magnitude{screen_shake_transition.value()}){
+            transform_matrix = Mat3x2::Translate(RandomVec2(magnitude * 10));
+        }
+        else{
+            transform_matrix = Mat3x2::Identity();
         }
     }
 
@@ -172,101 +189,111 @@ void Game::draw() const {
     
     Scene::SetBackground(MyColor::Background);
     
-    // 操作説明
-    FontAsset(U"Black")(U"[space] 一筆書きの始点終点いれかえ").draw(18, 10, 10, MyColor::White);
-    FontAsset(U"Black")(U"[esc] タイトルへもどる").draw(18, 10, 30, MyColor::White);
+    {
+        // 座標変換（ぼかし処理を避ける）
+        const Transformer2D transformer{ transform_matrix };
+        
+        // 操作説明
+        FontAsset(U"Black")(U"[space] 一筆書きの始点終点いれかえ").draw(18, 10, 10, MyColor::White);
+        FontAsset(U"Black")(U"[esc] タイトルへもどる").draw(18, 10, 30, MyColor::White);
 
-    // Enemyたちの描画
-    for (auto enemy_idx : step(3)) {
-        if(times_since_spawn[enemy_idx] < 1e-10){
-            continue;
+        // Enemyたちの描画
+        for (auto enemy_idx : step(3)) {
+            if(times_since_spawn[enemy_idx] < 1e-10){
+                continue;
+            }
+            
+            const auto& enemy{enemies[enemy_idx]};
+            if (not enemy.is_alive()) continue;
+
+            enemy.draw();
+
+            // 消滅中は描画しない
+            if (not enemy.is_vanishing()) {
+                enemy.draw_path();
+                enemy.draw_gauge();
+            }
+            // 消滅が始まってもしばらくはパスを描画する
+            // ただし、SPを使って倒した場合は描画しない
+            else if (vanishing_timers[enemy_idx] <
+                         Parameter::time_until_vanishing and
+                     respawn_timers[enemy_idx] < Parameter::respawn_time -
+                                                     Parameter::short_respawn_time -
+                                                     1e-5) {
+                enemy.draw_path();
+            }
         }
         
-        const auto& enemy{enemies[enemy_idx]};
-        if (not enemy.is_alive()) continue;
-
-        enemy.draw();
-
-        // 消滅中は描画しない
-        if (not enemy.is_vanishing()) {
-            enemy.draw_path();
-            enemy.draw_gauge();
+        // Enemyがスポーンしたときに透過するマスクを被せることで、滑らかに表示されるようにする
+        for(auto enemy_idx:step(3)){
+            if(double alpha = Max(0.0, 1.0 - times_since_spawn[enemy_idx] * 5) ; alpha > 1e-10){
+                enemy_frames[enemy_idx].draw(ColorF{MyColor::Background, alpha});
+            }
         }
-        // 消滅が始まってもしばらくはパスを描画する
-        // ただし、SPを使って倒した場合は描画しない
-        else if (vanishing_timers[enemy_idx] <
-                     Parameter::time_until_vanishing and
-                 respawn_timers[enemy_idx] < Parameter::respawn_time -
-                                                 Parameter::short_respawn_time -
-                                                 1e-5) {
-            enemy.draw_path();
-        }
-    }
-    
-    // Enemyがスポーンしたときに透過するマスクを被せることで、滑らかに表示されるようにする
-    for(auto enemy_idx:step(3)){
-        if(double alpha = Max(0.0, 1.0 - times_since_spawn[enemy_idx] * 5) ; alpha > 1e-10){
-            enemy_frames[enemy_idx].draw(ColorF{MyColor::Background, alpha});
-        }
-    }
 
-    // AlphaEnemyの描画
-    alpha_enemy.draw();
-    alpha_enemy.draw_gauges();
-    
-    // プレイヤーのステータスを描画
-    player.draw();
-    
-    // 小さいルーレットを画面右下に描画
-    roulette.draw_small_disk((not attack_mode) and (not pause) and roulette.mouse_over_small_circle()?1.2:1.0);
+        // AlphaEnemyの描画
+        alpha_enemy.draw();
+        alpha_enemy.draw_gauges();
+        
+        // プレイヤーのステータスを描画
+        player.draw();
+        
+        // 小さいルーレットを画面右下に描画
+        roulette.draw_small_disk((not attack_mode) and (not pause) and roulette.mouse_over_small_circle()?1.2:1.0);
 
-    {
-        // エフェクトは加算ブレンドで描画する
-        const ScopedRenderStates2D blend{BlendState::Additive};
-        for (const auto& enemy : enemies) {
-            enemy.draw_effect();
+        {
+            // エフェクトは加算ブレンドで描画する
+            const ScopedRenderStates2D blend{BlendState::Additive};
+            for (const auto& enemy : enemies) {
+                enemy.draw_effect();
+            }
         }
-    }
-    
-    // アタックモード中のマスクを描画
-    mask.draw(ColorF{MyColor::Background, mask_alpha_transition.value() * 0.8});
-    
-    {
-        // エフェクトは加算ブレンドで描画する
-        const ScopedRenderStates2D blend{BlendState::Additive};
-        alpha_enemy.draw_effect();
+        
+        // アタックモード中のマスクを描画
+        mask.draw(ColorF{MyColor::Background, mask_alpha_transition.value() * 0.8});
+        
+        {
+            // エフェクトは加算ブレンドで描画する
+            const ScopedRenderStates2D blend{BlendState::Additive};
+            alpha_enemy.draw_effect();
+        }
     }
     
     // APバーとSPバーのぼかし処理
     // アタックモードのマスクの描画後に描画しないと、干渉して見切れてしまう
     blur_bars();
     
-    // 文字のエフェクトの更新
-    effect.update();
-   
-    if (attack_mode or pause) {
-        // 中央に大きなルーレットを描画する
-        roulette.draw();
-    }
-    
-    // ルーレットの上下に表示するメッセージ
-    if(pause){
-        FontAsset(U"Black")(U"つぎ")
-            .drawAt(40, 700, 300, MyColor::White);
-        FontAsset(U"Black")(U"クリックで再開")
-            .drawAt(25, 700, 680, ColorF{MyColor::White,0.3 + 0.7*Periodic::Jump0_1(1s)});
-    }
+    {
+        // 座標変換（ぼかし処理を避ける）
+        const Transformer2D transformer{ transform_matrix };
+        
+        // 文字のエフェクトの更新
+        effect.update();
+       
+        if (attack_mode or pause) {
+            // 中央に大きなルーレットを描画する
+            roulette.draw();
+        }
+        
+        // ルーレットの上下に表示するメッセージ
+        if(pause){
+            FontAsset(U"Black")(U"つぎ")
+                .drawAt(40, 700, 300, MyColor::White);
+            FontAsset(U"Black")(U"クリックで再開")
+                .drawAt(25, 700, 680, ColorF{MyColor::White,0.3 + 0.7*Periodic::Jump0_1(1s)});
+        }
 
-    // 図形で攻撃する位置を選んでいるとき
-    if (attack_shape != nullptr) {
-        const Point upper_left = alpha_enemy.upper_left - Point{3000, 3000};
-        const Point center =
-            (Cursor::Pos() - upper_left) / 30 * 30 + upper_left + Point{15, 15};
+        // 図形で攻撃する位置を選んでいるとき
+        if (attack_shape != nullptr) {
+            const Point upper_left = alpha_enemy.upper_left - Point{3000, 3000};
+            const Point center =
+                (Cursor::Pos() - upper_left) / 30 * 30 + upper_left + Point{15, 15};
 
-        // 透過率を調整して、点滅するようAttackShapeを描画する
-        attack_shape->draw(
-            center, roulette.chosen_color().withAlpha(static_cast<uint32>(
-                        255 * (0.3 + Periodic::Jump0_1(2s) * 0.7))));
+            // 透過率を調整して、点滅するようAttackShapeを描画する
+            attack_shape->draw(
+                center, roulette.chosen_color().withAlpha(static_cast<uint32>(
+                            255 * (0.3 + Periodic::Jump0_1(2s) * 0.7))));
+        }
     }
 }
 
@@ -473,6 +500,9 @@ void Game::blur_bars() const {
         {
             // ガウスぼかし用テクスチャにもう一度バーを描く
             {
+                // 座標変換
+                const Transformer2D transformer{ transform_matrix };
+                
                 const ScopedRenderTarget2D target{ gaussianA1_ap.clear(ColorF{ 0.0 }) };
                 const ScopedRenderStates2D blend{ BlendState::Additive };
                 
@@ -498,6 +528,9 @@ void Game::blur_bars() const {
         {
             // ガウスぼかし用テクスチャにもう一度バーを描く
             {
+                // 座標変換
+                const Transformer2D transformer{ transform_matrix };
+                
                 const ScopedRenderTarget2D target{ gaussianA1_sp.clear(ColorF{ 0.0 }) };
                 const ScopedRenderStates2D blend{ BlendState::Additive };
                 
