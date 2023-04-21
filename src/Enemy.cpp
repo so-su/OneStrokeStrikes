@@ -181,6 +181,10 @@ void Enemy::reverse_path() { std::reverse(std::begin(path), std::end(path)); }
 
 // ゲージを更新し、満タンになったらtrueを返す
 bool Enemy::update_gauge() {
+    if(is_vanishing()){
+        return false;
+    }
+        
     gauge_len += Scene::DeltaTime() * gauge_speed;
 
     // ゲージが満タンになったとき

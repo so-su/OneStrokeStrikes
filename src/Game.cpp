@@ -12,7 +12,7 @@ Game::Game(const InitData& init) : IScene{init} {
 
 void Game::update() {
     /* デバック用の機能 */
-    if(KeyD.down() and KeyF.down()){
+    if(KeyD.pressed() and KeyF.pressed()){
         player.get_ap(1000);
     }
     
