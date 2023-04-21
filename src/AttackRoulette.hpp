@@ -88,7 +88,4 @@ class AttackRoulette {
     // valuesに入る初期値
     // この値が大きいほど割合が変動しにくい
     static constexpr int32 initial_value{10};
-
-    // AttackTypeがShapeになる確率
-    static constexpr double Shape_rate{0.5};
 };

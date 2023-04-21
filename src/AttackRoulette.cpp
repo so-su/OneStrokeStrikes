@@ -10,11 +10,20 @@ void AttackRoulette::initialize() {
     std::fill(std::begin(attack_nums), std::end(attack_nums), 0);
 
     // ルーレットの各部分の攻撃内容を決める
-    for (auto attack_idx : step(3)) {
-        if (RandomBool(Shape_rate)) {
-            attack_shapes[attack_idx].initialize();
-        } else {
-            attack_nums[attack_idx] = Random(5, 10);
+    {
+        // これらの配列をシャッフルしてから選択することによって
+        // shapeもnumも2つまでで、numは相異なるようにできる
+        Array<int32> shape_or_num{true,true,false,false};
+        shape_or_num.shuffle();
+        Array<int32> nums{5,6,7,8,9,10};
+        nums.shuffle();
+        
+        for (auto attack_idx : step(3)) {
+            if (shape_or_num[attack_idx]) {
+                attack_shapes[attack_idx].initialize();
+            } else {
+                attack_nums[attack_idx] = nums[attack_idx];
+            }
         }
     }
 }
