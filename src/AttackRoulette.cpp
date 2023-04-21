@@ -40,7 +40,7 @@ void AttackRoulette::draw() const {
 void AttackRoulette::draw_large_disk() const { draw_disk(large_circle); }
 
 // 画面右下に小さいルーレット円盤を描画する
-void AttackRoulette::draw_small_disk() const { draw_disk(small_circle); }
+void AttackRoulette::draw_small_disk(double scale) const { draw_disk(small_circle,scale); }
 
 // ルーレットが現在のフレームで押され始めたかを返す
 bool AttackRoulette::down() const {
@@ -95,11 +95,12 @@ Color AttackRoulette::chosen_color() const {
 }
 
 // 円を指定してルーレット円盤を描画
-void AttackRoulette::draw_disk(const Circle& circle) const {
-    circle.drawPie(start_angles[0], angles[0], MyColor::Green)
+void AttackRoulette::draw_disk(const Circle& circle, double scale) const {
+    (scale<1.01?circle:circle.scaled(scale))
+        .drawPie(start_angles[0], angles[0], MyColor::Green)
         .drawPie(start_angles[1], angles[1], MyColor::Red)
         .drawPie(start_angles[2], angles[2], MyColor::Blue)
-        .drawFrame(circle.r * 0.05, 0, ColorF{0.9});
+        .drawFrame(scale * circle.r * 0.05, 0, ColorF{0.5});
 }
 
 // 画面中央の大きいルーレットの位置に攻撃アイコンを描画
@@ -145,4 +146,9 @@ int32 AttackRoulette::chosen_index() const {
     } else {
         return 2;
     }
+}
+
+// 画面右下の小さいルーレットにマウスオーバーしているかを返す
+bool AttackRoulette::mouse_over_small_circle()const{
+    return small_circle.mouseOver();
 }

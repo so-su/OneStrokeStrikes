@@ -11,6 +11,11 @@ Game::Game(const InitData& init) : IScene{init} {
 }
 
 void Game::update() {
+    /* デバック用の機能 */
+    if(KeyG.down()){
+        player.get_ap(1000);
+    }
+    
     // 3 2 1 スタート！ のカウントダウン
     if(time_since_first_update <= 3.6){
         time_since_first_update +=Scene::DeltaTime();
@@ -213,7 +218,7 @@ void Game::draw() const {
     player.draw();
     
     // 小さいルーレットを画面右下に描画
-    roulette.draw_small_disk();
+    roulette.draw_small_disk((not attack_mode) and (not pause) and roulette.mouse_over_small_circle()?1.2:1.0);
 
     {
         // エフェクトは加算ブレンドで描画する
@@ -328,10 +333,12 @@ void Game::get_out_of_attack_mode() {
     attack_mode_timer.pause();
     roulette.initialize();
 
+    /*
     // 次の攻撃時のルーレットを表示するためにポーズ画面へ遷移
     if (alpha_enemy.is_alive()) {
-        pause = true;
+        pause = false;
     }
+    */
 }
 
 // Enemyたちの消滅を進める

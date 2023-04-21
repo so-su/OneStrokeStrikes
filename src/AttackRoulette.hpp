@@ -22,7 +22,7 @@ class AttackRoulette {
     void draw_large_disk() const;
 
     // 画面右下に小さいルーレット円盤を描画する
-    void draw_small_disk() const;
+    void draw_small_disk(double scale) const;
 
     // ルーレットが現在のフレームで押され始めたかを返す
     bool down() const;
@@ -47,10 +47,13 @@ class AttackRoulette {
     
     // ルーレットで選ばれたインデックス（0,1,2）を返す
     int32 chosen_index() const;
+    
+    // 画面右下の小さいルーレットにマウスオーバーしているかを返す
+    bool mouse_over_small_circle()const;
 
    private:
     // 円を指定して円盤を描画
-    void draw_disk(const Circle& circle) const;
+    void draw_disk(const Circle& circle, double scale = 1.0) const;
 
     // 大きいルーレットの位置に攻撃アイコンを描画
     void draw_icons() const;
