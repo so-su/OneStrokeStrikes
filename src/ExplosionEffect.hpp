@@ -22,7 +22,7 @@ private:
     const double base_hue;
     
     // 破片の個数
-    static constexpr int32 num_particle{50};
+    static constexpr int32 num_particle{30};
     
     // 破片の配列
     std::array<Particle,num_particle> particles;

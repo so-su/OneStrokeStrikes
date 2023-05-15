@@ -2,8 +2,8 @@
 namespace Parameter {
 /* ゲームの難易度に関わるもの */
 // AlphaEnemyの最大グリッドサイズ
-constexpr Size alpha_enemy_max_grid_size_easy{15, 6};
-constexpr Size alpha_enemy_max_grid_size_normal{18, 7};
+constexpr Size alpha_enemy_max_grid_size_easy{14, 6};
+constexpr Size alpha_enemy_max_grid_size_normal{17, 7};
 constexpr Size alpha_enemy_max_grid_size_hard{20, 8};
 
 // Enemyの最小グリッドサイズ

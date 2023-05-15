@@ -360,12 +360,10 @@ void Game::get_out_of_attack_mode() {
     attack_mode_timer.pause();
     roulette.initialize();
 
-    /*
     // 次の攻撃時のルーレットを表示するためにポーズ画面へ遷移
     if (alpha_enemy.is_alive()) {
-        pause = false;
+        pause = true;
     }
-    */
 }
 
 // Enemyたちの消滅を進める
