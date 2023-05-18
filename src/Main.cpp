@@ -16,6 +16,10 @@ void Main() {
                         U"font/kaiso_up/Kaisotai-Next-UP-B.ttf");
     FontAsset::Register(U"Black", FontMethod::MSDF, 80, Typeface::Black);
     FontAsset::Register(U"Regular", FontMethod::MSDF, 30, Typeface::Regular);
+    
+    FontAsset::Load(U"Kaisotai",U"ぴったりコンボ！");
+    FontAsset::Load(U"Black",U"みならいじゅくれんしょくにんつぎクリックで再開");
+    FontAsset::Load(U"Regular");
 
     // シーンの登録
     App manager;
