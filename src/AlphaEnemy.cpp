@@ -139,7 +139,7 @@ void AlphaEnemy::get_damaged(size_t remove_num, int32 roulette_idx) {
 }
 
 // 埋まっているセルのうち、指定した図形と重なるものを削除し、どれだけ削除できたかを返す
-ShapeAttackStatus AlphaEnemy::get_damaged(AttackShape* attack_shape, int32 roulette_idx) {
+ShapeAttackStatus AlphaEnemy::get_damaged(const AttackShape& attack_shape, int32 roulette_idx) {
     // 1つ以上削除できたか
     bool success{false};
     // attack shapeのブロックですべて削除できたか
@@ -149,7 +149,7 @@ ShapeAttackStatus AlphaEnemy::get_damaged(AttackShape* attack_shape, int32 roule
     // それを含む、ポリオミノの埋まっているセルが存在するか判定する
     for (auto shape_y : step(3)) {
         for (auto shape_x : step(3)) {
-            if (not attack_shape->shape[shape_y][shape_x]) {
+            if (not attack_shape.shape[shape_y][shape_x]) {
                 continue;
             }
             

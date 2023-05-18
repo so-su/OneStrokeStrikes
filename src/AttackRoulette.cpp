@@ -77,9 +77,9 @@ int32 AttackRoulette::get_attack_num() const {
     return attack_nums[chosen_index()];
 }
 
-// ルーレットで選ばれた攻撃の種類がShapeのとき、そのAttackShapeへのポインタを返す
-AttackShape* AttackRoulette::get_attack_shape() {
-    return &(attack_shapes[chosen_index()]);
+// ルーレットで選ばれた攻撃の種類がShapeのとき、そのAttackShapeを返す
+AttackShape AttackRoulette::get_attack_shape() {
+    return attack_shapes[chosen_index()];
 }
 
 // ルーレットで選ばれた色を返す

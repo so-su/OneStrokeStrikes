@@ -91,7 +91,8 @@ class Game : public App::Scene {
     // 一時停止の状態かどうか
     bool pause{false};
 
-    AttackShape* attack_shape{nullptr};
+    // ルーレットで選ばれた図形
+    Optional<AttackShape> attack_shape{none};
 
     // 3つのEnemyを囲う枠
     static constexpr std::array<Rect, 3> enemy_frames{Rect{50, 300, 400, 400},

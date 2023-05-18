@@ -39,8 +39,8 @@ class AttackRoulette {
     // ルーレットで選ばれた攻撃の種類がNumのとき、その数を返す
     int32 get_attack_num() const;
 
-    // ルーレットで選ばれた攻撃の種類がShapeのとき、そのAttackShapeへのポインタを返す
-    AttackShape* get_attack_shape();
+    // ルーレットで選ばれた攻撃の種類がShapeのとき、そのAttackShapeを返す
+    AttackShape get_attack_shape();
 
     // ルーレットで選ばれた色を返す
     Color chosen_color() const;

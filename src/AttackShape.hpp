@@ -10,6 +10,9 @@ class AttackShape {
 
     // 図形を描画する
     void draw(Point center, Color color) const;
+    
+    // 時計回りに回転する
+    void rotate();
 
     // 図形を表すグリッド
     Grid<bool> shape;

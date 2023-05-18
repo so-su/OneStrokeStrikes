@@ -58,7 +58,7 @@ void Game::update() {
     }
 
     // 図形で攻撃する位置を選んでいるとき
-    if (attack_shape != nullptr) {
+    if (attack_shape.has_value()) {
         shape_attack_update();
         return;
     }
@@ -284,7 +284,9 @@ void Game::draw() const {
         }
 
         // 図形で攻撃する位置を選んでいるとき
-        if (attack_shape != nullptr) {
+        if (attack_shape.has_value()) {
+            FontAsset(U"Black")(U"[space]で回転").drawAt(20, 700, 300, MyColor::White);
+            
             const Point upper_left = alpha_enemy.upper_left - Point{3000, 3000};
             const Point center =
                 (Cursor::Pos() - upper_left) / 30 * 30 + upper_left + Point{15, 15};
@@ -299,16 +301,21 @@ void Game::draw() const {
 
 // 図形で攻撃する位置を選んでいるときの処理
 void Game::shape_attack_update() {
+    // [space]キーが押されたら回転させる
+    if (KeySpace.down()){
+        attack_shape->rotate();
+    }
+
     if (not MouseL.down()) return;
     
-    ShapeAttackStatus status{alpha_enemy.get_damaged(attack_shape,roulette.chosen_index())};
+    ShapeAttackStatus status{alpha_enemy.get_damaged(attack_shape.value(), roulette.chosen_index())};
 
     // 図形で攻撃し、ひとつも消えなかったらやり直し
     if (status == ShapeAttackStatus::None) {
         return;
     }
 
-    attack_shape = nullptr;
+    attack_shape = none;
     get_out_of_attack_mode();
     
     // attack shapeのブロックすべてで削除できたらもう一度（ぴったりコンボ）

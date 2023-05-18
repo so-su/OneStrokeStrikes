@@ -17,9 +17,9 @@ void Main() {
     FontAsset::Register(U"Black", FontMethod::MSDF, 80, Typeface::Black);
     FontAsset::Register(U"Regular", FontMethod::MSDF, 30, Typeface::Regular);
     
+    // フレームレートを低下させずに描画されてほしい文字は明示的にロードしておく
     FontAsset::Load(U"Kaisotai",U"ぴったりコンボ！");
     FontAsset::Load(U"Black",U"みならいじゅくれんしょくにんつぎクリックで再開");
-    FontAsset::Load(U"Regular");
 
     // シーンの登録
     App manager;

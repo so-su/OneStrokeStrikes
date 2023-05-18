@@ -40,3 +40,13 @@ void AttackShape::draw(Point center, Color color) const {
     Rect{Arg::center = center, frame_size, frame_size}.drawFrame(
         0, 2, Palette::White);
 }
+
+// 時計回りに回転する
+void AttackShape::rotate(){
+    const auto tmp{shape};
+    for(auto y:step(3)){
+        for(auto x:step(3)){
+            shape[y][x]=tmp[x][2-y];
+        }
+    }
+}
