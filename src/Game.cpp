@@ -16,6 +16,9 @@ void Game::update() {
         player.get_ap(1000);
     }
     
+    // 早期リターンしても大丈夫なように、座標の変換行列をもとに戻しておく
+    transform_matrix = Mat3x2::Identity();
+    
     // [esc]キーでタイトルに戻る
     if(KeyEscape.down()){
         changeScene(State::Title);
@@ -141,10 +144,7 @@ void Game::update() {
 
         // 座標変換行列を設定
         if (const double magnitude{screen_shake_transition.value()}){
-            transform_matrix = Mat3x2::Translate(RandomVec2(magnitude * 100));
-        }
-        else{
-            transform_matrix = Mat3x2::Identity();
+            transform_matrix = Mat3x2::Translate(RandomVec2(magnitude * 10));
         }
     }
 
