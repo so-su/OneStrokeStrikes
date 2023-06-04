@@ -141,7 +141,7 @@ void Game::update() {
 
         // 座標変換行列を設定
         if (const double magnitude{screen_shake_transition.value()}){
-            transform_matrix = Mat3x2::Translate(RandomVec2(magnitude * 10));
+            transform_matrix = Mat3x2::Translate(RandomVec2(magnitude * 100));
         }
         else{
             transform_matrix = Mat3x2::Identity();
@@ -285,7 +285,7 @@ void Game::draw() const {
 
         // 図形で攻撃する位置を選んでいるとき
         if (attack_shape.has_value()) {
-            FontAsset(U"Black")(U"[space]で回転").drawAt(20, 700, 300, MyColor::White);
+            FontAsset(U"Black")(U"[space]で回転").drawAt(20, 700, 300, ColorF{MyColor::White, 0.3 + 0.7 * Periodic::Jump0_1(1s)});
             
             const Point upper_left = alpha_enemy.upper_left - Point{3000, 3000};
             const Point center =
