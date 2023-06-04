@@ -19,7 +19,7 @@ void Main() {
     
     // フレームレートを低下させずに描画されてほしい文字は明示的にロードしておく
     FontAsset::Load(U"Kaisotai",U"ぴったりコンボ！");
-    FontAsset::Load(U"Black",U"みならいじゅくれんしょくにんつぎクリックで再開");
+    FontAsset::Load(U"Black",U"みならいじゅくれんしょくにんつぎクリックで再開[space]で回転");
 
     // シーンの登録
     App manager;
