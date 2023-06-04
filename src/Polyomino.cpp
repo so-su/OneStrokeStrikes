@@ -126,7 +126,7 @@ void Polyomino::generate_polyomino(Cell designated) {
 
         // ランダムな方向に進みながらセルを埋め、ポリオミノをつくる
         while (error_cnt < tolerance) {
-            const auto dir_idx = Random<size_t>(3);
+            const auto dir_idx{Random<size_t>(3)};
             const auto next{now + directions[dir_idx]};
 
             if (next.x < 0 or grid_size.x <= next.x or next.y < 0 or

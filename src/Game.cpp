@@ -188,6 +188,7 @@ void Game::draw() const {
     /* 描画の順番には気をつける */
     
     Scene::SetBackground(MyColor::Background);
+    Cursor::RequestStyle(U"SquareCursor");
     
     {
         // 座標変換（ぼかし処理を避ける）
@@ -287,9 +288,8 @@ void Game::draw() const {
         if (attack_shape.has_value()) {
             FontAsset(U"Black")(U"[space]で回転").drawAt(20, 700, 300, ColorF{MyColor::White, 0.3 + 0.7 * Periodic::Jump0_1(1s)});
             
-            const Point upper_left = alpha_enemy.upper_left - Point{3000, 3000};
-            const Point center =
-                (Cursor::Pos() - upper_left) / 30 * 30 + upper_left + Point{15, 15};
+            const Point upper_left{alpha_enemy.upper_left - Point{3000, 3000}};
+            const Point center{(Cursor::Pos() - upper_left) / 30 * 30 + upper_left + Point{15, 15}};
 
             // 透過率を調整して、点滅するようAttackShapeを描画する
             attack_shape->draw(
@@ -444,7 +444,7 @@ void Game::update_one_stroke_path() {
     auto& enemy = enemies[*drawing_path_idx];
 
     // パスを更新
-    enemy.update_path(Cursor::Pos());
+    enemy.update_path();
 
     // 一筆書きが成功したときの処理
     if (enemy.is_vanishing()) {

@@ -25,8 +25,8 @@ class Enemy : public Polyomino {
     // パスを描画する
     void draw_path() const;
 
-    // カーソルの座標を受け取ってパスを更新
-    void update_path(Point cursor_pos);
+    // カーソルの座標からパスを更新
+    void update_path();
 
     // パスを削除する
     void clear_path();

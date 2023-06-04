@@ -128,49 +128,80 @@ void Enemy::draw_path() const {
     }
 }
 
-// カーソルの座標を受け取ってパスを更新
-void Enemy::update_path(Point cursor_pos) {
-    for (auto pos : step(grid_size)) {
-        if (rects[pos] and rects[pos]->contains(cursor_pos)) {
-            if (not path.empty()) {
-                // パスの末尾のセルに隣接していないなら拒否
-                if (not(std::abs(pos.x - path.back().x) +
-                            std::abs(pos.y - path.back().y) ==
-                        1)) {
-                    return;
-                }
+// カーソルの座標からパスを更新
+void Enemy::update_path() {
+    const Point pos{(Cursor::Pos() - upper_left) / cell_size};
+    bool updated{false};
+    
+    if(is_filled(pos)){
+        updated = true;
+        
+        if (not path.empty()) {
+            // パスの末尾のセルに隣接していないなら拒否
+            if (std::abs(pos.x - path.back().x) +
+                        std::abs(pos.y - path.back().y) != 1) {
+                updated = false;
+            }
 
-                // パスに既に含まれていたら拒否
-                // ただし、末尾から2番目ならパスの末尾を削除
-                for (auto path_idx : step(std::size(path))) {
-                    if (path[path_idx] == pos) {
-                        if (path_idx + 2 == std::size(path)) {
-                            path.pop_back();
-                        }
+            // パスに既に含まれていたら拒否
+            // ただし、末尾から2番目ならパスの末尾を削除
+            for (auto path_idx : step(std::size(path))) {
+                if (path[path_idx] == pos) {
+                    if (path_idx + 2 == std::size(path)) {
+                        path.pop_back();
                         return;
                     }
+                    updated = false;
+                    break;
                 }
             }
-
-            /* ここを抜けたときにパスが伸びる */
-
-            path.emplace_back(pos);
-
-            // パスがポリオミノを覆ったならポリオミノの消滅が始まる
-            if (std::size(path) == num_filled_cells) {
-                // パスの後ろから削除予定スタックに入れていく
-                for (auto it = path.rbegin(); it != path.rend(); ++it) {
-                    cells_to_erase.emplace_back(*it);
-                }
-
-                add_ring_effect();
-            }
-
+        }
+    }
+    
+    if(updated){
+        path.emplace_back(pos);
+    }
+    
+    /* カーソルの正確な座標でパスが更新されなかったとき、操作の快適性のための処理を施す */
+    if(not updated){
+        // ただし、マウスカーソルがパスの末尾を指しているときには、処理を施さない
+        if(path.empty() or pos == path.back()){
             return;
+        }
+        
+        // パスを伸ばせるセルの候補を計算する
+        Optional<Point> modified_pos;
+        constexpr std::array<Point, 4> directions{Point{1,0}, Point{0,1}, Point{-1,0}, Point{0,-1}};
+        for(const Point& dir : directions){
+            const Point pos_cand{pos + dir};
+            
+            // 有効なセルのうち、パスの末尾に隣接し、かつまだパスに含まれていないものが候補
+            if(is_filled(pos_cand) and
+                std::abs(pos_cand.x - path.back().x) + std::abs(pos_cand.y - path.back().y) == 1 and
+                std::find(std::begin(path), std::end(path), pos_cand) == std::end(path)){
+                // 候補が複数あるなら拒否
+                if(modified_pos.has_value()){
+                    return;
+                }
+                modified_pos = pos_cand;
+            }
+        }
+        
+        // パスを伸ばせるセルの候補がただひとつならば伸ばす
+        if(modified_pos.has_value()){
+            path.emplace_back(modified_pos.value());
         }
     }
 
-    /* cursor_posがポリオミノ外にあるとき、ここに到達する */
+    // パスがポリオミノを覆ったならポリオミノの消滅が始まる
+    if (std::size(path) == num_filled_cells) {
+        // パスの後ろから削除予定スタックに入れていく
+        for (auto it = path.rbegin(); it != path.rend(); ++it) {
+            cells_to_erase.emplace_back(*it);
+        }
+
+        add_ring_effect();
+    }
 }
 
 // パスを削除する

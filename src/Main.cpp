@@ -27,6 +27,13 @@ void Main() {
     manager.add<Game>(State::Game);
     manager.add<Result>(State::Result);
     manager.add<Ranking>(State::Ranking);
+    
+    // CursorStyleを登録しておく
+    {
+        Image cursor_img(12, 12, ColorF{0.3});
+        Rect{ 2, 2, 8 }.overwrite(cursor_img, ColorF{1.0});
+        Cursor::RegisterCustomCursorStyle(U"SquareCursor", cursor_img, Point{6, 6});
+    }
 
     while (System::Update()) {
         if (not manager.update()) {
