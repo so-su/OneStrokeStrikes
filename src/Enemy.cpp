@@ -130,7 +130,11 @@ void Enemy::draw_path() const {
 
 // カーソルの座標からパスを更新
 void Enemy::update_path() {
-    const Point pos{(Cursor::Pos() - upper_left) / cell_size};
+    // グリッド上でのカーソルの座標
+    // 負の数の除算で切り捨てたときの挙動に気をつける
+    const Point pos{(Cursor::Pos() - upper_left + cell_size * Point{1000, 1000}) / cell_size - Point{1000, 1000}};
+    
+    // カーソルの正確な座標でパスの更新されるか否か
     bool updated{false};
     
     if(is_filled(pos)){
@@ -175,10 +179,12 @@ void Enemy::update_path() {
         for(const Point& dir : directions){
             const Point pos_cand{pos + dir};
             
-            // 有効なセルのうち、パスの末尾に隣接し、かつまだパスに含まれていないものが候補
-            if(is_filled(pos_cand) and
+            // 有効なセルのうち、パスの末尾に隣接し、かつまだパスに含まれていないものと、
+            // さらに、パスの末尾から2番目のセルが候補
+            if((is_filled(pos_cand) and
                 std::abs(pos_cand.x - path.back().x) + std::abs(pos_cand.y - path.back().y) == 1 and
-                std::find(std::begin(path), std::end(path), pos_cand) == std::end(path)){
+                std::find(std::begin(path), std::end(path), pos_cand) == std::end(path)) or
+               (std::size(path) >= 2 and *std::next(std::rbegin(path)) == pos_cand)){
                 // 候補が複数あるなら拒否
                 if(modified_pos.has_value()){
                     return;
@@ -189,7 +195,13 @@ void Enemy::update_path() {
         
         // パスを伸ばせるセルの候補がただひとつならば伸ばす
         if(modified_pos.has_value()){
-            path.emplace_back(modified_pos.value());
+            if(std::size(path) >= 2 and modified_pos == *std::next(std::rbegin(path))){
+                path.pop_back();
+                return;
+            }
+            else{
+                path.emplace_back(modified_pos.value());
+            }
         }
     }
 
