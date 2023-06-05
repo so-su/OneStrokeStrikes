@@ -54,8 +54,7 @@ void Result::update() {
 
 void Result::draw() const {
     Scene::SetBackground(MyColor::Background);
-    Cursor::RequestStyle(U"SquareCursor");
-
+    
     FontAsset(U"Kaisotai")(U"リザルト").drawAt(80, 700, 100, MyColor::White);
     frame.drawFrame(1, 1, Palette::Dimgray);
     

@@ -58,7 +58,6 @@ void Ranking::update() {
 
 void Ranking::draw() const {
     Scene::SetBackground(MyColor::Background);
-    Cursor::RequestStyle(U"SquareCursor");
 
     FontAsset(U"Kaisotai")(U"ランキング").drawAt(80, 700, 100, MyColor::White);
 

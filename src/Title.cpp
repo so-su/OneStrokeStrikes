@@ -64,7 +64,6 @@ void Title::update() {
 
 void Title::draw() const {
     Scene::SetBackground(MyColor::Background);
-    Cursor::RequestStyle(U"SquareCursor");
     
     FontAsset(U"Kaisotai")(U"す").drawAt(TextStyle::Outline(0.5, MyColor::White),550, 90, MyColor::Red);
     FontAsset(U"Kaisotai")(U"と").drawAt(TextStyle::Outline(0.5, MyColor::White),650, 110, MyColor::Yellow);

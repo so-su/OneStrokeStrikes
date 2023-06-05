@@ -188,7 +188,6 @@ void Game::draw() const {
     /* 描画の順番には気をつける */
     
     Scene::SetBackground(MyColor::Background);
-    Cursor::RequestStyle(U"SquareCursor");
     
     {
         // 座標変換（ぼかし処理を避ける）

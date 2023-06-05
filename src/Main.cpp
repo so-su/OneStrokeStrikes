@@ -4,6 +4,12 @@
 #include "Result.hpp"
 #include "Title.hpp"
 
+// 自前のカーソルを描画する（Web版でカスタムカーソルが使えないため）
+void SetSquareCursor(){
+    Cursor::RequestStyle(CursorStyle::Hidden);
+    Rect{Arg::center = Cursor::Pos(), 10, 10}.draw(ColorF{1.0}).drawFrame(0, 2, ColorF{0.3});
+}
+
 void Main() {
     Window::Resize(1400, 800);
     Window::SetTitle(U"すとすと");
@@ -28,16 +34,13 @@ void Main() {
     manager.add<Result>(State::Result);
     manager.add<Ranking>(State::Ranking);
     
-    // CursorStyleを登録しておく
-    {
-        Image cursor_img(12, 12, ColorF{0.3});
-        Rect{ 2, 2, 8 }.overwrite(cursor_img, ColorF{1.0});
-        Cursor::RegisterCustomCursorStyle(U"SquareCursor", cursor_img, Point{6, 6});
-    }
 
     while (System::Update()) {
         if (not manager.update()) {
             break;
         }
+        
+        // 自前のカーソルをデフォルトにする
+        SetSquareCursor();
     }
 }
