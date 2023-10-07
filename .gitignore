@@ -3,3 +3,5 @@ Info.plist
 icon.icns
 one-stroke-strikes.xcodeproj
 .DS_Store
+.vscode/
+build/
