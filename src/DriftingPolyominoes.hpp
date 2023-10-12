@@ -40,7 +40,7 @@ class DriftingPolyominoes {
 
         const Grid<bool> shape;
 
-        Vec2 speed;
+        Vec2 speed{0.0, 0.0};
 
         // base_argを中心にしてargを動かす
         const double base_arg;
