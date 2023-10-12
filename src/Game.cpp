@@ -12,43 +12,41 @@ Game::Game(const InitData& init) : IScene{init} {
 
 void Game::update() {
     /* デバック用の機能 */
-    if(KeyD.pressed() and KeyF.pressed()){
+    if (KeyD.pressed() and KeyF.pressed()) {
         player.get_ap(1000);
     }
-    
+
     // 早期リターンしても大丈夫なように、座標の変換行列をもとに戻しておく
     transform_matrix = Mat3x2::Identity();
-    
+
     // [esc]キーでタイトルに戻る
-    if(KeyEscape.down()){
+    if (KeyEscape.down()) {
         changeScene(State::Title);
     }
-    
+
     // 3 2 1 スタート！ のカウントダウン
-    if(time_since_first_update <= 3.6){
-        time_since_first_update +=Scene::DeltaTime();
-        if(time_since_first_update >= 2.8 and countdown == 0){
-            effect.add<StringEffect>(U"スタート！",120, Point{700, 500}, 0.8, 0.1, 0.3);
+    if (time_since_first_update <= 3.6) {
+        time_since_first_update += Scene::DeltaTime();
+        if (time_since_first_update >= 2.8 and countdown == 0) {
+            effect.add<StringEffect>(U"スタート！", 120, Point{700, 500}, 0.8,
+                                     0.1, 0.3);
             --countdown;
-        }
-        else if(time_since_first_update >= 2.0 and countdown == 1){
-            effect.add<StringEffect>(U"1",120, Point{700, 500}, 0.6, 0.1, 0.3);
+        } else if (time_since_first_update >= 2.0 and countdown == 1) {
+            effect.add<StringEffect>(U"1", 120, Point{700, 500}, 0.6, 0.1, 0.3);
             --countdown;
-        }
-        else if(time_since_first_update >= 1.2 and countdown == 2){
-            effect.add<StringEffect>(U"2",120, Point{700, 500}, 0.6, 0.1, 0.3);
+        } else if (time_since_first_update >= 1.2 and countdown == 2) {
+            effect.add<StringEffect>(U"2", 120, Point{700, 500}, 0.6, 0.1, 0.3);
             --countdown;
-        }
-        else if(time_since_first_update >= 0.4 and countdown == 3){
-            effect.add<StringEffect>(U"3",120, Point{700, 500}, 0.6, 0.1, 0.3);
+        } else if (time_since_first_update >= 0.4 and countdown == 3) {
+            effect.add<StringEffect>(U"3", 120, Point{700, 500}, 0.6, 0.1, 0.3);
             --countdown;
         }
         return;
     }
-    
+
     // マスクの透過率を更新
     mask_alpha_transition.update(attack_mode or pause);
-    
+
     // プレイヤーの遅延つきステータスを更新
     player.update_delay_status();
 
@@ -77,11 +75,11 @@ void Game::update() {
         pause = true;
         return;
     }
-    
+
     // これより上の処理でreturnしたら時間経過に含めない
     getData().elapsed_time += Scene::DeltaTime();
-    
-    for(auto& time_since_spawn : times_since_spawn){
+
+    for (auto& time_since_spawn : times_since_spawn) {
         time_since_spawn += Scene::DeltaTime();
     }
 
@@ -91,12 +89,15 @@ void Game::update() {
     // 画面をクリックしたとき
     if (MouseL.down()) {
         // APを消費してアタックモードに切り替わる
-        if (Rect{940, 720, 120, 80}.contains(Cursor::Pos()) and player.ap_is_full()) {
+        if (Rect{940, 720, 120, 80}.contains(Cursor::Pos()) and
+            player.ap_is_full()) {
             use_ap();
             return;
         }
         // SPを消費して敵を一掃する
-        else if (Rect{1090, 720, 120, 80}.contains(Cursor::Pos()) and player.sp_is_full() and all_clear_status == AllClearStatus::EnemyAliveExists) {
+        else if (Rect{1090, 720, 120, 80}.contains(Cursor::Pos()) and
+                 player.sp_is_full() and
+                 all_clear_status == AllClearStatus::EnemyAliveExists) {
             use_sp();
         }
         // 既に一筆書き中なら、一筆書き状態を解除する
@@ -130,7 +131,7 @@ void Game::update() {
     {
         // プレイヤーが少なくとも一回はダメージを受けたかどうか
         bool damaged{false};
-        
+
         for (auto& enemy : enemies) {
             if (not enemy.is_alive()) continue;
             if (enemy.update_gauge()) {
@@ -138,12 +139,12 @@ void Game::update() {
                 damaged = true;
             }
         }
-        
+
         // ダメージを受けたかどうかで画面の振動を更新
         screen_shake_transition.update(damaged);
 
         // 座標変換行列を設定
-        if (const double magnitude{screen_shake_transition.value()}){
+        if (const double magnitude{screen_shake_transition.value()}) {
             transform_matrix = Mat3x2::Translate(RandomVec2(magnitude * 10));
         }
     }
@@ -155,7 +156,8 @@ void Game::update() {
             timer += Scene::DeltaTime();
         }
 
-        // All Clearの効果を待機している状態LastIsVanishingのときはリスポーンさせない
+        // All
+        // Clearの効果を待機している状態LastIsVanishingのときはリスポーンさせない
         if (timer > Parameter::respawn_time and
             all_clear_status != AllClearStatus::LastIsVanishing) {
             enemies[enemy_idx].initialize();
@@ -186,23 +188,25 @@ void Game::update() {
 
 void Game::draw() const {
     /* 描画の順番には気をつける */
-    
+
     Scene::SetBackground(MyColor::Background);
-    
+
     {
         // 座標変換（ぼかし処理を避ける）
-        const Transformer2D transformer{ transform_matrix };
-        
+        const Transformer2D transformer{transform_matrix};
+
         // 操作説明
-        FontAsset(U"Black")(U"[space] 一筆書きの始点終点いれかえ").draw(18, 10, 10, MyColor::White);
-        FontAsset(U"Black")(U"[esc] タイトルへもどる").draw(18, 10, 30, MyColor::White);
+        FontAsset(U"Black")(U"[space] 一筆書きの始点終点いれかえ")
+            .draw(18, 10, 10, MyColor::White);
+        FontAsset(U"Black")(U"[esc] タイトルへもどる")
+            .draw(18, 10, 30, MyColor::White);
 
         // Enemyたちの描画
         for (auto enemy_idx : step(3)) {
-            if(times_since_spawn[enemy_idx] < 1e-10){
+            if (times_since_spawn[enemy_idx] < 1e-10) {
                 continue;
             }
-            
+
             const auto& enemy{enemies[enemy_idx]};
             if (not enemy.is_alive()) continue;
 
@@ -217,29 +221,34 @@ void Game::draw() const {
             // ただし、SPを使って倒した場合は描画しない
             else if (vanishing_timers[enemy_idx] <
                          Parameter::time_until_vanishing and
-                     respawn_timers[enemy_idx] < Parameter::respawn_time -
-                                                     Parameter::short_respawn_time -
-                                                     1e-5) {
+                     respawn_timers[enemy_idx] <
+                         Parameter::respawn_time -
+                             Parameter::short_respawn_time - 1e-5) {
                 enemy.draw_path();
             }
         }
-        
+
         // Enemyがスポーンしたときに透過するマスクを被せることで、滑らかに表示されるようにする
-        for(auto enemy_idx:step(3)){
-            if(double alpha = Max(0.0, 1.0 - times_since_spawn[enemy_idx] * 5) ; alpha > 1e-10){
-                enemy_frames[enemy_idx].draw(ColorF{MyColor::Background, alpha});
+        for (auto enemy_idx : step(3)) {
+            if (double alpha = Max(0.0, 1.0 - times_since_spawn[enemy_idx] * 5);
+                alpha > 1e-10) {
+                enemy_frames[enemy_idx].draw(
+                    ColorF{MyColor::Background, alpha});
             }
         }
 
         // AlphaEnemyの描画
         alpha_enemy.draw();
         alpha_enemy.draw_gauges();
-        
+
         // プレイヤーのステータスを描画
         player.draw();
-        
+
         // 小さいルーレットを画面右下に描画
-        roulette.draw_small_disk((not attack_mode) and (not pause) and roulette.mouse_over_small_circle()?1.2:1.0);
+        roulette.draw_small_disk((not attack_mode) and (not pause) and
+                                         roulette.mouse_over_small_circle()
+                                     ? 1.2
+                                     : 1.0);
 
         {
             // エフェクトは加算ブレンドで描画する
@@ -248,47 +257,53 @@ void Game::draw() const {
                 enemy.draw_effect();
             }
         }
-        
+
         // アタックモード中のマスクを描画
-        mask.draw(ColorF{MyColor::Background, mask_alpha_transition.value() * 0.8});
-        
+        mask.draw(
+            ColorF{MyColor::Background, mask_alpha_transition.value() * 0.8});
+
         {
             // エフェクトは加算ブレンドで描画する
             const ScopedRenderStates2D blend{BlendState::Additive};
             alpha_enemy.draw_effect();
         }
     }
-    
+
     // APバーとSPバーのぼかし処理
     // アタックモードのマスクの描画後に描画しないと、干渉して見切れてしまう
     blur_bars();
-    
+
     {
         // 座標変換（ぼかし処理を避ける）
-        const Transformer2D transformer{ transform_matrix };
-        
+        const Transformer2D transformer{transform_matrix};
+
         // 文字のエフェクトの更新
         effect.update();
-       
+
         if (attack_mode or pause) {
             // 中央に大きなルーレットを描画する
             roulette.draw();
         }
-        
+
         // ルーレットの上下に表示するメッセージ
-        if(pause){
-            FontAsset(U"Black")(U"つぎ")
-                .drawAt(40, 700, 300, MyColor::White);
+        if (pause) {
+            FontAsset(U"Black")(U"つぎ").drawAt(40, 700, 300, MyColor::White);
             FontAsset(U"Black")(U"クリックで再開")
-                .drawAt(25, 700, 680, ColorF{MyColor::White,0.3 + 0.7*Periodic::Jump0_1(1s)});
+                .drawAt(
+                    25, 700, 680,
+                    ColorF{MyColor::White, 0.3 + 0.7 * Periodic::Jump0_1(1s)});
         }
 
         // 図形で攻撃する位置を選んでいるとき
         if (attack_shape.has_value()) {
-            FontAsset(U"Black")(U"[space]で回転").drawAt(20, 700, 300, ColorF{MyColor::White, 0.3 + 0.7 * Periodic::Jump0_1(1s)});
-            
+            FontAsset(U"Black")(U"[space]で回転")
+                .drawAt(
+                    20, 700, 300,
+                    ColorF{MyColor::White, 0.3 + 0.7 * Periodic::Jump0_1(1s)});
+
             const Point upper_left{alpha_enemy.upper_left - Point{3000, 3000}};
-            const Point center{(Cursor::Pos() - upper_left) / 30 * 30 + upper_left + Point{15, 15}};
+            const Point center{(Cursor::Pos() - upper_left) / 30 * 30 +
+                               upper_left + Point{15, 15}};
 
             // 透過率を調整して、点滅するようAttackShapeを描画する
             attack_shape->draw(
@@ -298,16 +313,16 @@ void Game::draw() const {
     }
 }
 
-// 図形で攻撃する位置を選んでいるときの処理
 void Game::shape_attack_update() {
     // [space]キーが押されたら回転させる
-    if (KeySpace.down()){
+    if (KeySpace.down()) {
         attack_shape->rotate();
     }
 
     if (not MouseL.down()) return;
-    
-    ShapeAttackStatus status{alpha_enemy.get_damaged(attack_shape.value(), roulette.chosen_index())};
+
+    ShapeAttackStatus status{
+        alpha_enemy.get_damaged(attack_shape.value(), roulette.chosen_index())};
 
     // 図形で攻撃し、ひとつも消えなかったらやり直し
     if (status == ShapeAttackStatus::None) {
@@ -316,9 +331,9 @@ void Game::shape_attack_update() {
 
     attack_shape = none;
     get_out_of_attack_mode();
-    
+
     // attack shapeのブロックすべてで削除できたらもう一度（ぴったりコンボ）
-    if(status == ShapeAttackStatus::All){
+    if (status == ShapeAttackStatus::All) {
         pause = false;
         attack_mode = true;
         attack_mode_timer.restart();
@@ -326,10 +341,11 @@ void Game::shape_attack_update() {
         // ルーレットが回る時間をランダムで決める
         roulette_duration = Random(Parameter::roulette_rotation_min_duration,
                                    Parameter::roulette_rotation_max_duration);
-        
+
         ++getData().attack_combo;
-        
-        effect.add<StringEffect>(U"ぴったりコンボ！", 80, Point{700, 320}, 2.0, 0.5,0.5);
+
+        effect.add<StringEffect>(U"ぴったりコンボ！", 80, Point{700, 320}, 2.0,
+                                 0.5, 0.5);
     }
 }
 
@@ -354,7 +370,8 @@ void Game::attack_mode_update() {
         if (attack_type == AttackType::Shape) {
             attack_shape = roulette.get_attack_shape();
         } else if (attack_type == AttackType::Num) {
-            alpha_enemy.get_damaged(roulette.get_attack_num(),roulette.chosen_index());
+            alpha_enemy.get_damaged(roulette.get_attack_num(),
+                                    roulette.chosen_index());
             get_out_of_attack_mode();
         }
     }
@@ -401,8 +418,9 @@ void Game::update_to_vanish_enemies() {
                 // リスポーンまでの時間は短め
                 respawn_timers[0] = respawn_timers[1] = respawn_timers[2] =
                     Parameter::respawn_time - Parameter::short_respawn_time;
-                
-                effect.add<StringEffect>(U"オールクリア!", 100, Point{700, 500}, 2.0, 0.5,0.5);
+
+                effect.add<StringEffect>(U"オールクリア!", 100, Point{700, 500},
+                                         2.0, 0.5, 0.5);
             }
         }
     }
@@ -451,10 +469,10 @@ void Game::update_one_stroke_path() {
         drawing_path_idx = none;
 
         const auto& path_info{enemy.get_path_score()};
-        
+
         getData().sum_max_run_length += path_info.second;
         ++getData().cnt_one_stroke;
-        
+
         // パスのスコアによって効果を得る
         const auto& score{path_info.first};
         player.get_healed(score.green);
@@ -500,59 +518,70 @@ void Game::use_ap() {
 // APバーとSPバーにぼかし処理を施す
 void Game::blur_bars() const {
     // APが満タンのときにぼかし処理
-    if(player.ap_is_full()){
+    if (player.ap_is_full()) {
         {
             // ガウスぼかし用テクスチャにもう一度バーを描く
             {
                 // 座標変換
-                const Transformer2D transformer{ transform_matrix };
-                
-                const ScopedRenderTarget2D target{ gaussianA1_ap.clear(ColorF{ 0.0 }) };
-                const ScopedRenderStates2D blend{ BlendState::Additive };
-                
+                const Transformer2D transformer{transform_matrix};
+
+                const ScopedRenderTarget2D target{
+                    gaussianA1_ap.clear(ColorF{0.0})};
+                const ScopedRenderStates2D blend{BlendState::Additive};
+
                 player.draw_ap_bar();
             }
 
             // オリジナルサイズのガウスぼかし (A1)
             // A1 を 1/16 サイズにしてガウスぼかし (A16)
             Shader::Downsample(gaussianA1_ap, gaussianA16_ap);
-            Shader::GaussianBlur(gaussianA16_ap, gaussianB16_ap, gaussianA16_ap);
+            Shader::GaussianBlur(gaussianA16_ap, gaussianB16_ap,
+                                 gaussianA16_ap);
         }
 
         {
-            const ScopedRenderStates2D blend{ BlendState::Additive };
+            const ScopedRenderStates2D blend{BlendState::Additive};
 
             // マウスオーバーしているならぼかし最大
-            gaussianA16_ap.resized(sceneSize).draw(ColorF{ (Rect{940, 720, 120, 80}.contains(Cursor::Pos())? 1.0: Periodic::Jump0_1(2s)) * 3 });
+            gaussianA16_ap.resized(sceneSize).draw(
+                ColorF{(Rect{940, 720, 120, 80}.contains(Cursor::Pos())
+                            ? 1.0
+                            : Periodic::Jump0_1(2s)) *
+                       3});
         }
     }
-    
+
     // SPが満タンのときにぼかし処理
-    if(player.sp_is_full()){
+    if (player.sp_is_full()) {
         {
             // ガウスぼかし用テクスチャにもう一度バーを描く
             {
                 // 座標変換
-                const Transformer2D transformer{ transform_matrix };
-                
-                const ScopedRenderTarget2D target{ gaussianA1_sp.clear(ColorF{ 0.0 }) };
-                const ScopedRenderStates2D blend{ BlendState::Additive };
-                
+                const Transformer2D transformer{transform_matrix};
+
+                const ScopedRenderTarget2D target{
+                    gaussianA1_sp.clear(ColorF{0.0})};
+                const ScopedRenderStates2D blend{BlendState::Additive};
+
                 player.draw_sp_bar();
             }
 
             // オリジナルサイズのガウスぼかし (A1)
             // A1 を 1/16 サイズにしてガウスぼかし (A16)
             Shader::Downsample(gaussianA1_sp, gaussianA16_sp);
-            Shader::GaussianBlur(gaussianA16_sp, gaussianB16_sp, gaussianA16_sp);
+            Shader::GaussianBlur(gaussianA16_sp, gaussianB16_sp,
+                                 gaussianA16_sp);
         }
 
         {
-            const ScopedRenderStates2D blend{ BlendState::Additive };
+            const ScopedRenderStates2D blend{BlendState::Additive};
 
             // マウスオーバーしているならぼかし最大
-            gaussianA16_sp.resized(sceneSize).draw(ColorF{(Rect{1090, 720, 120, 80}.contains(Cursor::Pos())? 1.0: Periodic::Jump0_1(2s)) * 3});
+            gaussianA16_sp.resized(sceneSize).draw(
+                ColorF{(Rect{1090, 720, 120, 80}.contains(Cursor::Pos())
+                            ? 1.0
+                            : Periodic::Jump0_1(2s)) *
+                       3});
         }
-
     }
 }

@@ -38,7 +38,7 @@ class Game : public App::Scene {
 
     // APを消費して攻撃モードに遷移する
     void use_ap();
-    
+
     // APバーとSPバーにぼかし処理を施す
     void blur_bars() const;
 
@@ -67,14 +67,15 @@ class Game : public App::Scene {
 
     // respawn_timeになるまでの時間を管理
     std::array<double, 3> respawn_timers{0.0, 0.0, 0.0};
-    
+
     // スポーンしてからの時間を管理
     std::array<double, 3> times_since_spawn{0.0, 0.0, 0.0};
 
     // Enemyが消滅し始めてからの時間を管理
     std::array<double, 3> vanishing_timers;
 
-    // All Clearの状態になってからすべてのEnemyが消滅するまで待つために導入した状態
+    // All
+    // Clearの状態になってからすべてのEnemyが消滅するまで待つために導入した状態
     enum class AllClearStatus {
         EnemyAliveExists,
         LastIsVanishing,
@@ -101,30 +102,32 @@ class Game : public App::Scene {
 
     // アタックモード時にEnemyにかかるマスク
     static constexpr Rect mask{0, 290, 1400, 440};
-    
+
     // スクリーンのサイズ
-    static constexpr Size sceneSize{ 1400, 800 };
-    
+    static constexpr Size sceneSize{1400, 800};
+
     // APバーのぼかし処理のため
-    RenderTexture gaussianA1_ap{ sceneSize };
-    RenderTexture gaussianA16_ap{ sceneSize / 16 }, gaussianB16_ap{ sceneSize / 16 };
-    
+    RenderTexture gaussianA1_ap{sceneSize};
+    RenderTexture gaussianA16_ap{sceneSize / 16},
+        gaussianB16_ap{sceneSize / 16};
+
     // SPバーのぼかし処理のため
-    RenderTexture gaussianA1_sp{ sceneSize };
-    RenderTexture gaussianA16_sp{ sceneSize / 16 }, gaussianB16_sp{ sceneSize / 16 };
-    
+    RenderTexture gaussianA1_sp{sceneSize};
+    RenderTexture gaussianA16_sp{sceneSize / 16},
+        gaussianB16_sp{sceneSize / 16};
+
     // StringEffectの描画を管理する
     Effect effect;
-    
+
     // 初めのupdateが呼ばれてからの経過時間
     double time_since_first_update{0.0};
-    
+
     // スタートまでのカウントダウン
     int32 countdown{3};
-    
+
     // ダメージを受けたときの画面の振動の大きさの遷移を管理
     Transition screen_shake_transition{0.0s, 0.3s};
-    
+
     // 座標変換行列
     Mat3x2 transform_matrix{Mat3x2::Identity()};
 };

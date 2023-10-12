@@ -17,28 +17,26 @@ void Title::update() {
         confirm_update();
         return;
     }
-    
+
     // 難易度変更をボタンの更新処理の前にやる
-    if(left_triangle_large.leftClicked()) {
-        if(auto& diff=getData().difficulty;diff!=Difficulty::Easy){
-            left_triangle_last_clicked_time=Scene::Time();
-            if(diff==Difficulty::Normal){
-                diff=Difficulty::Easy;
-            }
-            else if(diff==Difficulty::Hard){
-                diff=Difficulty::Normal;
+    if (left_triangle_large.leftClicked()) {
+        if (auto& diff = getData().difficulty; diff != Difficulty::Easy) {
+            left_triangle_last_clicked_time = Scene::Time();
+            if (diff == Difficulty::Normal) {
+                diff = Difficulty::Easy;
+            } else if (diff == Difficulty::Hard) {
+                diff = Difficulty::Normal;
             }
         }
         return;
     }
-    if(right_triangle_large.leftClicked()) {
-        if(auto& diff=getData().difficulty;diff!=Difficulty::Hard){
-            right_triangle_last_clicked_time=Scene::Time();
-            if(diff==Difficulty::Easy){
-                diff=Difficulty::Normal;
-            }
-            else if(diff==Difficulty::Normal){
-                diff=Difficulty::Hard;
+    if (right_triangle_large.leftClicked()) {
+        if (auto& diff = getData().difficulty; diff != Difficulty::Hard) {
+            right_triangle_last_clicked_time = Scene::Time();
+            if (diff == Difficulty::Easy) {
+                diff = Difficulty::Normal;
+            } else if (diff == Difficulty::Normal) {
+                diff = Difficulty::Hard;
             }
         }
         return;
@@ -64,11 +62,19 @@ void Title::update() {
 
 void Title::draw() const {
     Scene::SetBackground(MyColor::Background);
-    
-    FontAsset(U"Kaisotai")(U"す").drawAt(TextStyle::Outline(0.5, MyColor::White),550, 90, MyColor::Red);
-    FontAsset(U"Kaisotai")(U"と").drawAt(TextStyle::Outline(0.5, MyColor::White),650, 110, MyColor::Yellow);
-    FontAsset(U"Kaisotai")(U"す").drawAt(TextStyle::Outline(0.5, MyColor::White),750, 90, MyColor::Green);
-    FontAsset(U"Kaisotai")(U"と").drawAt(TextStyle::Outline(0.5, MyColor::White),850, 110, MyColor::Blue);
+
+    // 画面遷移中も背景は動いてほしいので、drawの中でupdateする必要がある
+    drifting_polyominoes.update();
+    drifting_polyominoes.draw();
+
+    FontAsset(U"Kaisotai")(U"す").drawAt(
+        TextStyle::Outline(0.5, MyColor::White), 550, 90, MyColor::Red);
+    FontAsset(U"Kaisotai")(U"と").drawAt(
+        TextStyle::Outline(0.5, MyColor::White), 650, 110, MyColor::Yellow);
+    FontAsset(U"Kaisotai")(U"す").drawAt(
+        TextStyle::Outline(0.5, MyColor::White), 750, 90, MyColor::Green);
+    FontAsset(U"Kaisotai")(U"と").drawAt(
+        TextStyle::Outline(0.5, MyColor::White), 850, 110, MyColor::Blue);
 
     // ボタンの描画
     for (const auto& button : buttons) {
@@ -77,18 +83,23 @@ void Title::draw() const {
     }
 
     draw_play_button();
-    
-    FontAsset(U"Black")(U"あそびかた").drawAt(50, 1024, 324, ColorF{Palette::Black, 0.4});
+
+    FontAsset(U"Black")(U"あそびかた")
+        .drawAt(50, 1024, 324, ColorF{Palette::Black, 0.4});
     FontAsset(U"Black")(U"あそびかた").drawAt(50, 1020, 320, MyColor::Green);
-    FontAsset(U"Black")(U"あそびかた").drawAt(TextStyle::Outline(0.3, Palette::Black),50, 1020, 320, ColorF(MyColor::White, (buttons[1].contains(Cursor::Pos()) ? 1.0 : 0.8)));
-    
+    FontAsset(U"Black")(U"あそびかた")
+        .drawAt(TextStyle::Outline(0.3, Palette::Black), 50, 1020, 320,
+                ColorF(MyColor::White,
+                       (buttons[1].contains(Cursor::Pos()) ? 1.0 : 0.8)));
+
     FontAsset(U"Black")(U"ランキング")
         .drawAt(50, 964, 604, ColorF{Palette::Black, 0.4});
+    FontAsset(U"Black")(U"ランキング").drawAt(50, 960, 600, MyColor::Blue);
     FontAsset(U"Black")(U"ランキング")
-        .drawAt(50, 960, 600, MyColor::Blue);
-    FontAsset(U"Black")(U"ランキング")
-        .drawAt(TextStyle::Outline(0.3, Palette::Black),50, 960, 600, ColorF(MyColor::White, (buttons[2].contains(Cursor::Pos()) ? 1.0 : 0.8)));
-    
+        .drawAt(TextStyle::Outline(0.3, Palette::Black), 50, 960, 600,
+                ColorF(MyColor::White,
+                       (buttons[2].contains(Cursor::Pos()) ? 1.0 : 0.8)));
+
     // メッセージウィンドウの描画
     message_window.draw(ColorF{1.0, 0.2});
     if (buttons[0].contains(Cursor::Pos())) {
@@ -148,57 +159,55 @@ void Title::confirm_update() {
 }
 
 // あそぶボタンの描画
-void Title::draw_play_button()const{
+void Title::draw_play_button() const {
     // マウスオーバーしていないときは白色を透過させる
-    Color white = ColorF(MyColor::White, (buttons[0].contains(Cursor::Pos()) ? 1.0 : 0.8));
-    FontAsset(U"Black")(U"あそぶ").drawAt(80, 506, 386, ColorF{Palette::Black,0.4});
+    Color white = ColorF(MyColor::White,
+                         (buttons[0].contains(Cursor::Pos()) ? 1.0 : 0.8));
+    FontAsset(U"Black")(U"あそぶ").drawAt(80, 506, 386,
+                                          ColorF{Palette::Black, 0.4});
     FontAsset(U"Black")(U"あそぶ").drawAt(80, 500, 380, MyColor::Red);
-    FontAsset(U"Black")(U"あそぶ").drawAt(TextStyle::Outline(0.3, Palette::Black),80, 500, 380, white);
+    FontAsset(U"Black")(U"あそぶ").drawAt(
+        TextStyle::Outline(0.3, Palette::Black), 80, 500, 380, white);
     {
         String difficulty_text;
-        if(getData().difficulty==Difficulty::Easy){
-            difficulty_text=U"みならい";
-        }else if(getData().difficulty==Difficulty::Normal){
-            difficulty_text=U"じゅくれん";
-        }
-        else if(getData().difficulty==Difficulty::Hard){
-            difficulty_text=U"しょくにん";
+        if (getData().difficulty == Difficulty::Easy) {
+            difficulty_text = U"みならい";
+        } else if (getData().difficulty == Difficulty::Normal) {
+            difficulty_text = U"じゅくれん";
+        } else if (getData().difficulty == Difficulty::Hard) {
+            difficulty_text = U"しょくにん";
         }
         FontAsset(U"Black")(difficulty_text)
-            .drawAt(TextStyle::Outline(0.3, Palette::Black),40, 500, 480, white);
+            .drawAt(TextStyle::Outline(0.3, Palette::Black), 40, 500, 480,
+                    white);
     }
-    
-    
+
     // 難易度変更の三角ボタン
     // 難易度変更できないときは透過させる
-    if(getData().difficulty==Difficulty::Easy){
-        left_triangle_small.draw(ColorF{MyColor::White, 0.4}).drawFrame(0, 4,ColorF{0.8,0.4});
-    }
-    else{
+    if (getData().difficulty == Difficulty::Easy) {
+        left_triangle_small.draw(ColorF{MyColor::White, 0.4})
+            .drawFrame(0, 4, ColorF{0.8, 0.4});
+    } else {
         // ボタンが押されてすぐは枠を描かない
-        if(Scene::Time() - left_triangle_last_clicked_time < 0.1){
+        if (Scene::Time() - left_triangle_last_clicked_time < 0.1) {
             left_triangle_large.draw(white);
-        }
-        else if(left_triangle_large.mouseOver()){
-            left_triangle_large.draw(white).drawFrame(0, 5,ColorF{0.8});
-        }
-        else{
-            left_triangle_small.draw(white).drawFrame(0, 5,ColorF{0.8});
+        } else if (left_triangle_large.mouseOver()) {
+            left_triangle_large.draw(white).drawFrame(0, 5, ColorF{0.8});
+        } else {
+            left_triangle_small.draw(white).drawFrame(0, 5, ColorF{0.8});
         }
     }
-    if(getData().difficulty==Difficulty::Hard){
-        right_triangle_small.draw(ColorF{MyColor::White, 0.4}).drawFrame(0, 4,ColorF{0.8,0.4});
-    }
-    else{
+    if (getData().difficulty == Difficulty::Hard) {
+        right_triangle_small.draw(ColorF{MyColor::White, 0.4})
+            .drawFrame(0, 4, ColorF{0.8, 0.4});
+    } else {
         // ボタンが押されてすぐは枠を描かない
-        if(Scene::Time() - right_triangle_last_clicked_time < 0.1){
+        if (Scene::Time() - right_triangle_last_clicked_time < 0.1) {
             right_triangle_large.draw(white);
-        }
-        else if(right_triangle_large.mouseOver()){
-            right_triangle_large.draw(white).drawFrame(0, 5,ColorF{0.8});
-        }
-        else{
-            right_triangle_small.draw(white).drawFrame(0, 5,ColorF{0.8});
+        } else if (right_triangle_large.mouseOver()) {
+            right_triangle_large.draw(white).drawFrame(0, 5, ColorF{0.8});
+        } else {
+            right_triangle_small.draw(white).drawFrame(0, 5, ColorF{0.8});
         }
     }
 }
