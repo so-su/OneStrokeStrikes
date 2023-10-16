@@ -1,35 +1,39 @@
 #include "Ranking.hpp"
 
-Ranking::Ranking(const InitData& init) : IScene{init} {
-    // ランキングを取得して読み込む
-    get_ranking();
-    load_ranking();
+Ranking::Ranking(const InitData& init) : IScene{init} {}
 
-    // 各順位の枠
-    // 11個目は自分のスコアが入る
-    for (auto rank : step(11)) {
-        rects[rank] = Rect{400, 170 + 50 * rank, 600, 50};
-    }
+void Ranking::update() {
+    if (is_loading) {
+        // ランキングを取得して読み込む
+        is_loading = not get_ranking();
+        load_ranking();
 
-    if (getData().display_player_score) {  // プレイヤーのスコアが表示できるとき
-        // ランキングに登録できるかを判定する
-        display_register_button = (std::size(ranking) < 10) or
-                                  (getData().score > ranking.back().score);
-        // 11位の位置にプレイヤーのスコアを表示
-        player_place = 10;
-    } else {  // プレイヤーのスコアが表示できないとき
-        // もしプレイヤーがランクインしていたら、player_placeを設定
-        for (auto rank : step(std::size(ranking))) {
-            const auto [user_id, score] = ranking[rank];
-            if (user_id == getData().player_id and score == getData().score) {
-                player_place = rank;
-                break;
+        // 各順位の枠
+        // 11個目は自分のスコアが入る
+        for (auto rank : step(11)) {
+            rects[rank] = Rect{400, 170 + 50 * rank, 600, 50};
+        }
+
+        if (getData()
+                .display_player_score) {  // プレイヤーのスコアが表示できるとき
+            // ランキングに登録できるかを判定する
+            display_register_button = (std::size(ranking) < 10) or
+                                      (getData().score > ranking.back().score);
+            // 11位の位置にプレイヤーのスコアを表示
+            player_place = 10;
+        } else {  // プレイヤーのスコアが表示できないとき
+            // もしプレイヤーがランクインしていたら、player_placeを設定
+            for (auto rank : step(std::size(ranking))) {
+                const auto [user_id, score] = ranking[rank];
+                if (user_id == getData().player_id and
+                    score == getData().score) {
+                    player_place = rank;
+                    break;
+                }
             }
         }
     }
-}
 
-void Ranking::update() {
     mask_alpha_transition.update(input_mode);
 
     // ユーザーidの入力中
@@ -60,6 +64,10 @@ void Ranking::draw() const {
     Scene::SetBackground(MyColor::Background);
 
     FontAsset(U"Kaisotai")(U"ランキング").drawAt(80, 700, 100, MyColor::White);
+
+    if (is_loading) {
+        return;
+    }
 
     draw_ranking();
 
@@ -123,7 +131,7 @@ void Ranking::input_mode_update() {
         input_mode = false;
         can_press_button = true;
     }
-    
+
     // ボタンの更新
     if (send.update(can_press_button and is_valid(text_edit.text))) {
         can_press_button = false;
@@ -142,7 +150,7 @@ void Ranking::input_mode_update() {
 
 // ランキングを取得する
 bool Ranking::get_ranking() {
-    if (SimpleHTTP::Get(url, {}, save_file_path)) {
+    if (SimpleHTTP::GetAsync(url, {}, save_file_path)) {
         return true;
     }
     return false;

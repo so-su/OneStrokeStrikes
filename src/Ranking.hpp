@@ -39,6 +39,8 @@ class Ranking : public App::Scene {
     // ランキングをもつ配列
     Array<User> ranking;
 
+    bool is_loading{true};
+
     // ランキングの枠の配列
     std::array<Rect, 11> rects;
 
