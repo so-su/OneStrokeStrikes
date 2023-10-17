@@ -3,35 +3,17 @@
 Ranking::Ranking(const InitData& init) : IScene{init} {}
 
 void Ranking::update() {
-    if (is_loading) {
-        // ランキングを取得して読み込む
-        is_loading = not get_ranking();
-        load_ranking();
+    // ランキングを表示するための準備をする
+    if (not preparing_task.isValid()) {
+        preparing_task = Async(prepare_ranking, std::ref(*this));
+    }
 
-        // 各順位の枠
-        // 11個目は自分のスコアが入る
-        for (auto rank : step(11)) {
-            rects[rank] = Rect{400, 170 + 50 * rank, 600, 50};
-        }
-
-        if (getData()
-                .display_player_score) {  // プレイヤーのスコアが表示できるとき
-            // ランキングに登録できるかを判定する
-            display_register_button = (std::size(ranking) < 10) or
-                                      (getData().score > ranking.back().score);
-            // 11位の位置にプレイヤーのスコアを表示
-            player_place = 10;
-        } else {  // プレイヤーのスコアが表示できないとき
-            // もしプレイヤーがランクインしていたら、player_placeを設定
-            for (auto rank : step(std::size(ranking))) {
-                const auto [user_id, score] = ranking[rank];
-                if (user_id == getData().player_id and
-                    score == getData().score) {
-                    player_place = rank;
-                    break;
-                }
-            }
-        }
+    timer += Scene::DeltaTime();
+    if (not preparing_task.isReady()) {  // まだランキングの準備中
+        timer = fmod(timer, num_squares * (rot_duration - duration_overlap) +
+                                duration_overlap);
+    } else {  // ランキングの準備をする非同期処理が終わった
+        timer = 0.0;
     }
 
     mask_alpha_transition.update(input_mode);
@@ -65,7 +47,8 @@ void Ranking::draw() const {
 
     FontAsset(U"Kaisotai")(U"ランキング").drawAt(80, 700, 100, MyColor::White);
 
-    if (is_loading) {
+    if (not preparing_task.isReady()) {
+        draw_loading_animation();
         return;
     }
 
@@ -148,9 +131,18 @@ void Ranking::input_mode_update() {
     }
 }
 
+// ランキングを表示する準備をする
+bool Ranking::prepare_ranking(Ranking& ranking_instance) {
+    if (not ranking_instance.get_ranking()) {
+        return false;
+    }
+    ranking_instance.load_ranking();
+    return true;
+}
+
 // ランキングを取得する
 bool Ranking::get_ranking() {
-    if (SimpleHTTP::GetAsync(url, {}, save_file_path)) {
+    if (SimpleHTTP::Get(url, {}, save_file_path)) {
         return true;
     }
     return false;
@@ -158,11 +150,35 @@ bool Ranking::get_ranking() {
 
 // 取得済みのランキングを読み込む
 void Ranking::load_ranking() {
+    // jsonファイルからランキング配列を構成する
     ranking.clear();
     const JSON users = JSON::Load(U"ranking.json");
     for (const auto& user : users.arrayView()) {
         ranking.emplace_back(
             User{user[U"user_id"].get<String>(), user[U"score"].get<int32>()});
+    }
+
+    // 各順位の枠
+    // 11個目は自分のスコアが入る
+    for (auto rank : step(11)) {
+        rects[rank] = Rect{400, 170 + 50 * rank, 600, 50};
+    }
+
+    if (getData().display_player_score) {  // プレイヤーのスコアが表示できるとき
+        // ランキングに登録できるかを判定する
+        display_register_button = (std::size(ranking) < 10) or
+                                  (getData().score > ranking.back().score);
+        // 11位の位置にプレイヤーのスコアを表示
+        player_place = 10;
+    } else {  // プレイヤーのスコアが表示できないとき
+        // もしプレイヤーがランクインしていたら、player_placeを設定
+        for (auto rank : step(std::size(ranking))) {
+            const auto [user_id, score] = ranking[rank];
+            if (user_id == getData().player_id and score == getData().score) {
+                player_place = rank;
+                break;
+            }
+        }
     }
 }
 
@@ -174,6 +190,28 @@ bool Ranking::send_score() const {
         return true;
     }
     return false;
+}
+
+// ローディング中のアニメーションを描画する
+void Ranking::draw_loading_animation() const {
+    constexpr int32 square_size{30};
+    constexpr int32 center_spacing{40};
+
+    for (int32 square_idx = 0; square_idx < num_squares; ++square_idx) {
+        const Point center{
+            Scene::Width() / 2 +
+                center_spacing / 2 * (square_idx * 2 - num_squares + 1),
+            Scene::Height() / 2};
+        const double arg{
+            EaseOutBounce(std::clamp(
+                (timer - (rot_duration - duration_overlap) * square_idx) /
+                    rot_duration,
+                0.0, 1.0)) *
+            Math::HalfPi};
+        Rect{Arg::center = center, square_size, square_size}
+            .rotatedAt(center, arg)
+            .draw(ColorF{1.0, 0.5});
+    }
 }
 
 // ランキングを描画する

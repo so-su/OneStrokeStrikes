@@ -15,6 +15,10 @@ class Ranking : public App::Scene {
     // ユーザーid入力中の更新処理
     void input_mode_update();
 
+    // ランキングを表示する準備をする
+    // non staticメソッドを非同期処理で呼び出せないのでstaticにする
+    static bool prepare_ranking(Ranking& ranking_instance);
+
     // ランキングを取得する
     bool get_ranking();
 
@@ -24,11 +28,26 @@ class Ranking : public App::Scene {
     // スコアを送信する
     bool send_score() const;
 
+    // ローディング中のアニメーションを描画する
+    void draw_loading_animation() const;
+
     // ランキングを描画する
     void draw_ranking() const;
 
     // 文字列がユーザーidとして有効かを返す
     static bool is_valid(const String& user_id);
+
+    // ローディングが始まってからの経過時間
+    // ローディングが終わってからは、それからの経過時間
+    double timer{0.0};
+
+    // prepare_ranking()を実行するための非同期タスク
+    AsyncTask<bool> preparing_task;
+
+    // ローディングのアニメーションに関するパラメータ
+    static constexpr int32 num_squares{5};
+    static constexpr double rot_duration{0.6};
+    static constexpr double duration_overlap{0.4};
 
     // ユーザーの情報をもつ構造体
     struct User {
@@ -38,8 +57,6 @@ class Ranking : public App::Scene {
 
     // ランキングをもつ配列
     Array<User> ranking;
-
-    bool is_loading{true};
 
     // ランキングの枠の配列
     std::array<Rect, 11> rects;
