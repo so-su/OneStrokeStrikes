@@ -3,6 +3,10 @@
 Ranking::Ranking(const InitData& init) : IScene{init} {}
 
 void Ranking::update() {
+    if (KeyEscape.down()) {
+        changeScene(State::Title);
+    }
+
     // ランキングを表示するための準備をする
     if (not preparing_task.isValid()) {
         preparing_task = Async(prepare_ranking, std::ref(*this));
@@ -47,6 +51,11 @@ void Ranking::draw() const {
 
     FontAsset(U"Kaisotai")(U"ランキング").drawAt(80, 700, 100, MyColor::White);
 
+    // もどるボタン
+    backward.draw();
+    FontAsset(U"Regular")(U"もどる").drawAt(20, backward.center(),
+                                            Palette::Black);
+
     if (not preparing_task.isReady()) {
         draw_loading_animation();
         return;
@@ -60,11 +69,6 @@ void Ranking::draw() const {
         FontAsset(U"Regular")(U"ランキング登録")
             .drawAt(20, ranking_register.center(), Palette::Black);
     }
-
-    // もどるボタン
-    backward.draw();
-    FontAsset(U"Regular")(U"もどる").drawAt(20, backward.center(),
-                                            Palette::Black);
 
     // ユーザーid入力中
     if (input_mode) {
