@@ -43,8 +43,7 @@ bool Polyomino::vanish() {
     Optional<double> base_hue;
     if (cells[pos] == Cell::Green) {
         base_hue = 120.0;
-    }
-    else if (cells[pos] == Cell::Red) {
+    } else if (cells[pos] == Cell::Red) {
         base_hue = 0.0;
     } else if (cells[pos] == Cell::Blue) {
         base_hue = 225.0;
@@ -119,7 +118,7 @@ void Polyomino::generate_polyomino(Cell designated) {
     const int32 tolerance{grid_size.x * grid_size.y};
 
     // 2方向に伸ばすことで、極端な図形になるのを防止する
-    for (auto _ : step(2)) {
+    for ([[maybe_unused]] auto _ : step(2)) {
         Point now{start};
         Cell prev{cells[start]};
         int32 error_cnt{0};
