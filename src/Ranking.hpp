@@ -15,13 +15,6 @@ class Ranking : public App::Scene {
     // ユーザーid入力中の更新処理
     void input_mode_update();
 
-    // ランキングを表示する準備をする
-    // non staticメソッドを非同期処理で呼び出せないのでstaticにする
-    static bool prepare_ranking(Ranking& ranking_instance);
-
-    // ランキングを取得する
-    bool get_ranking();
-
     // 取得済みのランキングを読み込む
     void load_ranking();
 
@@ -41,8 +34,8 @@ class Ranking : public App::Scene {
     // ローディングが終わってからは、それからの経過時間
     double timer{0.0};
 
-    // prepare_ranking()を実行するための非同期タスク
-    AsyncTask<bool> preparing_task;
+    // ランキングを取得するGETリクエストの非同期タスク
+    AsyncHTTPTask get_task;
 
     // ローディングのアニメーションに関するパラメータ
     static constexpr int32 num_squares{5};
@@ -71,6 +64,7 @@ class Ranking : public App::Scene {
         U"73c/exec"};
 
     // ランキングを保存するファイル
+    // Web版向けにビルドするときは、U"/ranking.json"に置換する
     const FilePath save_file_path{U"ranking.json"};
 
     // ランキング登録ボタン

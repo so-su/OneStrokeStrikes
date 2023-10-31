@@ -1,19 +1,20 @@
 #include "Ranking.hpp"
 
-Ranking::Ranking(const InitData& init) : IScene{init} {}
+Ranking::Ranking(const InitData& init) : IScene{init} {
+    get_task = SimpleHTTP::SaveAsync(url, save_file_path);
+}
 
 void Ranking::update() {
     if (KeyEscape.down()) {
         changeScene(State::Title);
     }
 
-    // ランキングを表示するための準備をする
-    if (not preparing_task.isValid()) {
-        preparing_task = Async(prepare_ranking, std::ref(*this));
+    if (get_task.isReady() and ranking.empty()) {
+        load_ranking();
     }
 
     timer += Scene::DeltaTime();
-    if (not preparing_task.isReady()) {  // まだランキングの準備中
+    if (not get_task.isReady()) {  // まだランキングの準備中
         timer = fmod(timer, num_squares * (rot_duration - duration_overlap) +
                                 duration_overlap);
     } else {  // ランキングの準備をする非同期処理が終わった
@@ -56,7 +57,7 @@ void Ranking::draw() const {
     FontAsset(U"Regular")(U"もどる").drawAt(20, backward.center(),
                                             Palette::Black);
 
-    if (not preparing_task.isReady()) {
+    if (not get_task.isReady()) {
         draw_loading_animation();
         return;
     }
@@ -135,28 +136,11 @@ void Ranking::input_mode_update() {
     }
 }
 
-// ランキングを表示する準備をする
-bool Ranking::prepare_ranking(Ranking& ranking_instance) {
-    if (not ranking_instance.get_ranking()) {
-        return false;
-    }
-    ranking_instance.load_ranking();
-    return true;
-}
-
-// ランキングを取得する
-bool Ranking::get_ranking() {
-    if (SimpleHTTP::Get(url, {}, save_file_path)) {
-        return true;
-    }
-    return false;
-}
-
 // 取得済みのランキングを読み込む
 void Ranking::load_ranking() {
     // jsonファイルからランキング配列を構成する
     ranking.clear();
-    const JSON users = JSON::Load(U"ranking.json");
+    const JSON users{JSON::Load(save_file_path)};
     for (const auto& user : users.arrayView()) {
         ranking.emplace_back(
             User{user[U"user_id"].get<String>(), user[U"score"].get<int32>()});
